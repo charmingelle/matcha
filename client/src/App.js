@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
-import './App.css';
-import Settings from './components/Settings/Settings.js';
+import React, { Component } from "react";
+import Settings from "./components/Settings/Settings.js";
+import Profile from './containers/Profile/Profile.js'
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <Settings />
+      <div>
+        {/* <Settings /> */}
+        <Profile />
       </div>
     );
   }

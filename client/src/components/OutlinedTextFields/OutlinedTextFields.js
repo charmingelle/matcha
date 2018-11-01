@@ -8,77 +8,79 @@ import TextField from '@material-ui/core/TextField';
 const styles = theme => ({
   container: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   },
   textField: {
     marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing.unit
   },
   dense: {
-    marginTop: 16,
+    marginTop: 16
   },
   menu: {
-    width: 200,
-  },
+    width: 200
+  }
 });
 
 const currencies = [
   {
     value: 'USD',
-    label: '$',
+    label: '$'
   },
   {
     value: 'EUR',
-    label: '€',
+    label: '€'
   },
   {
     value: 'BTC',
-    label: '฿',
+    label: '฿'
   },
   {
     value: 'JPY',
-    label: '¥',
-  },
+    label: '¥'
+  }
 ];
 
 class OutlinedTextField extends React.Component {
   state = {
-    name: 'Cat in the Hat',
-    age: '',
-    multiline: 'Controlled',
-    currency: 'EUR',
+    [this.props.name]: ''
   };
 
-  handleChange = name => event => {
+  componentDidMount() {
     this.setState({
-      [name]: event.target.value,
+      [this.props.name]: this.props.value
     });
+  }
+
+  handleChange = event => {
+    this.setState({ [this.props.name]: event.target.value });
+    this.props.onChange(this.state);
   };
 
   render() {
     const { classes, label, placeholder } = this.props;
 
     return (
-      <form className={classes.container} noValidate autoComplete="off">
-        <TextField
-          id="outlined-full-width"
-          label={label}
-          style={{ margin: 8 }}
-          placeholder={placeholder}
-          fullWidth
-          margin="normal"
-          variant="outlined"
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </form>
+      <TextField
+        id="outlined-full-width"
+        label={label}
+        style={{ margin: 8 }}
+        placeholder={placeholder}
+        fullWidth
+        margin="normal"
+        variant="outlined"
+        InputLabelProps={{
+          shrink: true
+        }}
+        onChange={this.handleChange}
+        value={this.state[this.props.name]}
+      />
     );
   }
 }
 
 OutlinedTextField.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(OutlinedTextField);
