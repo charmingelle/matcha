@@ -19,7 +19,8 @@ class Profile extends React.Component {
         bio: user.location.street,
         sexPreferences: Math.random() > 0.5 ? 'heterosexual' : (Math.random() > 0.5 ? 'homosectual': 'bisexual'),
         interests:
-          Math.random() > 0.5 ? ['books', 'music'] : ['movies', 'sport']
+          Math.random() > 0.5 ? ['books', 'music'] : ['movies', 'sport'],
+        allInterests: ['books', 'music', 'movies', 'sport']
       },
       gallery: [user.picture.large]
     });

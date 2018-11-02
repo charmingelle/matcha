@@ -1,6 +1,7 @@
 import React from 'react';
 import SimpleSelect from './../../../components/SimpleSelect/SimpleSelect.js';
 import OutlinedTextFields from './../../../components/OutlinedTextFields/OutlinedTextFields.js';
+import DownshiftMultiple from './../../../components/DownshiftMultiple/DownshiftMultiple.js';
 
 class UserEditor extends React.Component {
   state = this.props.initValue;
@@ -21,11 +22,10 @@ class UserEditor extends React.Component {
   };
 
   render() {
-    const { gender, sexPreferences, bio, interests } = this.state;
+    const { gender, sexPreferences, bio, interests, allInterests } = this.state;
 
     return (
       <form onSubmit={this.onSubmit}>
-        {/* <input name="gender" value={gender} onChange={this.onChange} /> */}
         <SimpleSelect
           title="Gender"
           items={['male', 'female']}
@@ -34,11 +34,6 @@ class UserEditor extends React.Component {
           onChange={this.onChange}
         />
 
-        {/* <input
-          name="sexPreferences"
-          value={sexPreferences}
-          onChange={this.onChange}
-        /> */}
         <SimpleSelect
           title="Preferences"
           items={['heterosexual', 'homosectual', 'bisexual']}
@@ -47,7 +42,6 @@ class UserEditor extends React.Component {
           onChange={this.onChange}
         />
 
-        {/* <input name="bio" value={bio} onChange={this.onChange} /> */}
         <OutlinedTextFields
           label="Biography"
           placeholder="Tell us a few words about yourself"
@@ -56,7 +50,8 @@ class UserEditor extends React.Component {
           onChange={this.onChange}
         />
 
-        <input name="interests" value={interests} onChange={this.onChange} />
+        <DownshiftMultiple name="interests" value={interests} all={allInterests} onChange={this.onChange} />
+
         <div>
           <button>Submit</button>
         </div>

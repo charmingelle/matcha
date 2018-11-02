@@ -10,80 +10,6 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
 
-// import { createStore } from 'redux';
-
-// let interests = [];
-
-// const addInterests = (state = [], action) => {
-//   if (action.type === 'ADD_INTEREST') {
-//     return [...state, action.interest];
-//   }
-//   return state;
-// };
-
-// let store = createStore(addInterests);
-
-// store.subscribe(() => {
-//   // console.log('subscribe', store.getState());
-//   interests = [...interests, ...store.getState()];
-//   // console.log('interests', interests);
-//   console.log(interests);
-// });
-
-// store.dispatch({'type': 'ADD_INTEREST', 'interest': {'label': 'running'}});
-// store.dispatch({'type': 'ADD_INTEREST', 'interest': {'label': 'singing'}});
-
-// fetch('/interests', {
-//   method: 'POST',
-//   credentials: 'include',
-// })
-//   .then(response => response.json())
-//   .then(interests => {
-//     interests.forEach(interest => {
-//       store.dispatch({ type: 'ADD_INTEREST', interest: interest });
-//     });
-//   });
-
-// function enterPressHandler(event) {
-//   if (event.key === 'Enter') {
-//     store.dispatch({ type: 'ADD_INTEREST', interest: event.target.value });
-//   }
-// }
-
-// class Interests extends React.Component {
-//   state = {
-//     interests: this.props.interests,
-//   };
-
-//   onEnter = interest => {
-//     const { interests } = this.props
-
-//     if (interests.includes(interest)) {
-//       return;
-//     }
-
-//     this.setState({
-//       interests: [...interests, interest],
-//     });
-//   };
-
-//   render() {
-//     const { inputProps, ...other } = this.props;
-//     const { ref, ...otherInputProps } = inputProps;
-
-//     return (
-//       <TextField
-//         InputProps={{
-//           inputRef: ref,
-//           onKeyPress: this.onEnter,
-//           ...otherInputProps,
-//         }}
-//         {...other}
-//       />
-//     );
-//   }
-// }
-
 const Interests = props => {
   const { inputProps, handleAdding, ...other } = props;
   const { ref, ...otherInputProps } = inputProps;
@@ -112,7 +38,7 @@ function renderSuggestion({
   return (
     <MenuItem
       {...itemProps}
-      key={suggestion}
+      key={index}
       selected={isHighlighted}
       component="div"
       style={{
@@ -123,6 +49,7 @@ function renderSuggestion({
     </MenuItem>
   );
 }
+
 renderSuggestion.propTypes = {
   highlightedIndex: PropTypes.number,
   index: PropTypes.number,
@@ -155,17 +82,12 @@ class DownshiftMultiple extends React.Component {
   state = {
     inputValue: '',
     selectedItem: [],
-    interests: null,
+    interests: [],
     suggestions: [],
   };
 
-  async componentDidMount() {
-    const interests = await fetch('/interests', {
-      method: 'POST',
-      credentials: 'include',
-    }).then(response => response.json());
-
-    this.setState({ interests });
+  componentDidMount() {
+    this.setState({ selectedItem: this.props.value, interests: this.props.all });
   }
 
   handleKeyDown = event => {
@@ -181,8 +103,8 @@ class DownshiftMultiple extends React.Component {
       });
     }
 
-    if (keycode(event) === 'enter' && inputValue.length) {
-      this.handleChange(inputValue);
+    if (keycode(event) === 'space' && inputValue.length) {
+      this.handleChange(inputValue.trim());
     }
   };
 
@@ -192,30 +114,35 @@ class DownshiftMultiple extends React.Component {
     this.setState({
       inputValue: target.value,
       suggestions: [
-        ...getSuggestions(interests, target.value),
-        ...getSuggestions(selectedItem, target.value),
+        ...getSuggestions(interests, target.value)
       ],
     });
   };
 
   handleChange = item => {
-    let { selectedItem } = this.state;
+    let { interests, selectedItem } = this.state;
 
     if (selectedItem.indexOf(item) === -1) {
       selectedItem = [...selectedItem, item];
+    }
+    if (interests.indexOf(item) === -1) {
+      interests = [...interests, item];
     }
 
     this.setState({
       inputValue: '',
       selectedItem,
+      interests
     });
+    this.props.onChange({ interests: selectedItem });
   };
 
   handleDelete = item => () => {
-    this.setState(state => {
-      const selectedItem = [...state.selectedItem];
-      selectedItem.splice(selectedItem.indexOf(item), 1);
-      return { selectedItem };
+    const selectedItem = this.state.selectedItem;
+
+    selectedItem.splice(selectedItem.indexOf(item), 1);
+    this.setState({
+      selectedItem: selectedItem
     });
   };
 
@@ -247,9 +174,9 @@ class DownshiftMultiple extends React.Component {
               interests={interests}
               handleAdding={this.handleChange}
               inputProps={getInputProps({
-                startAdornment: selectedItem.map(item => (
+                startAdornment: selectedItem.map((item, index) => (
                   <Chip
-                    key={item}
+                    key={index}
                     tabIndex={-1}
                     label={item}
                     className={classes.chip}
@@ -321,14 +248,16 @@ const styles = theme => ({
 
 let popperNode;
 
-function IntegrationDownshift(props) {
-  const { classes } = props;
-
-  return (
-    <div className={classes.root}>
-      <DownshiftMultiple classes={classes} />
-    </div>
-  );
+class IntegrationDownshift extends React.Component {
+  render() {
+    const { classes, name, value, all, onChange } = this.props;
+  
+    return (
+      <div className={classes.root}>
+        <DownshiftMultiple classes={classes} name={name} value={value} all={all} onChange={onChange} />
+      </div>
+    );
+  }
 }
 
 IntegrationDownshift.propTypes = {
