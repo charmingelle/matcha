@@ -16,13 +16,18 @@ class Profile extends React.Component {
     this.setState({
       userInfo: {
         gender: user.gender,
+        sexPreferences:
+          Math.random() > 0.5
+            ? 'heterosexual'
+            : Math.random() > 0.5
+              ? 'homosectual'
+              : 'bisexual',
         bio: user.location.street,
-        sexPreferences: Math.random() > 0.5 ? 'heterosexual' : (Math.random() > 0.5 ? 'homosectual': 'bisexual'),
         interests:
           Math.random() > 0.5 ? ['books', 'music'] : ['movies', 'sport'],
         allInterests: ['books', 'music', 'movies', 'sport']
       },
-      gallery: [user.picture.large]
+      gallery: [user.picture.large, user.picture.medium, user.picture.thumbnail]
     });
   }
 
@@ -39,8 +44,8 @@ class Profile extends React.Component {
 
     return (
       <div className="user-profile">
-        <UserEditor initValue={userInfo} onSubmit={this.onUserEditorSubmit} />
         <Gallery images={gallery} />
+        <UserEditor initValue={userInfo} onSubmit={this.onUserEditorSubmit} />
       </div>
     );
   }

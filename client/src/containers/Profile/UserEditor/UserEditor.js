@@ -2,17 +2,12 @@ import React from 'react';
 import SimpleSelect from './../../../components/SimpleSelect/SimpleSelect.js';
 import OutlinedTextFields from './../../../components/OutlinedTextFields/OutlinedTextFields.js';
 import DownshiftMultiple from './../../../components/DownshiftMultiple/DownshiftMultiple.js';
+import Button from '@material-ui/core/Button';
 
 class UserEditor extends React.Component {
   state = this.props.initValue;
 
-  // onChange = ({ target }) => {
-  //   this.setState({
-  //     [target.name]: target.value
-  //   });
-  // };
-
-  onChange = (target) => {
+  onChange = target => {
     this.setState(target);
   };
 
@@ -25,7 +20,7 @@ class UserEditor extends React.Component {
     const { gender, sexPreferences, bio, interests, allInterests } = this.state;
 
     return (
-      <form onSubmit={this.onSubmit}>
+      <form>
         <SimpleSelect
           title="Gender"
           items={['male', 'female']}
@@ -33,7 +28,6 @@ class UserEditor extends React.Component {
           value={gender}
           onChange={this.onChange}
         />
-
         <SimpleSelect
           title="Preferences"
           items={['heterosexual', 'homosectual', 'bisexual']}
@@ -41,7 +35,6 @@ class UserEditor extends React.Component {
           value={sexPreferences}
           onChange={this.onChange}
         />
-
         <OutlinedTextFields
           label="Biography"
           placeholder="Tell us a few words about yourself"
@@ -49,12 +42,15 @@ class UserEditor extends React.Component {
           value={bio}
           onChange={this.onChange}
         />
-
-        <DownshiftMultiple name="interests" value={interests} all={allInterests} onChange={this.onChange} />
-
-        <div>
-          <button>Submit</button>
-        </div>
+        <DownshiftMultiple
+          name="interests"
+          value={interests}
+          all={allInterests}
+          onChange={this.onChange}
+        />
+        <Button variant="outlined" onClick={this.onSubmit}>
+          Save changes
+        </Button>
       </form>
     );
   }

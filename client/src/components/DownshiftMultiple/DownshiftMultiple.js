@@ -18,7 +18,7 @@ const Interests = props => {
     <TextField
       InputProps={{
         inputRef: ref,
-        ...otherInputProps,
+        ...otherInputProps
       }}
       {...other}
     />
@@ -30,7 +30,7 @@ function renderSuggestion({
   index,
   itemProps,
   highlightedIndex,
-  selectedItem,
+  selectedItem
 }) {
   const isHighlighted = highlightedIndex === index;
   const isSelected = (selectedItem || '').indexOf(suggestion) > -1;
@@ -42,7 +42,7 @@ function renderSuggestion({
       selected={isHighlighted}
       component="div"
       style={{
-        fontWeight: isSelected ? 500 : 400,
+        fontWeight: isSelected ? 500 : 400
       }}
     >
       {suggestion}
@@ -55,7 +55,7 @@ renderSuggestion.propTypes = {
   index: PropTypes.number,
   itemProps: PropTypes.object,
   selectedItem: PropTypes.string,
-  suggestion: PropTypes.shape({ label: PropTypes.string }).isRequired,
+  suggestion: PropTypes.shape({ label: PropTypes.string }).isRequired
 };
 
 function getSuggestions(interests, value) {
@@ -83,11 +83,14 @@ class DownshiftMultiple extends React.Component {
     inputValue: '',
     selectedItem: [],
     interests: [],
-    suggestions: [],
+    suggestions: []
   };
 
   componentDidMount() {
-    this.setState({ selectedItem: this.props.value, interests: this.props.all });
+    this.setState({
+      selectedItem: this.props.value,
+      interests: this.props.all
+    });
   }
 
   handleKeyDown = event => {
@@ -99,7 +102,7 @@ class DownshiftMultiple extends React.Component {
       keycode(event) === 'backspace'
     ) {
       this.setState({
-        selectedItem: selectedItem.slice(0, selectedItem.length - 1),
+        selectedItem: selectedItem.slice(0, selectedItem.length - 1)
       });
     }
 
@@ -113,9 +116,7 @@ class DownshiftMultiple extends React.Component {
 
     this.setState({
       inputValue: target.value,
-      suggestions: [
-        ...getSuggestions(interests, target.value)
-      ],
+      suggestions: [...getSuggestions(interests, target.value)]
     });
   };
 
@@ -166,7 +167,7 @@ class DownshiftMultiple extends React.Component {
           getItemProps,
           isOpen,
           selectedItem: selectedItem2,
-          highlightedIndex,
+          highlightedIndex
         }) => (
           <div className={classes.container}>
             <Interests
@@ -185,7 +186,7 @@ class DownshiftMultiple extends React.Component {
                 )),
                 onChange: this.handleInputChange,
                 onKeyDown: this.handleKeyDown,
-                placeholder: 'Select multiple interests',
+                placeholder: 'Select multiple interests'
               })}
               label="Interests"
             />
@@ -197,7 +198,7 @@ class DownshiftMultiple extends React.Component {
                     index,
                     itemProps: getItemProps({ item: suggestion }),
                     highlightedIndex,
-                    selectedItem: selectedItem2,
+                    selectedItem: selectedItem2
                   })
                 )}
               </Paper>
@@ -210,40 +211,39 @@ class DownshiftMultiple extends React.Component {
 }
 
 DownshiftMultiple.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 const styles = theme => ({
   root: {
     margin: '8px',
-    flexGrow: 1,
-    height: 250,
+    flexGrow: 1
   },
   container: {
     margin: '8px',
     flexGrow: 1,
-    position: 'relative',
+    position: 'relative'
   },
   paper: {
     position: 'absolute',
     zIndex: 1,
     marginTop: theme.spacing.unit,
     left: 0,
-    right: 0,
+    right: 0
   },
   chip: {
-    margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`,
+    margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`
   },
   inputRoot: {
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   },
   inputInput: {
     width: 'auto',
-    flexGrow: 1,
+    flexGrow: 1
   },
   divider: {
-    height: theme.spacing.unit * 2,
-  },
+    height: theme.spacing.unit * 2
+  }
 });
 
 let popperNode;
@@ -251,17 +251,23 @@ let popperNode;
 class IntegrationDownshift extends React.Component {
   render() {
     const { classes, name, value, all, onChange } = this.props;
-  
+
     return (
       <div className={classes.root}>
-        <DownshiftMultiple classes={classes} name={name} value={value} all={all} onChange={onChange} />
+        <DownshiftMultiple
+          classes={classes}
+          name={name}
+          value={value}
+          all={all}
+          onChange={onChange}
+        />
       </div>
     );
   }
 }
 
 IntegrationDownshift.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(IntegrationDownshift);
