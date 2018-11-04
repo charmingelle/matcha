@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import SimpleSelect from '../SimpleSelect/SimpleSelect.js';
 import OutlinedTextFields from '../OutlinedTextFields/OutlinedTextFields.js';
-import DownshiftMultiple from '../DownshiftMultiple/DownshiftMultiple.js';
+import InterestsInput from '../InterestsInput/InterestsInput.js';
 import ImageGridList from '../ImageGridList/ImageGridList.js';
 
 class Settings extends Component {
@@ -12,7 +12,8 @@ class Settings extends Component {
         <SimpleSelect title='Gender' items={['Male', 'Female']} />
         <SimpleSelect title='Preferences' items={['Heterosexual', 'Homosexual', 'Bisexual']} />
         <OutlinedTextFields label='Biography' placeholder='Tell us a few words about yourself' />
-        <DownshiftMultiple />
+        <InterestsInput
+       />
         <ImageGridList />
       </div>
     );

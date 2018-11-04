@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import Settings from "./components/Settings/Settings.js";
-import Profile from './containers/Profile/Profile.js'
+import Settings from "./../Settings/Settings.js";
+import Profile from './../Profile/Profile.js'
 
 class App extends Component {
   render() {
     return (
       <div>
-        {/* <Settings /> */}
+        <Settings />
         <Profile />
       </div>
     );

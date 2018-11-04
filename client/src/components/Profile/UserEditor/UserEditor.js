@@ -1,7 +1,7 @@
 import React from 'react';
 import SimpleSelect from './../../../components/SimpleSelect/SimpleSelect.js';
 import OutlinedTextFields from './../../../components/OutlinedTextFields/OutlinedTextFields.js';
-import DownshiftMultiple from './../../../components/DownshiftMultiple/DownshiftMultiple.js';
+import InterestsInput from './../../../components/InterestsInput/InterestsInput.js';
 import Button from '@material-ui/core/Button';
 
 class UserEditor extends React.Component {
@@ -42,7 +42,7 @@ class UserEditor extends React.Component {
           value={bio}
           onChange={this.onChange}
         />
-        <DownshiftMultiple
+        <InterestsInput
           name="interests"
           value={interests}
           all={allInterests}
