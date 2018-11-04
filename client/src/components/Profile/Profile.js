@@ -32,7 +32,7 @@ class Profile extends React.Component {
     //   gallery: [user.picture.large, user.picture.medium, user.picture.thumbnail]
     // });
 
-    const user = await getUserProfile(2);    
+    const user = await getUserProfile(0);    
 
     this.setState({
       userInfo: {
