@@ -30,7 +30,7 @@ class UserEditor extends React.Component {
         />
         <SimpleSelect
           title="Preferences"
-          items={['heterosexual', 'homosectual', 'bisexual']}
+          items={['heterosexual', 'homosexual', 'bisexual']}
           name="sexPreferences"
           value={sexPreferences}
           onChange={this.onChange}
