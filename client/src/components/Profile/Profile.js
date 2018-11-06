@@ -1,6 +1,5 @@
 import React from 'react';
 import UserEditor from './UserEditor/UserEditor';
-import Gallery from './../Gallery/Gallery';
 import { getUser } from './../../api/randomUser';
 import { getUserProfile } from './../../api/getUser';
 import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js'
