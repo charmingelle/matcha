@@ -1,67 +1,79 @@
 import React from 'react';
-import UserEditor from './UserEditor/UserEditor';
-import { getUser } from './../../api/randomUser';
-import { getUserProfile } from './../../api/getUser';
-import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js'
+import SimpleSelect from './../../components/SimpleSelect/SimpleSelect.js';
+import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTextFields.js';
+import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
+import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js';
+import Button from '@material-ui/core/Button';
+import {
+  getUserProfile,
+  saveUserProfile
+} from './../../api/profileRequests.js';
 
 class Profile extends React.Component {
-  state = {
-    userInfo: null,
-    gallery: [],
-    fames: 0
-  };
-
   async componentDidMount() {
-    // const [user] = await getUser();
-
-    // this.setState({
-    //   userInfo: {
-    //     gender: user.gender,
-    //     sexPreferences:
-    //       Math.random() > 0.5
-    //         ? 'heterosexual'
-    //         : Math.random() > 0.5
-    //           ? 'homosectual'
-    //           : 'bisexual',
-    //     bio: user.location.street,
-    //     interests:
-    //       Math.random() > 0.5 ? ['books', 'music'] : ['movies', 'sport'],
-    //     allInterests: ['books', 'music', 'movies', 'sport']
-    //   },
-    //   gallery: [user.picture.large, user.picture.medium, user.picture.thumbnail]
-    // });
-
-    const user = await getUserProfile(0);    
+    const data = await getUserProfile(3);
 
     this.setState({
-      userInfo: {
-        gender: user.gender,
-        sexPreferences: user.sexPreferences,
-        bio: user.bio,
-        interests: user.interests,
-        allInterests: user.allInterests
-      },
-      gallery: user.gallery
+      id: data.user.id,
+      gender: data.user.gender,
+      preferences: data.user.preferences,
+      bio: data.user.bio,
+      interests: data.user.interests,
+      gallery: data.user.gallery,
+      avatarID: data.user.avatarID,
+      allInterests: data.allInterests
     });
   }
 
-  onUserEditorSubmit = userInfo => {
-    this.setState({ userInfo }, () => console.log(this.state));
+  onSubmit = event => {
+    event.preventDefault();
+    saveUserProfile(this.state);
+  };
+
+  onChange = target => {
+    this.setState(target);
   };
 
   render() {
-    const { userInfo, gallery } = this.state;
-
-    if (!userInfo) {
+    if (!this.state) {
       return <span>Loader is here</span>;
     }
+    const { gender, preferences, bio, interests, gallery, avatarID } = this.state;
 
     return (
-      <div className="user-profile">
-        {/* <Gallery images={gallery} /> */}
-        <ProfilePhotos />
-        <UserEditor initValue={userInfo} onSubmit={this.onUserEditorSubmit} />
-      </div>
+      <form>
+        <ProfilePhotos gallery={gallery} avatarID={avatarID} onChange={this.onChange} />
+        <SimpleSelect
+          title="Gender"
+          items={['male', 'female']}
+          name="gender"
+          value={gender}
+          onChange={this.onChange}
+        />
+        <SimpleSelect
+          title="Preferences"
+          items={['heterosexual', 'homosexual', 'bisexual']}
+          name="preferences"
+          value={preferences}
+          onChange={this.onChange}
+        />
+        <OutlinedTextFields
+          label="Biography"
+          placeholder="Tell us a few words about yourself"
+          name="bio"
+          value={bio}
+          onChange={this.onChange}
+        />
+        <InterestsInput
+          name="interests"
+          value={interests}
+          all={this.state.allInterests}
+          onChange={this.onChange}
+        />
+        <Button variant="outlined" onClick={this.onSubmit}>
+          Save changes
+        </Button>
+      </form>
     );
   }
 }

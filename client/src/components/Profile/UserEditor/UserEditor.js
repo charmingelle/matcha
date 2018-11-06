@@ -3,9 +3,10 @@ import SimpleSelect from './../../../components/SimpleSelect/SimpleSelect.js';
 import OutlinedTextFields from './../../../components/OutlinedTextFields/OutlinedTextFields.js';
 import InterestsInput from './../../../components/InterestsInput/InterestsInput.js';
 import Button from '@material-ui/core/Button';
+import ProfilePhotos from './../../ProfilePhotos/ProfilePhotos.js'
 
 class UserEditor extends React.Component {
-  state = this.props.initValue;
+  state = this.props;
 
   onChange = target => {
     this.setState(target);
@@ -17,10 +18,11 @@ class UserEditor extends React.Component {
   };
 
   render() {
-    const { gender, sexPreferences, bio, interests, allInterests } = this.state;
+    const { userInfo: {gender, preferences, bio, interests}, allInterests } = this.state;
 
     return (
       <form>
+        <ProfilePhotos photos={this.state.userInfo.gallery} avatarID={this.state.userInfo.avatarID} />
         <SimpleSelect
           title="Gender"
           items={['male', 'female']}
@@ -31,8 +33,8 @@ class UserEditor extends React.Component {
         <SimpleSelect
           title="Preferences"
           items={['heterosexual', 'homosexual', 'bisexual']}
-          name="sexPreferences"
-          value={sexPreferences}
+          name="preferences"
+          value={preferences}
           onChange={this.onChange}
         />
         <OutlinedTextFields
