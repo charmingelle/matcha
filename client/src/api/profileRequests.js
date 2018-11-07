@@ -24,3 +24,10 @@ export const saveUserPhoto = (userid, photo, photoid) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userid, photo, photoid })
   });
+
+export const setAvatar = (userid, avatarid) =>
+fetch('/setAvatar', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ userid, avatarid })
+});

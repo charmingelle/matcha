@@ -6,7 +6,7 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
-import { saveUserPhoto } from './../../api/profileRequests.js';
+import { saveUserPhoto, setAvatar } from './../../api/profileRequests.js';
 
 const styles = theme => ({
   root: {
@@ -56,9 +56,10 @@ class ProfilePhotos extends React.Component {
     uploadEl.click();
   };
 
-  makeAvatar = id => {
+  makeAvatar = (id, event) => {
+    event.stopPropagation();
     this.setState({ avatarid: id });
-    this.props.onChange({ avatarid: id });
+    setAvatar(this.state.userid, id);
   };
 
   uploadPhoto = event => {
@@ -74,7 +75,6 @@ class ProfilePhotos extends React.Component {
         .drawImage(image, 0, 0, canvas.width, canvas.height);
       newGallery[this.photoid] = canvas.toDataURL();
       this.setState({ gallery: newGallery });
-      this.props.onChange({ gallery: newGallery });
       saveUserPhoto(this.state.userid, newGallery[this.photoid], this.photoid);
     };
     image.src = window.URL.createObjectURL(event.target.files[0]);

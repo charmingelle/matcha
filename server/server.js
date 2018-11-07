@@ -68,3 +68,10 @@ app.post('/saveUserPhoto', (req, res) => {
     }
   );
 });
+
+app.post('/setAvatar', (req, res) => {
+  db.one('UPDATE users SET avatarid = $1 WHERE id = $2', [
+    req.body.avatarid,
+    req.body.userid
+  ]);
+});

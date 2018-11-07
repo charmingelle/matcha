@@ -43,7 +43,7 @@ class Profile extends React.Component {
 
     return (
       <form>
-        <ProfilePhotos userid={id} gallery={gallery} avatarid={avatarid} onChange={this.onChange} />
+        <ProfilePhotos userid={id} gallery={gallery} avatarid={avatarid} />
         <SimpleSelect
           title="Gender"
           items={['male', 'female']}
