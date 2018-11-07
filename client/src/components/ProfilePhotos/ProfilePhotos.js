@@ -5,7 +5,7 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
+import FaceIcon from '@material-ui/icons/Face';
 import { saveUserPhoto, setAvatar } from './../../api/profileRequests.js';
 
 const styles = theme => ({
@@ -17,10 +17,14 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper
   },
   gridList: {
-    width: 500,
-    height: 450,
+    height: '450px',
     // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
-    transform: 'translateZ(0)'
+    transform: 'translateZ(0)',
+    flexDirection: 'row',
+    flexWrap: 'unset'
+  },
+  gridListTile: {
+    width: '500px !important'
   },
   titleBar: {
     background:
@@ -94,18 +98,26 @@ class ProfilePhotos extends React.Component {
         />
         <GridList cellHeight={200} spacing={1} className={classes.gridList}>
           {this.state.gallery.map((photo, photoid) => (
-            <GridListTile key={photoid} cols={2} rows={2} onClick={this.upload.bind(this, photoid)}>
+            <GridListTile
+              key={photoid}
+              cols={2}
+              rows={2}
+              onClick={this.upload.bind(this, photoid)}
+              className={classes.gridListTile}
+            >
               <img src={photo} alt="" />
               <GridListTileBar
                 titlePosition="top"
                 actionIcon={
                   <IconButton
                     className={
-                      this.state.avatarid === photoid ? classes.avatar : classes.icon
+                      this.state.avatarid === photoid
+                        ? classes.avatar
+                        : classes.icon
                     }
                     onClick={this.makeAvatar.bind(this, photoid)}
                   >
-                    <StarBorderIcon />
+                    <FaceIcon />
                   </IconButton>
                 }
                 actionPosition="left"
