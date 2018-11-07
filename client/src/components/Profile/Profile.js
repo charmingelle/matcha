@@ -20,7 +20,7 @@ class Profile extends React.Component {
       bio: data.user.bio,
       interests: data.user.interests,
       gallery: data.user.gallery,
-      avatarID: data.user.avatarID,
+      avatarid: data.user.avatarid,
       allInterests: data.allInterests
     });
   }
@@ -39,11 +39,11 @@ class Profile extends React.Component {
     if (!this.state) {
       return <span>Loader is here</span>;
     }
-    const { gender, preferences, bio, interests, gallery, avatarID } = this.state;
+    const { id, gender, preferences, bio, interests, gallery, avatarid } = this.state;
 
     return (
       <form>
-        <ProfilePhotos gallery={gallery} avatarID={avatarID} onChange={this.onChange} />
+        <ProfilePhotos userid={id} gallery={gallery} avatarid={avatarid} onChange={this.onChange} />
         <SimpleSelect
           title="Gender"
           items={['male', 'female']}

@@ -17,3 +17,10 @@ export const saveUserProfile = userInfo =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userInfo: userInfo })
   });
+
+export const saveUserPhoto = (userid, photo, photoid) =>
+  fetch('/saveUserPhoto', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userid, photo, photoid })
+  });
