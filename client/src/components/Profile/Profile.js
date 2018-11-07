@@ -31,6 +31,7 @@ class Profile extends React.Component {
   };
 
   onChange = target => {
+    console.log(target);
     this.setState(target);
   };
 

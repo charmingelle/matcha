@@ -54,7 +54,7 @@ class OutlinedTextField extends React.Component {
 
   handleChange = event => {
     this.setState({ [this.props.name]: event.target.value });
-    this.props.onChange(this.state);
+    this.props.onChange({ [this.props.name]: event.target.value });
   };
 
   render() {
