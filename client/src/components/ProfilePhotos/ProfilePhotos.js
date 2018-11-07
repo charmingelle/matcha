@@ -53,7 +53,7 @@ class ProfilePhotos extends React.Component {
 
   makeAvatar = id => {
     this.setState({ avatarID: id });
-    this.props.onChange({ avatarID: this.state.avatarID });
+    this.props.onChange({ avatarID: id });
   };
 
   uploadPhoto = event => {
@@ -63,7 +63,7 @@ class ProfilePhotos extends React.Component {
     image.onload = () => {
       newGallery[this.id] = image.src;
       this.setState({ gallery: newGallery });
-      this.props.onChange({ gallery: this.state.gallery });
+      this.props.onChange({ gallery: newGallery });
     };
     image.src = window.URL.createObjectURL(event.target.files[0]);
   };
