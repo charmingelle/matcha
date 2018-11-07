@@ -46,12 +46,10 @@ app.post('/saveUserProfile', (req, res) => {
 });
 
 app.post('/saveUserPhoto', (req, res) => {
-  const path = `client/public/photos/${crypto
-    .randomBytes(20)
-    .toString('hex')}.png`;
+  const fileName = crypto.randomBytes(20).toString('hex');
 
   fs.writeFile(
-    path,
+    `client/public/photos/${fileName}.png`,
     req.body.photo.replace(/^data:image\/png;base64,/, ''),
     'base64',
     err => console.error(err)
@@ -60,21 +58,13 @@ app.post('/saveUserPhoto', (req, res) => {
     data => {
       let gallery = data.gallery;
 
-      gallery[req.body.photoid] = `/${path}`;
-      db.one('UPDATE users SET gallery = $1 WHERE id = $2', [
-        gallery,
-        req.body.userid
-      ]);
+      fs.unlink(`client/public/${gallery[req.body.photoid]}`, () => {
+        gallery[req.body.photoid] = `photos/${fileName}.png`;
+        db.one('UPDATE users SET gallery = $1 WHERE id = $2', [
+          gallery,
+          req.body.userid
+        ]);
+      });
     }
   );
-});
-
-app.get(`*`, (req, res) => {
-  console.log(req.url.startsWith('/client/public/photos/'));
-  console.log(req.url);
-  console.log(fs.existsSync(req.url.substring(1)));
-  if (req.url.startsWith('/client/public/photos/') && fs.existsSync(req.url)) {
-    console.log('HERE 111');
-    res.sendFile(req.url);
-  }
 });

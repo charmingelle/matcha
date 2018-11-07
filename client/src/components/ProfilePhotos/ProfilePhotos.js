@@ -75,8 +75,6 @@ class ProfilePhotos extends React.Component {
       newGallery[this.photoid] = canvas.toDataURL();
       this.setState({ gallery: newGallery });
       this.props.onChange({ gallery: newGallery });
-
-      console.log(newGallery[this.photoid]);
       saveUserPhoto(this.state.userid, newGallery[this.photoid], this.photoid);
     };
     image.src = window.URL.createObjectURL(event.target.files[0]);
@@ -96,8 +94,8 @@ class ProfilePhotos extends React.Component {
         />
         <GridList cellHeight={200} spacing={1} className={classes.gridList}>
           {this.state.gallery.map((photo, photoid) => (
-            <GridListTile key={photoid} cols={2} rows={2}>
-              <img src={photo} alt="" onClick={this.upload.bind(this, photoid)} />
+            <GridListTile key={photoid} cols={2} rows={2} onClick={this.upload.bind(this, photoid)}>
+              <img src={photo} alt="" />
               <GridListTileBar
                 titlePosition="top"
                 actionIcon={
