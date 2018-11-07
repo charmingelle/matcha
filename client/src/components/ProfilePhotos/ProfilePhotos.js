@@ -41,7 +41,10 @@ class ProfilePhotos extends React.Component {
   constructor(props) {
     super(props);
     this.id = null;
-    this.state = this.props;
+    this.state = {
+      gallery: this.props.gallery,
+      avatarID: this.props.avatarID
+    }
   }
 
   upload = id => {
