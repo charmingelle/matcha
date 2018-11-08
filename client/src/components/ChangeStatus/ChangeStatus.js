@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
+import { isError } from 'util';
 
 const styles = theme => ({
   container: {
@@ -15,13 +16,12 @@ input: {
 });
 
 function Inputs(props) {
-  const { classes } = props;
+  const { classes, error } = props;
   return (
     <div className={classes.container}>
       <Input
-        defaultValue="Error"
         className={classes.input}
-        error
+        error={error}
         inputProps={{
           'aria-label': 'Description',
         }}

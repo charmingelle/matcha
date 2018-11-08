@@ -15,7 +15,7 @@ export const saveUserProfile = userInfo =>
   fetch('/saveUserProfile', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userInfo: userInfo })
+    body: JSON.stringify(userInfo)
   });
 
 export const saveUserPhoto = (userid, photo, photoid) =>
@@ -26,8 +26,8 @@ export const saveUserPhoto = (userid, photo, photoid) =>
   });
 
 export const setAvatar = (userid, avatarid) =>
-fetch('/setAvatar', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ userid, avatarid })
-});
+  fetch('/setAvatar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userid, avatarid })
+  });

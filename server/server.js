@@ -6,6 +6,7 @@ const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const fs = require('fs');
+const { check } = require('express-validator/check');
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -27,26 +28,49 @@ app.post('/getUserProfile', (req, res) => {
     .catch(error => console.error('ERROR:', error));
 });
 
-app.post('/saveUserProfile', (req, res) => {
-  console.log('RECEIVED');
-  console.log(req.body.userInfo);
+const checkBusyEmail = (email, id) => {
+  return new Promise((resolve, reject) => {
+    db.any('SELECT email FROM users WHERE email = ${email} AND id <> ${id}', {
+      email,
+      id
+    }).then(data => {
+      data.length === 0 ? resolve() : reject();
+    });
+  });
+};
 
-  db.one(
+const updateProfile = reqBody => {
+  return db.any(
     'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE id = ${id}',
     {
-      firstname: req.body.userInfo.firstname,
-      lastname: req.body.userInfo.lastname,
-      email: req.body.userInfo.email,
-      gender: req.body.userInfo.gender,
-      preferences: req.body.userInfo.preferences,
-      bio: req.body.userInfo.bio,
-      interests: req.body.userInfo.interests,
-      gallery: req.body.userInfo.gallery,
-      avatarid: req.body.userInfo.avatarid,
-      id: req.body.userInfo.id
+      firstname: reqBody.firstname,
+      lastname: reqBody.lastname,
+      email: reqBody.email,
+      gender: reqBody.gender,
+      preferences: reqBody.preferences,
+      bio: reqBody.bio,
+      interests: reqBody.interests,
+      gallery: reqBody.gallery,
+      avatarid: reqBody.avatarid,
+      id: reqBody.id
     }
   );
-});
+};
+
+app.post(
+  '/saveUserProfile',
+  [check('firstname').isEmpty(), check('lastname').isEmpty()],
+  (req, res) => {
+    checkBusyEmail(req.body.email, req.body.id)
+      .then(
+        () => updateProfile(req.body),
+        () => res.status(500).send({ result: 'The email address is busy' })
+      )
+      .then(() =>
+        res.status(200).send({ result: 'Your data has been changed' })
+      );
+  }
+);
 
 app.post('/saveUserPhoto', (req, res) => {
   const fileName = crypto.randomBytes(20).toString('hex');

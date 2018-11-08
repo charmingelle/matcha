@@ -3,7 +3,7 @@ import SimpleSelect from './../../components/SimpleSelect/SimpleSelect.js';
 import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTextFields.js';
 import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
 import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js';
-import Error from './../Error/Error.js';
+import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import Button from '@material-ui/core/Button';
 import {
   getUserProfile,
@@ -26,26 +26,30 @@ class Profile extends React.Component {
       gallery: data.user.gallery,
       avatarid: data.user.avatarid,
       allInterests: data.allInterests,
-      error: null
+      changeStatus: null,
+      error: false
     });
   }
 
-  validateEmpty = (value) => {
-    console.log('value', value);
-    console.log("value === ''", value === '');
-
+  validateEmpty = value => {
     if (value === '') {
-      this.setState({ error: 'Please fill all the fields in' });
+      this.setState({
+        changeStatus: 'Please fill all the fields in',
+        error: true
+      });
       return false;
     }
     return true;
-  }
+  };
 
   validateEmail = email => {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     if (!re.test(String(email).toLowerCase())) {
-      this.setState({ error: 'Please make sure that your email address is correct' });
+      this.setState({
+        changeStatus: 'Please make sure that your email address is correct',
+        error: true
+      });
       return false;
     }
     return true;
@@ -59,13 +63,23 @@ class Profile extends React.Component {
     res = res && this.validateEmpty(this.state.email);
     res = res && this.validateEmail(this.state.email);
     return res;
-  }
+  };
 
   onSubmit = event => {
     event.preventDefault();
     if (this.isAllValid()) {
-      this.setState({ error: null });
-      saveUserProfile(this.state);
+      saveUserProfile(this.state)
+        .then(res => {
+          res.status === 200
+            ? this.setState({ error: false })
+            : this.setState({ error: true });
+          return res.json();
+        })
+        .then(data => {
+          this.setState({
+            changeStatus: data.result,
+          });
+        });
     }
   };
 
@@ -73,9 +87,14 @@ class Profile extends React.Component {
     this.setState(target);
   };
 
-  renderError = value => {
-    if (this.state.error) {
-      return <Error value={this.state.error} />;
+  renderChangeStatus = value => {
+    if (this.state.changeStatus) {
+      return (
+        <ChangeStatus
+          value={this.state.changeStatus}
+          error={this.state.error}
+        />
+      );
     }
   };
 
@@ -99,7 +118,7 @@ class Profile extends React.Component {
     return (
       <form>
         <ProfilePhotos userid={id} gallery={gallery} avatarid={avatarid} />
-        {this.renderError()}
+        {this.renderChangeStatus()}
         <OutlinedTextFields
           label="First name"
           name="firstname"
