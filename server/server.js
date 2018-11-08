@@ -32,16 +32,19 @@ app.post('/saveUserProfile', (req, res) => {
   console.log(req.body.userInfo);
 
   db.one(
-    'UPDATE users SET gender = $1, preferences = $2, bio = $3, interests = $4, gallery = $5, avatarid = $6 WHERE id = $7',
-    [
-      req.body.userInfo.gender,
-      req.body.userInfo.preferences,
-      req.body.userInfo.bio,
-      req.body.userInfo.interests,
-      req.body.userInfo.gallery,
-      req.body.userInfo.avatarid,
-      req.body.userInfo.id
-    ]
+    'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE id = ${id}',
+    {
+      firstname: req.body.userInfo.firstname,
+      lastname: req.body.userInfo.lastname,
+      email: req.body.userInfo.email,
+      gender: req.body.userInfo.gender,
+      preferences: req.body.userInfo.preferences,
+      bio: req.body.userInfo.bio,
+      interests: req.body.userInfo.interests,
+      gallery: req.body.userInfo.gallery,
+      avatarid: req.body.userInfo.avatarid,
+      id: req.body.userInfo.id
+    }
   );
 });
 
