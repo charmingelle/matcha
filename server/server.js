@@ -87,7 +87,7 @@ app.post('/saveUserPhoto', (req, res) => {
 
       fs.unlink(`client/public/${gallery[req.body.photoid]}`, () => {
         gallery[req.body.photoid] = `photos/${fileName}.png`;
-        db.one('UPDATE users SET gallery = $1 WHERE id = $2', [
+        db.any('UPDATE users SET gallery = $1 WHERE id = $2', [
           gallery,
           req.body.userid
         ]);
@@ -97,8 +97,15 @@ app.post('/saveUserPhoto', (req, res) => {
 });
 
 app.post('/setAvatar', (req, res) => {
-  db.one('UPDATE users SET avatarid = $1 WHERE id = $2', [
+  db.any('UPDATE users SET avatarid = $1 WHERE id = $2', [
     req.body.avatarid,
     req.body.userid
   ]);
+});
+
+app.post('/saveLocation', (req, res) => {
+  db.any('UPDATE users SET location = ${location} WHERE id = ${userid}', {
+    location: req.body.location,
+    userid: req.body.userid
+  });
 });

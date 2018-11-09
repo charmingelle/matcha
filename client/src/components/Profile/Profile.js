@@ -7,10 +7,31 @@ import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import Button from '@material-ui/core/Button';
 import {
   getUserProfile,
-  saveUserProfile
+  saveUserProfile,
+  saveLocation
 } from './../../api/profileRequests.js';
 
 class Profile extends React.Component {
+  ipLookUp = (userid) => {
+    fetch('http://ip-api.com/json', {
+      method: 'POST'
+    })
+      .then(response => response.json())
+      .then(data => {
+        saveLocation(userid, [data.lat, data.lon]);
+      })
+      .catch(error => console.error(error));
+  };
+
+  getLocation = (userid) => {
+    navigator.geolocation.getCurrentPosition(position => {
+      saveLocation(userid, [
+        position.coords.latitude,
+        position.coords.longitude
+      ]);
+    }, () => this.ipLookUp(userid));
+  };
+
   async componentDidMount() {
     const data = await getUserProfile(3);
 
@@ -29,6 +50,7 @@ class Profile extends React.Component {
       changeStatus: null,
       error: false
     });
+    this.getLocation(this.state.id);
   }
 
   validateEmpty = value => {
@@ -77,7 +99,7 @@ class Profile extends React.Component {
         })
         .then(data => {
           this.setState({
-            changeStatus: data.result,
+            changeStatus: data.result
           });
         });
     }
