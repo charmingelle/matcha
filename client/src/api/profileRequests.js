@@ -32,11 +32,9 @@ export const setAvatar = (userid, avatarid) =>
     body: JSON.stringify({ userid, avatarid })
   });
 
-export const saveLocation = (userid, location) => {
-  console.log('location', location);
+export const saveLocation = (userid, location) =>
   fetch('/saveLocation', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userid, location })
   });
-}

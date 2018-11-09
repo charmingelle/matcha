@@ -1,0 +1,29 @@
+-g
+Lldb ./RT
+run arguments
+
+MAPS
+https://developers.google.com/maps/documentation/javascript/adding-a-google-map
+
+
+https://material.io/tools/icons/?icon=face&style=baseline - material-ui icons
+
+https://flaviocopes.com/express-validate-input/ - express validator
+
+pg_ctl -D /Users/grevenko/.brew/var/postgres start (stop)
+http://127.0.0.1:[process id]/browser/ - pdAdmin (open dmg file)
+psql postgres
+\du - list users
+\l - list databases
+
+ALTER TABLE public.users ADD CONSTRAINT check_gender CHECK (gender = 'male' OR gender = 'female');
+
+ALTER TABLE public.users ADD CONSTRAINT check_preferences CHECK (preferences = 'heterosexual' OR preferences = 'homosexual' OR preferences = 'bisexual');
+
+insert into users(login, password, email, hash, active, gender, preferences, bio, interests, gallery) values('anna', '123', 'anna@gmail.com', '123', true, 'female', 'heterosexual', 'I''m Anna', ARRAY['books', 'yoga'], ARRAY[
+	'https://i.ytimg.com/vi/3VWGMXR9dx0/maxresdefault.jpg',
+	'http://creativeanchor.com/wp-content/uploads/2018/03/marvelous-female-portrait-photography-by-kai-bottcher.jpg',
+	'https://i.pinimg.com/originals/39/e9/b3/39e9b39628e745a39f900dc14ee4d9a7.jpg'
+]);
+
+UPDATE users SET avatarID = 0 WHERE login = 'anna';

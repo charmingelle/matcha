@@ -109,3 +109,7 @@ app.post('/saveLocation', (req, res) => {
     userid: req.body.userid
   });
 });
+
+app.post('/getUsers', (req, res) => {
+  db.any('SELECT * FROM users').then(data => res.send(JSON.stringify(data)));
+});
