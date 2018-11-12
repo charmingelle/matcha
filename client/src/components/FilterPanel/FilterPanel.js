@@ -11,6 +11,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
+import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
   root: {
@@ -44,6 +45,8 @@ const styles = theme => ({
   }
 });
 
+const EARTH_RADIUS = 6371;
+const MAX_DISTANCE = Math.PI * EARTH_RADIUS;
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -58,15 +61,19 @@ const MenuProps = {
 class TextFields extends React.Component {
   state = {
     age: 18,
-    radius: 1,
+    distance: 1,
     fame: 0,
     name: [],
-    names: []
+    interests: []
   };
 
   componentDidMount() {
+    console.log(this.props.users);
     this.setState({
-      names: this.props.interests
+      profileLocation: this.props.profileLocation,
+      interests: this.props.interests,
+      users: this.props.users,
+      filteredUsers: this.props.filteredUsers
     });
   }
 
@@ -81,7 +88,7 @@ class TextFields extends React.Component {
   handleRadiusChange = event => {
     if (event.target.value >= 1) {
       this.setState({
-        radius: event.target.value
+        distance: event.target.value
       });
     }
   };
@@ -98,8 +105,48 @@ class TextFields extends React.Component {
     }
   };
 
+  deg2rad = deg => deg * (Math.PI / 180);
+
+  getDistance = (profileLocation, userLocation) => {
+    if (!profileLocation || !userLocation) {
+      return MAX_DISTANCE;
+    }
+    let dLat = this.deg2rad(userLocation[0] - profileLocation[0]);
+    let dLon = this.deg2rad(userLocation[1] - profileLocation[1]);
+    let a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.deg2rad(profileLocation[0])) *
+        Math.cos(this.deg2rad(userLocation[0])) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return EARTH_RADIUS * c;
+  };
+
+  filter = () => {
+    const filteredUsers = this.state.users.filter(
+      user =>
+        user.age >= this.state.age &&
+        this.getDistance(this.state.profileLocation, user.location) <=
+          this.state.distance &&
+        (user.interests.length === 0 ||
+          user.interests.some(interest => {
+            if (this.state.name.length === 0) {
+              return true;
+            }
+            return this.state.name.includes(interest);
+          })) &&
+        user.fame >= this.state.fame
+    );
+
+    this.setState({
+      filteredUsers
+    });
+    this.props.onChange(filteredUsers);
+  };
+
   render() {
-    if (!this.state.names) {
+    if (!this.state.interests) {
       return <span>Loader is here</span>;
     }
     const { classes } = this.props;
@@ -119,14 +166,14 @@ class TextFields extends React.Component {
         />
         <TextField
           label="Radius (km)"
-          value={this.state.radius}
+          value={this.state.distance}
           onChange={this.handleRadiusChange}
           type="number"
           className={classes.textField}
           InputLabelProps={{
             shrink: true
           }}
-          margin="normal"     
+          margin="normal"
         />
 
         <FormControl className={classes.formControl}>
@@ -140,7 +187,7 @@ class TextFields extends React.Component {
             renderValue={selected => selected.join(', ')}
             MenuProps={MenuProps}
           >
-            {this.state.names.map(name => (
+            {this.state.interests.map(name => (
               <MenuItem key={name} value={name}>
                 <Checkbox checked={this.state.name.indexOf(name) > -1} />
                 <ListItemText primary={name} />
@@ -160,6 +207,10 @@ class TextFields extends React.Component {
           }}
           margin="normal"
         />
+
+        <Button variant="outlined" onClick={this.filter}>
+          Filter
+        </Button>
       </div>
     );
   }

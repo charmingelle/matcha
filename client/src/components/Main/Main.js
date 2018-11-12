@@ -15,7 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import Profile from './../Profile/Profile.js';
 import ListIcon from '@material-ui/icons/List';
 import Users from './../Users/Users.js';
-import { getUserProfile } from './../../api/profileRequests.js';
+import { getUserProfile, saveLocation } from './../../api/profileRequests.js';
 
 function TabContainer(props) {
   return (
@@ -42,8 +42,28 @@ class ScrollableTabsButtonForce extends React.Component {
     tabid: 0
   };
 
+  ipLookUp = userid => {
+    fetch('http://ip-api.com/json', {
+      method: 'POST'
+    })
+      .then(response => response.json())
+      .then(data => saveLocation(userid, [data.lat, data.lon]))
+      .catch(error => console.error(error));
+  };
+
+  getLocation = userid => {
+    navigator.geolocation.getCurrentPosition(
+      position =>
+        saveLocation(userid, [
+          position.coords.latitude,
+          position.coords.longitude
+        ]),
+      () => this.ipLookUp(userid)
+    );
+  };
+
   async componentDidMount() {
-    const data = await getUserProfile(3);
+    const data = await getUserProfile(4);
 
     this.setState({
       profile: {
@@ -58,11 +78,13 @@ class ScrollableTabsButtonForce extends React.Component {
         interests: data.user.interests,
         gallery: data.user.gallery,
         avatarid: data.user.avatarid,
+        location: data.user.location,
         allInterests: data.allInterests,
         changeStatus: null,
         error: false
       }
     });
+    this.getLocation(data.user.id);
   }
 
   handleChange = (event, value) => {
@@ -102,7 +124,10 @@ class ScrollableTabsButtonForce extends React.Component {
         </AppBar>
         {tabid === 0 && (
           <TabContainer>
-            <Users interests={this.state.profile.interests} />
+            <Users
+              interests={this.state.profile.interests}
+              profileLocation={this.state.profile.location}
+            />
           </TabContainer>
         )}
         {tabid === 1 && (

@@ -9,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import { getUsers } from './../../api/usersRequests.js';
 import UserDetails from './../UserDetails/UserDetails.js';
-import SortingPanel from './../SortingPanel/SortingPanel.js';
+import FilterPanel from './../FilterPanel/FilterPanel.js';
 
 const styles = theme => ({
   root: {
@@ -33,9 +33,14 @@ class TitlebarGridList extends React.Component {
     const data = await getUsers();
 
     this.setState({
-      users: data
+      users: data,
+      filteredUsers: data
     });
   }
+
+  showFilteredUsers = filteredUsers => {
+    this.setState({ filteredUsers });
+  };
 
   render = () => {
     if (!this.state) {
@@ -45,9 +50,15 @@ class TitlebarGridList extends React.Component {
 
     return (
       <div className={classes.root}>
-        <SortingPanel interests={this.props.interests} />
+        <FilterPanel
+          profileLocation={this.props.profileLocation}
+          interests={this.props.interests}
+          users={this.state.users}
+          filteredUsers={this.state.users}
+          onChange={this.showFilteredUsers}
+        />
         <GridList cellHeight={180} className={classes.gridList}>
-          {this.state.users.map(user => (
+          {this.state.filteredUsers.map(user => (
             <GridListTile
               key={user.gallery[user.avatarid]}
               className={classes.gridListTile}

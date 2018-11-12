@@ -8,10 +8,7 @@ import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js';
 import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import {
-  saveUserProfile,
-  saveLocation
-} from './../../api/profileRequests.js';
+import { saveUserProfile } from './../../api/profileRequests.js';
 
 const styles = theme => ({
   ageInput: {
@@ -20,32 +17,8 @@ const styles = theme => ({
 });
 
 class Profile extends React.Component {
-  ipLookUp = userid => {
-    fetch('http://ip-api.com/json', {
-      method: 'POST'
-    })
-      .then(response => response.json())
-      .then(data => {
-        saveLocation(userid, [data.lat, data.lon]);
-      })
-      .catch(error => console.error(error));
-  };
-
-  getLocation = userid => {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        saveLocation(userid, [
-          position.coords.latitude,
-          position.coords.longitude
-        ]);
-      },
-      () => this.ipLookUp(userid)
-    );
-  };
-
   componentDidMount() {
     this.setState(this.props.value);
-    this.getLocation(this.props.value.id);
   }
 
   validateEmpty = value => {
