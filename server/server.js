@@ -41,11 +41,12 @@ const checkBusyEmail = (email, id) => {
 
 const updateProfile = reqBody => {
   return db.any(
-    'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE id = ${id}',
+    'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE id = ${id}',
     {
       firstname: reqBody.firstname,
       lastname: reqBody.lastname,
       email: reqBody.email,
+      age: reqBody.age,
       gender: reqBody.gender,
       preferences: reqBody.preferences,
       bio: reqBody.bio,
@@ -112,4 +113,10 @@ app.post('/saveLocation', (req, res) => {
 
 app.post('/getUsers', (req, res) => {
   db.any('SELECT * FROM users').then(data => res.send(JSON.stringify(data)));
+});
+
+app.post('/getUserInterests', (req, res) => {
+  db.one('SELECT interests FROM users WHERE id = ${userid}', {
+    userid: req.body.userid
+  }).then(data => res.send(JSON.stringify(data)));
 });

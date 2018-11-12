@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import { getUsers } from './../../api/usersRequests.js';
 import UserDetails from './../UserDetails/UserDetails.js';
+import SortingPanel from './../SortingPanel/SortingPanel.js';
 
 const styles = theme => ({
   root: {
@@ -44,6 +45,7 @@ class TitlebarGridList extends React.Component {
 
     return (
       <div className={classes.root}>
+        <SortingPanel />
         <GridList cellHeight={180} className={classes.gridList}>
           {this.state.users.map(user => (
             <GridListTile

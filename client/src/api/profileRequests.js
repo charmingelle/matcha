@@ -2,7 +2,7 @@ export const getUserProfile = id =>
   fetch('/getUserProfile', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: id })
+    body: JSON.stringify({ id })
   }).then(res => {
     if (!res.ok) {
       throw Error(res.code);

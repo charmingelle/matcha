@@ -1,18 +1,27 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import SimpleSelect from './../../components/SimpleSelect/SimpleSelect.js';
 import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTextFields.js';
 import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
 import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js';
 import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 import {
   getUserProfile,
   saveUserProfile,
   saveLocation
 } from './../../api/profileRequests.js';
 
+const styles = theme => ({
+  ageInput: {
+    marginTop: '8px'
+  }
+});
+
 class Profile extends React.Component {
-  ipLookUp = (userid) => {
+  ipLookUp = userid => {
     fetch('http://ip-api.com/json', {
       method: 'POST'
     })
@@ -23,13 +32,16 @@ class Profile extends React.Component {
       .catch(error => console.error(error));
   };
 
-  getLocation = (userid) => {
-    navigator.geolocation.getCurrentPosition(position => {
-      saveLocation(userid, [
-        position.coords.latitude,
-        position.coords.longitude
-      ]);
-    }, () => this.ipLookUp(userid));
+  getLocation = userid => {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        saveLocation(userid, [
+          position.coords.latitude,
+          position.coords.longitude
+        ]);
+      },
+      () => this.ipLookUp(userid)
+    );
   };
 
   async componentDidMount() {
@@ -40,6 +52,7 @@ class Profile extends React.Component {
       firstname: data.user.firstname,
       lastname: data.user.lastname,
       email: data.user.email,
+      age: data.user.age,
       gender: data.user.gender,
       preferences: data.user.preferences,
       bio: data.user.bio,
@@ -109,6 +122,14 @@ class Profile extends React.Component {
     this.setState(target);
   };
 
+  onAgeChange = event => {
+    if (event.target.value >= 18) {
+      this.setState({
+        age: event.target.value
+      });
+    }
+  };
+
   renderChangeStatus = value => {
     if (this.state.changeStatus) {
       return (
@@ -160,6 +181,15 @@ class Profile extends React.Component {
           validate={this.validateEmail}
           onChange={this.onChange}
         />
+        <TextField
+          label="Age"
+          name="age"
+          value={this.state.age}
+          onChange={this.onAgeChange}
+          type="number"
+          variant="outlined"
+          className={this.props.classes.ageInput}
+        />
         <SimpleSelect
           title="Gender"
           items={['male', 'female']}
@@ -195,4 +225,8 @@ class Profile extends React.Component {
   }
 }
 
-export default Profile;
+Profile.propTypes = {
+  classes: PropTypes.object.isRequired
+};
+
+export default withStyles(styles)(Profile);
