@@ -19,19 +19,9 @@ const styles = theme => ({
     flexWrap: 'wrap',
     width: '100%'
   },
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200
-  },
-  dense: {
-    marginTop: 19
-  },
-  menu: {
     width: 200
   },
   formControl: {
@@ -177,7 +167,7 @@ class TextFields extends React.Component {
         />
 
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple-checkbox">Interests</InputLabel>
+          <InputLabel shrink htmlFor="select-multiple-checkbox">Interests</InputLabel>
           <Select
             className={classes.formControlSelect}
             multiple
