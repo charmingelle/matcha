@@ -11,7 +11,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
-import { getUserInterests } from './../../api/usersRequests.js';
 
 const styles = theme => ({
   root: {
@@ -65,11 +64,9 @@ class TextFields extends React.Component {
     names: []
   };
 
-  async componentDidMount() {
-    const data = await getUserInterests(3);
-
+  componentDidMount() {
     this.setState({
-      names: data.interests
+      names: this.props.interests
     });
   }
 

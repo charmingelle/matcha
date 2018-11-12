@@ -45,7 +45,7 @@ class TitlebarGridList extends React.Component {
 
     return (
       <div className={classes.root}>
-        <SortingPanel />
+        <SortingPanel interests={this.props.interests} />
         <GridList cellHeight={180} className={classes.gridList}>
           {this.state.users.map(user => (
             <GridListTile

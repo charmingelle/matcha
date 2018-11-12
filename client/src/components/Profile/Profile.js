@@ -9,7 +9,6 @@ import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import {
-  getUserProfile,
   saveUserProfile,
   saveLocation
 } from './../../api/profileRequests.js';
@@ -44,26 +43,9 @@ class Profile extends React.Component {
     );
   };
 
-  async componentDidMount() {
-    const data = await getUserProfile(3);
-
-    this.setState({
-      id: data.user.id,
-      firstname: data.user.firstname,
-      lastname: data.user.lastname,
-      email: data.user.email,
-      age: data.user.age,
-      gender: data.user.gender,
-      preferences: data.user.preferences,
-      bio: data.user.bio,
-      interests: data.user.interests,
-      gallery: data.user.gallery,
-      avatarid: data.user.avatarid,
-      allInterests: data.allInterests,
-      changeStatus: null,
-      error: false
-    });
-    this.getLocation(this.state.id);
+  componentDidMount() {
+    this.setState(this.props.value);
+    this.getLocation(this.props.value.id);
   }
 
   validateEmpty = value => {
@@ -114,6 +96,7 @@ class Profile extends React.Component {
           this.setState({
             changeStatus: data.result
           });
+          this.props.onChange(this.state);
         });
     }
   };

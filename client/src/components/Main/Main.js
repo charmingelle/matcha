@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import Profile from './../Profile/Profile.js';
 import ListIcon from '@material-ui/icons/List';
 import Users from './../Users/Users.js';
+import { getUserProfile } from './../../api/profileRequests.js';
 
 function TabContainer(props) {
   return (
@@ -38,22 +39,52 @@ const styles = theme => ({
 
 class ScrollableTabsButtonForce extends React.Component {
   state = {
-    value: 0
+    tabid: 0
   };
 
+  async componentDidMount() {
+    const data = await getUserProfile(3);
+
+    this.setState({
+      profile: {
+        id: data.user.id,
+        firstname: data.user.firstname,
+        lastname: data.user.lastname,
+        email: data.user.email,
+        age: data.user.age,
+        gender: data.user.gender,
+        preferences: data.user.preferences,
+        bio: data.user.bio,
+        interests: data.user.interests,
+        gallery: data.user.gallery,
+        avatarid: data.user.avatarid,
+        allInterests: data.allInterests,
+        changeStatus: null,
+        error: false
+      }
+    });
+  }
+
   handleChange = (event, value) => {
-    this.setState({ value });
+    this.setState({ tabid: value });
+  };
+
+  onProfileChange = target => {
+    this.setState({ profile: target });
   };
 
   render() {
+    if (!this.state.profile) {
+      return <span>Loader is here</span>;
+    }
     const { classes } = this.props;
-    const { value } = this.state;
+    const { tabid } = this.state;
 
     return (
       <div className={classes.root}>
         <AppBar position="static" color="default">
           <Tabs
-            value={value}
+            value={tabid}
             onChange={this.handleChange}
             scrollable
             scrollButtons="on"
@@ -69,21 +100,25 @@ class ScrollableTabsButtonForce extends React.Component {
             <Tab label="Item Seven" icon={<ThumbUp />} />
           </Tabs>
         </AppBar>
-        {value === 0 && (
+        {tabid === 0 && (
           <TabContainer>
-            <Users />
+            <Users interests={this.state.profile.interests} />
           </TabContainer>
         )}
-        {value === 1 && (
+        {tabid === 1 && (
           <TabContainer>
-            <Profile />
+            <Profile
+              name="profile"
+              value={this.state.profile}
+              onChange={this.onProfileChange}
+            />
           </TabContainer>
         )}
-        {value === 2 && <TabContainer>Item Three</TabContainer>}
-        {value === 3 && <TabContainer>Item Four</TabContainer>}
-        {value === 4 && <TabContainer>Item Five</TabContainer>}
-        {value === 5 && <TabContainer>Item Six</TabContainer>}
-        {value === 6 && <TabContainer>Item Seven</TabContainer>}
+        {tabid === 2 && <TabContainer>Item Three</TabContainer>}
+        {tabid === 3 && <TabContainer>Item Four</TabContainer>}
+        {tabid === 4 && <TabContainer>Item Five</TabContainer>}
+        {tabid === 5 && <TabContainer>Item Six</TabContainer>}
+        {tabid === 6 && <TabContainer>Item Seven</TabContainer>}
       </div>
     );
   }

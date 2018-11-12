@@ -114,9 +114,3 @@ app.post('/saveLocation', (req, res) => {
 app.post('/getUsers', (req, res) => {
   db.any('SELECT * FROM users').then(data => res.send(JSON.stringify(data)));
 });
-
-app.post('/getUserInterests', (req, res) => {
-  db.one('SELECT interests FROM users WHERE id = ${userid}', {
-    userid: req.body.userid
-  }).then(data => res.send(JSON.stringify(data)));
-});
