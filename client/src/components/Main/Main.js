@@ -12,6 +12,7 @@ import ShoppingBasket from '@material-ui/icons/ShoppingBasket';
 import ThumbDown from '@material-ui/icons/ThumbDown';
 import ThumbUp from '@material-ui/icons/ThumbUp';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import Profile from './../Profile/Profile.js';
 import ListIcon from '@material-ui/icons/List';
 import Users from './../Users/Users.js';
@@ -34,6 +35,9 @@ const styles = theme => ({
     flexGrow: 1,
     width: '100%',
     backgroundColor: theme.palette.background.paper
+  },
+  signoutButton: {
+    width: 'fit-content'
   }
 });
 
@@ -95,7 +99,11 @@ class ScrollableTabsButtonForce extends React.Component {
     this.setState({ profile: target });
   };
 
-  render() {
+  signout = () => {
+    this.props.changeSigninStatus(false);
+  };
+
+  render = () => {
     if (!this.state.profile) {
       return <span>Loader is here</span>;
     }
@@ -120,6 +128,9 @@ class ScrollableTabsButtonForce extends React.Component {
             <Tab label="Item Five" icon={<ShoppingBasket />} />
             <Tab label="Item Six" icon={<ThumbDown />} />
             <Tab label="Item Seven" icon={<ThumbUp />} />
+            <Button className={classes.signoutButton} onClick={this.signout}>
+              Sign Out
+            </Button>
           </Tabs>
         </AppBar>
         {tabid === 0 && (
@@ -146,7 +157,7 @@ class ScrollableTabsButtonForce extends React.Component {
         {tabid === 6 && <TabContainer>Item Seven</TabContainer>}
       </div>
     );
-  }
+  };
 }
 
 ScrollableTabsButtonForce.propTypes = {

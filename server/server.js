@@ -114,3 +114,19 @@ app.post('/saveLocation', (req, res) => {
 app.post('/getUsers', (req, res) => {
   db.any('SELECT * FROM users').then(data => res.send(JSON.stringify(data)));
 });
+
+app.post('/signin', (req, res) => {
+  db.any(
+    'SELECT * FROM users WHERE login = ${login} AND password = ${password}',
+    {
+      login: req.body.login,
+      password: req.body.password
+    }
+  ).then(data => {
+    if (data.length === 1) {
+      res.status(200).send();
+    } else {
+      res.status(404).send();
+    }
+  });
+});
