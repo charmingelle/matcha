@@ -49,7 +49,7 @@ const currencies = [
   }
 ];
 
-class SignIn extends React.Component {
+class Signin extends React.Component {
   state = {
     login: '',
     password: '',
@@ -135,8 +135,8 @@ class SignIn extends React.Component {
   };
 }
 
-SignIn.propTypes = {
+Signin.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(SignIn);
+export default withStyles(styles)(Signin);

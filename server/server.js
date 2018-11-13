@@ -130,3 +130,16 @@ app.post('/signin', (req, res) => {
     }
   });
 });
+
+app.post('/signun', (req, res) => {
+  db.any(
+    'INSERT INTO users(email, login, password, firstname, lastname) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname})',
+    {
+      email: req.body.email,
+      login: req.body.login,
+      password: req.body.password,
+      firstname: req.body.firstname,
+      lastname: req.body.lastname
+    }
+  );
+});

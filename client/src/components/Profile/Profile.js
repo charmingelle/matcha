@@ -9,6 +9,7 @@ import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { saveUserProfile } from './../../api/profileRequests.js';
+import { isEmailValid } from './../../utils/utils.js';
 
 const styles = theme => ({
   ageInput: {
@@ -32,26 +33,13 @@ class Profile extends React.Component {
     return true;
   };
 
-  validateEmail = email => {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    if (!re.test(String(email).toLowerCase())) {
-      this.setState({
-        changeStatus: 'Please make sure that your email address is correct',
-        error: true
-      });
-      return false;
-    }
-    return true;
-  };
-
   isAllValid = () => {
     let res = true;
 
     res = res && this.validateEmpty(this.state.firstname);
     res = res && this.validateEmpty(this.state.lastname);
     res = res && this.validateEmpty(this.state.email);
-    res = res && this.validateEmail(this.state.email);
+    res = res && isEmailValid(this.state.email);
     return res;
   };
 
@@ -134,7 +122,7 @@ class Profile extends React.Component {
           label="Email address"
           name="email"
           value={email}
-          validate={this.validateEmail}
+          validate={isEmailValid}
           onChange={this.onChange}
         />
         <TextField
