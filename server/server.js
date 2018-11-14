@@ -8,7 +8,16 @@ const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: 'student.unit.ua',
+  auth: {
+    user: 'grevenko@student.unit.ua',
+    pass: 'bL9AG2Gi'
+  }
+});
 const { check } = require('express-validator/check');
+const { generateHash } = require('random-hash');
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -170,16 +179,59 @@ app.post('/signun', (req, res) => {
               .one('SELECT id FROM users WHERE login = ${login}', {
                 login: req.body.login
               })
-              .then(data => res.status(200).send(JSON.stringify(data)))
+              .then(data => {
+                const hash = generateHash({
+                  length: 16,
+                  charset:
+                    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
+                });
+
+                db.any('UPDATE users SET hash = ${hash} WHERE id = ${id}', {
+                  hash,
+                  id: data.id
+                }).then(() => {
+                  db.any('UPDATE users SET active = true WHERE id = ${id}', {
+                    id: data.id
+                  }).then(() =>
+                    res
+                      .status(200)
+                      .send(JSON.stringify({ result: 'You can log in now' }))
+                  );
+                });
+                // transporter.sendMail(
+                //   {
+                //     from: 'annar703unit@gmail.com',
+                //     to: req.body.email,
+                //     subject: 'Account verification',
+                //     text: `id = ${data.id}`
+                //   },
+                //   error => {
+                //     if (error) {
+                //       console.log('ERROR', error);
+                //       db.any('DELETE FROM users WHERE id = ${id}', {
+                //         id: data.id
+                //       }).then(() =>
+                //         res
+                //           .status(500)
+                //           .send(
+                //             JSON.stringify({ result: 'Your email is invalid' })
+                //           )
+                //       );
+                //     } else {
+                //       res
+                //         .status(200)
+                //         .send(JSON.stringify({ result: 'Check your email' }));
+                //     }
+                //   }
+                // );
+              })
           );
         });
       });
     } else {
       res
         .status(500)
-        .send(
-          JSON.stringify({ result: 'Your email or login is busy' })
-        );
+        .send(JSON.stringify({ result: 'Your email or login is busy' }));
     }
   });
 });

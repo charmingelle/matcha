@@ -13,5 +13,5 @@ export const isPasswordValid = password => {
 };
 
 export const isFirstLastNameValid = password => {
-  return /^[a-zA-Z]+\-?[a-zA-Z]+$/.test(String(password));
+  return /^[a-zA-Z]+(-[a-zA-Z])?[a-zA-Z]*$/.test(String(password));
 };

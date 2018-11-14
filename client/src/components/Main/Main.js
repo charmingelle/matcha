@@ -100,7 +100,7 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 
   signout = () => {
-    this.props.changeSigninStatus(false);
+    this.props.switch('signin');
   };
 
   render = () => {

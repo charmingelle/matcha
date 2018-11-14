@@ -79,7 +79,7 @@ class Signin extends React.Component {
       });
       signin(this.state.login, this.state.password).then(res => {
         if (res.status === 200) {
-          this.props.changeSigninStatus(true);
+          this.props.switch('main');
         } else {
           res.json().then(data =>
             this.setState({
@@ -90,6 +90,10 @@ class Signin extends React.Component {
       });
     }
   };
+  
+  showSignup = () => {
+    this.props.switch('signup');
+  }
 
   renderMessage = () => {
     if (this.state.message !== '') {
@@ -131,6 +135,14 @@ class Signin extends React.Component {
           <Button className={classes.button} onClick={this.signin}>
             Sign In
           </Button>
+          <div>
+            <Button onClick={this.showSignup}>
+              Sign Up
+            </Button>
+            <Button>
+              Forgot password?
+            </Button>
+          </div>
         </form>
       </div>
     );
