@@ -124,16 +124,17 @@ class Signup extends React.Component {
         this.state.password,
         this.state.firstname,
         this.state.lastname
-      );
-      //   signin(this.state.login, this.state.password).then(res => {
-      //     if (res.status === 200) {
-      //       this.props.changeSigninStatus(true);
-      //     } else {
-      //       this.setState({
-      //         message: 'Invalid login or password'
-      //       });
-      //     }
-      //   });
+      ).then(res => {
+        if (res.status === 200) {
+          this.props.changeSigninStatus(true);
+        } else {
+          res.json().then(data =>
+            this.setState({
+              message: data.result
+            })
+          );
+        }
+      });
     }
   };
 

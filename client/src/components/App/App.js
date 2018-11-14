@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Profile from './../Profile/Profile.js';
 import Main from './../Main/Main.js';
 import Signin from './../SignIn/SignIn.js';
 import Signup from './../Signup/Signup.js';
@@ -25,7 +24,11 @@ class App extends Component {
         ) : (
           <Signin changeSigninStatus={this.changeSigninStatus} />
         )} */}
-        <Signup />
+        {this.state.signedIn ? (
+          <Main changeSigninStatus={this.changeSigninStatus} />
+        ) : (
+          <Signup changeSigninStatus={this.changeSigninStatus} />
+        )}
       </div>
     );
   };

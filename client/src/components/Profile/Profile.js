@@ -22,6 +22,18 @@ class Profile extends React.Component {
     this.setState(this.props.value);
   }
 
+  isEmailValid = email => {
+    const validStatus = isEmailValid(email);
+    
+    if (!validStatus) {
+      this.setState({
+        changeStatus: 'Please make sure that your email address is correct',
+        error: true
+      });
+    }
+    return validStatus;
+  };
+
   validateEmpty = value => {
     if (value === '') {
       this.setState({
@@ -39,7 +51,7 @@ class Profile extends React.Component {
     res = res && this.validateEmpty(this.state.firstname);
     res = res && this.validateEmpty(this.state.lastname);
     res = res && this.validateEmpty(this.state.email);
-    res = res && isEmailValid(this.state.email);
+    res = res && this.isEmailValid(this.state.email);
     return res;
   };
 
@@ -122,7 +134,7 @@ class Profile extends React.Component {
           label="Email address"
           name="email"
           value={email}
-          validate={isEmailValid}
+          validate={this.isEmailValid}
           onChange={this.onChange}
         />
         <TextField

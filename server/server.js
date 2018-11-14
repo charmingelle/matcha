@@ -2,10 +2,12 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const pgp = require('pg-promise')(/*options*/);
-const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
+// const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
+const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
 const { check } = require('express-validator/check');
 
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -65,10 +67,15 @@ app.post(
     checkBusyEmail(req.body.email, req.body.id)
       .then(
         () => updateProfile(req.body),
-        () => res.status(500).send({ result: 'The email address is busy' })
+        () =>
+          res
+            .status(500)
+            .send(JSON.stringify({ result: 'The email address is busy' }))
       )
       .then(() =>
-        res.status(200).send({ result: 'Your data has been changed' })
+        res
+          .status(200)
+          .send(JSON.stringify({ result: 'Your data has been changed' }))
       );
   }
 );
@@ -126,20 +133,53 @@ app.post('/signin', (req, res) => {
     if (data.length === 1) {
       res.status(200).send();
     } else {
-      res.status(404).send();
+      res
+        .status(500)
+        .send(JSON.stringify({ result: 'Invalid email or password' }));
     }
   });
 });
 
 app.post('/signun', (req, res) => {
-  db.any(
-    'INSERT INTO users(email, login, password, firstname, lastname) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname})',
-    {
-      email: req.body.email,
-      login: req.body.login,
-      password: req.body.password,
-      firstname: req.body.firstname,
-      lastname: req.body.lastname
+  db.any('SELECT * FROM users WHERE email = ${email} OR login = ${login}', {
+    email: req.body.email,
+    login: req.body.login
+  }).then(data => {
+    if (data.length === 0) {
+      bcrypt.genSalt(10, (err, salt) => {
+        if (err) {
+          return next(err);
+        }
+        bcrypt.hash(req.body.password, salt, function(err, hash) {
+          if (err) {
+            return next(err);
+          }
+          let password = hash;
+
+          db.any(
+            'INSERT INTO users(email, login, password, firstname, lastname) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname})',
+            {
+              email: req.body.email,
+              login: req.body.login,
+              password: password,
+              firstname: req.body.firstname,
+              lastname: req.body.lastname
+            }
+          ).then(() =>
+            db
+              .one('SELECT id FROM users WHERE login = ${login}', {
+                login: req.body.login
+              })
+              .then(data => res.status(200).send(JSON.stringify(data)))
+          );
+        });
+      });
+    } else {
+      res
+        .status(500)
+        .send(
+          JSON.stringify({ result: 'Your email or login is busy' })
+        );
     }
-  );
+  });
 });

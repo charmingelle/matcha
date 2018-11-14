@@ -81,9 +81,11 @@ class Signin extends React.Component {
         if (res.status === 200) {
           this.props.changeSigninStatus(true);
         } else {
-          this.setState({
-            message: 'Invalid login or password'
-          });
+          res.json().then(data =>
+            this.setState({
+              message: data.result
+            })
+          );
         }
       });
     }
