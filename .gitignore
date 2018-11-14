@@ -4,6 +4,11 @@
 node_modules
 client/node_modules
 client/public/photos/
+.vscode/settings.json
+package-lock.json
+package.json
+client/package-lock.json
+client/package.json
 
 # testing
 /coverage
