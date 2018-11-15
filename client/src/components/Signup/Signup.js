@@ -36,25 +36,6 @@ const styles = theme => ({
   }
 });
 
-const currencies = [
-  {
-    value: 'USD',
-    label: '$'
-  },
-  {
-    value: 'EUR',
-    label: '€'
-  },
-  {
-    value: 'BTC',
-    label: '฿'
-  },
-  {
-    value: 'JPY',
-    label: '¥'
-  }
-];
-
 class Signup extends React.Component {
   state = {
     email: '',
@@ -63,6 +44,7 @@ class Signup extends React.Component {
     passwordConfirm: '',
     firstname: '',
     lastname: '',
+    error: false,
     message: ''
   };
 
@@ -88,30 +70,37 @@ class Signup extends React.Component {
       this.state.lastname === ''
     ) {
       this.setState({
+        error: true,
         message: 'Please fill all the fields in'
       });
     } else if (!isEmailValid(this.state.email)) {
       this.setState({
+        error: true,
         message: 'Invalid email address'
       });
     } else if (!isLoginValid(this.state.login)) {
       this.setState({
+        error: true,
         message: 'Invalid login'
       });
     } else if (!isPasswordValid(this.state.password)) {
       this.setState({
+        error: true,
         message: 'Invalid password'
       });
     } else if (this.state.password !== this.state.passwordConfirm) {
       this.setState({
+        error: true,
         message: 'Invalid password confirm'
       });
     } else if (!isFirstLastNameValid(this.state.firstname)) {
       this.setState({
+        error: true,
         message: 'Invalid first name'
       });
     } else if (!isFirstLastNameValid(this.state.lastname)) {
       this.setState({
+        error: false,
         message: 'Invalid last name'
       });
     } else {
@@ -124,16 +113,22 @@ class Signup extends React.Component {
         this.state.password,
         this.state.firstname,
         this.state.lastname
-      );
-      //   signin(this.state.login, this.state.password).then(res => {
-      //     if (res.status === 200) {
-      //       this.props.changeSigninStatus(true);
-      //     } else {
-      //       this.setState({
-      //         message: 'Invalid login or password'
-      //       });
-      //     }
-      //   });
+      )
+        .then(res => {
+          res.status === 200
+            ? this.setState({
+                error: false
+              })
+            : this.setState({
+                error: true
+              });
+          return res.json();
+        })
+        .then(data =>
+          this.setState({
+            message: data.result
+          })
+        );
     }
   };
 
@@ -142,7 +137,7 @@ class Signup extends React.Component {
       return (
         <TextField
           className={this.props.classes.textField}
-          error
+          error={this.state.error}
           disabled
           value={this.state.message}
         />

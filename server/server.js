@@ -3,10 +3,21 @@ const app = express();
 const port = 5000;
 const pgp = require('pg-promise')(/*options*/);
 const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
+// const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'annar703unit@gmail.com',
+    pass: 'eiling357unit'
+  }
+});
 const { check } = require('express-validator/check');
+const { generateHash } = require('random-hash');
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -65,10 +76,15 @@ app.post(
     checkBusyEmail(req.body.email, req.body.id)
       .then(
         () => updateProfile(req.body),
-        () => res.status(500).send({ result: 'The email address is busy' })
+        () =>
+          res
+            .status(500)
+            .send(JSON.stringify({ result: 'The email address is busy' }))
       )
       .then(() =>
-        res.status(200).send({ result: 'Your data has been changed' })
+        res
+          .status(200)
+          .send(JSON.stringify({ result: 'Your data has been changed' }))
       );
   }
 );
@@ -126,20 +142,108 @@ app.post('/signin', (req, res) => {
     if (data.length === 1) {
       res.status(200).send();
     } else {
-      res.status(404).send();
+      res
+        .status(500)
+        .send(JSON.stringify({ result: 'Invalid login or password' }));
     }
   });
 });
 
 app.post('/signun', (req, res) => {
-  db.any(
-    'INSERT INTO users(email, login, password, firstname, lastname) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname})',
-    {
-      email: req.body.email,
-      login: req.body.login,
-      password: req.body.password,
-      firstname: req.body.firstname,
-      lastname: req.body.lastname
+  db.any('SELECT * FROM users WHERE email = ${email} OR login = ${login}', {
+    email: req.body.email,
+    login: req.body.login
+  }).then(data => {
+    if (data.length === 0) {
+      bcrypt.genSalt(10, (err, salt) => {
+        if (err) {
+          return next(err);
+        }
+        bcrypt.hash(req.body.password, salt, function(err, hash) {
+          if (err) {
+            return next(err);
+          }
+          let password = hash;
+
+          db.any(
+            'INSERT INTO users(email, login, password, firstname, lastname) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname})',
+            {
+              email: req.body.email,
+              login: req.body.login,
+              password: password,
+              firstname: req.body.firstname,
+              lastname: req.body.lastname
+            }
+          ).then(() =>
+            db
+              .one('SELECT id FROM users WHERE login = ${login}', {
+                login: req.body.login
+              })
+              .then(data => {
+                const hash = generateHash({
+                  length: 16,
+                  charset:
+                    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
+                });
+
+                db.any('UPDATE users SET hash = ${hash} WHERE id = ${id}', {
+                  hash,
+                  id: data.id
+                }).then(() =>
+                  transporter.sendMail(
+                    {
+                      from: 'annar703unit@gmail.com',
+                      to: req.body.email,
+                      subject: 'Matcha Registration Confirmation',
+                      text: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
+                        req.body.email
+                      }&hash=${hash}`
+                    },
+                    error => {
+                      if (error) {
+                        console.log('ERROR', error);
+                        db.any('DELETE FROM users WHERE id = ${id}', {
+                          id: data.id
+                        }).then(() =>
+                          res.status(500).send(
+                            JSON.stringify({
+                              result: 'Your email is invalid'
+                            })
+                          )
+                        );
+                      } else {
+                        res
+                          .status(200)
+                          .send(JSON.stringify({ result: 'Check your email' }));
+                      }
+                    }
+                  )
+                );
+              })
+          );
+        });
+      });
+    } else {
+      res
+        .status(500)
+        .send(JSON.stringify({ result: 'Your email or login is busy' }));
     }
-  );
+  });
+});
+
+app.get('/confirm', (req, res) => {
+  db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
+    email: req.query.email,
+    hash: req.query.hash
+  }).then(data => {
+    if (data.length === 1) {
+      db.any('UPDATE users SET active = true, hash = null WHERE email = ${email}', {
+        email: req.query.email
+      }).then(() => {
+        res.redirect('http://localhost:3000');
+      })
+    } else {
+      res.end();
+    }
+  });
 });

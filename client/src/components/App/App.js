@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Profile from './../Profile/Profile.js';
 import Main from './../Main/Main.js';
 import Signin from './../SignIn/SignIn.js';
 import Signup from './../Signup/Signup.js';
@@ -8,24 +7,21 @@ window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
 class App extends Component {
   state = {
-    signedIn: false
+    page: 'signin'
   };
 
-  changeSigninStatus = status => {
+  switch = page => {
     this.setState({
-      signedIn: status
+      page
     });
   };
 
   render = () => {
     return (
       <div id="app">
-        {/* {this.state.signedIn ? (
-          <Main changeSigninStatus={this.changeSigninStatus} />
-        ) : (
-          <Signin changeSigninStatus={this.changeSigninStatus} />
-        )} */}
-        <Signup />
+        {this.state.page === 'signin' && <Signin switch={this.switch} />}
+        {this.state.page === 'main' && <Main switch={this.switch} />}
+        {this.state.page === 'signup' && <Signup />}
       </div>
     );
   };

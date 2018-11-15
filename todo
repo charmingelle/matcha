@@ -3,3 +3,7 @@
 - check how to make photos square or what else to do with proportions
 - add the rest params that need to be changed to user profile
 - check how to remove errors from browser console when 500 response status is returned frim server
+- add validation of signup data on server
+- user API and OAuth2.0 for sending emails
+- use React router to send get request to Node server
+pkolomiy

@@ -30,25 +30,6 @@ const styles = theme => ({
   }
 });
 
-const currencies = [
-  {
-    value: 'USD',
-    label: '$'
-  },
-  {
-    value: 'EUR',
-    label: '€'
-  },
-  {
-    value: 'BTC',
-    label: '฿'
-  },
-  {
-    value: 'JPY',
-    label: '¥'
-  }
-];
-
 class Signin extends React.Component {
   state = {
     login: '',
@@ -79,14 +60,20 @@ class Signin extends React.Component {
       });
       signin(this.state.login, this.state.password).then(res => {
         if (res.status === 200) {
-          this.props.changeSigninStatus(true);
+          this.props.switch('main');
         } else {
-          this.setState({
-            message: 'Invalid login or password'
-          });
+          res.json().then(data =>
+            this.setState({
+              message: data.result
+            })
+          );
         }
       });
     }
+  };
+
+  showSignup = () => {
+    this.props.switch('signup');
   };
 
   renderMessage = () => {
@@ -129,6 +116,10 @@ class Signin extends React.Component {
           <Button className={classes.button} onClick={this.signin}>
             Sign In
           </Button>
+          <Button className={classes.button} onClick={this.showSignup}>
+            Sign Up
+          </Button>
+          <Button className={classes.button}>Forgot password?</Button>
         </form>
       </div>
     );
