@@ -61,6 +61,7 @@ class Signin extends React.Component {
       signin(this.state.login, this.state.password).then(res => {
         if (res.status === 200) {
           this.props.switch('main');
+          res.json().then(data => this.props.setID(data.id))
         } else {
           res.json().then(data =>
             this.setState({

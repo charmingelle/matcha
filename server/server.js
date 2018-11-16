@@ -132,13 +132,13 @@ app.post('/getUsers', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-  db.any('SELECT password FROM users WHERE login = ${login}', {
+  db.any('SELECT id, password FROM users WHERE login = ${login}', {
     login: req.body.login
   }).then(data => {
     if (data.length === 1) {
       bcrypt.compare(req.body.password, data[0].password).then(result => {
         result === true
-          ? res.status(200).send()
+          ? res.status(200).send(JSON.stringify({ id: data[0].id }))
           : res
               .status(500)
               .send(JSON.stringify({ result: 'Invalid login or password' }));

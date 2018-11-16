@@ -66,7 +66,7 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 
   async componentDidMount() {
-    const data = await getUserProfile(4);
+    const data = await getUserProfile(this.props.id);
 
     this.setState({
       profile: {
