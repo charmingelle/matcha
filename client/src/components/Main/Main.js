@@ -15,6 +15,7 @@ import Button from '@material-ui/core/Button';
 import Profile from './../Profile/Profile.js';
 import ListIcon from '@material-ui/icons/List';
 import Users from './../Users/Users.js';
+import Signin from '../Signin/Signin.js';
 import { getUserProfile, saveLocation } from './../../api/profileRequests.js';
 import { signout } from './../../api/signoutRequests.js';
 
@@ -43,7 +44,8 @@ const styles = theme => ({
 
 class ScrollableTabsButtonForce extends React.Component {
   state = {
-    tabid: 0
+    tabid: 0,
+    profile: null
   };
 
   ipLookUp = userid => {
@@ -66,29 +68,38 @@ class ScrollableTabsButtonForce extends React.Component {
     );
   };
 
-  async componentDidMount() {
-    const data = await getUserProfile(this.props.id);
-
-    this.setState({
-      profile: {
-        id: data.user.id,
-        firstname: data.user.firstname,
-        lastname: data.user.lastname,
-        email: data.user.email,
-        age: data.user.age,
-        gender: data.user.gender,
-        preferences: data.user.preferences,
-        bio: data.user.bio,
-        interests: data.user.interests,
-        gallery: data.user.gallery,
-        avatarid: data.user.avatarid,
-        location: data.user.location,
-        allInterests: data.allInterests,
-        changeStatus: null,
-        error: false
+  componentDidMount() {
+    getUserProfile(12).then(res => {
+      console.log('res.status', res.status);
+      if (res.status === 200) {
+        res.json().then(data => {
+          console.log('data', data);
+          this.setState({
+            profile: {
+              id: data.user.id,
+              firstname: data.user.firstname,
+              lastname: data.user.lastname,
+              email: data.user.email,
+              age: data.user.age,
+              gender: data.user.gender,
+              preferences: data.user.preferences,
+              bio: data.user.bio,
+              interests: data.user.interests,
+              gallery: data.user.gallery,
+              avatarid: data.user.avatarid,
+              location: data.user.location,
+              allInterests: data.allInterests,
+              changeStatus: null,
+              error: false
+            }
+          });
+          this.getLocation(data.user.id);
+        });
+      } else {
+        console.log('profile should be set to empty');
+        this.setState({ profile: 'signin' });
       }
     });
-    this.getLocation(data.user.id);
   }
 
   handleChange = (event, value) => {
@@ -100,12 +111,15 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 
   signout = () => {
-    signout().then(() => this.props.switch('signin'));
-  };
+    signout().then(() => this.setState({ profile: 'signin' }));
+  }
 
   render = () => {
-    if (!this.state.profile) {
+    if (this.state.profile === null) {
       return <span>Loader is here</span>;
+    }
+    if (this.state.profile === 'signin') {
+      return <Signin />;
     }
     const { classes } = this.props;
     const { tabid } = this.state;

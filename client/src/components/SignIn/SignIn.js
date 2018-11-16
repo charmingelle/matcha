@@ -1,10 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { signin } from './../../api/signinRequests.js';
+import Main from '../Main/Main.js';
+import { signin } from '../../api/signinRequests.js';
 
 const styles = theme => ({
   root: {
@@ -34,7 +36,8 @@ class Signin extends React.Component {
   state = {
     login: '',
     password: '',
-    message: ''
+    message: '',
+    main: false
   };
 
   handleKeyPress = event => {
@@ -60,8 +63,9 @@ class Signin extends React.Component {
       });
       signin(this.state.login, this.state.password).then(res => {
         if (res.status === 200) {
-          this.props.switch('main');
-          res.json().then(data => this.props.setID(data.id))
+          this.setState({
+            main: true
+          });
         } else {
           res.json().then(data =>
             this.setState({
@@ -71,10 +75,6 @@ class Signin extends React.Component {
         }
       });
     }
-  };
-
-  showSignup = () => {
-    this.props.switch('signup');
   };
 
   renderMessage = () => {
@@ -93,6 +93,9 @@ class Signin extends React.Component {
   render = () => {
     const { classes } = this.props;
 
+    if (this.state.main) {
+      return <Main />;
+    }
     return (
       <div className={classes.root}>
         <form className={classes.container} noValidate autoComplete="off">
@@ -117,10 +120,8 @@ class Signin extends React.Component {
           <Button className={classes.button} onClick={this.signin}>
             Sign In
           </Button>
-          <Button className={classes.button} onClick={this.showSignup}>
-            Sign Up
-          </Button>
-          <Button className={classes.button}>Forgot password?</Button>
+          <Link to={'/signup'}>Sign Up</Link>
+          {/* <Button className={classes.button}>Forgot password?</Button> */}
         </form>
       </div>
     );

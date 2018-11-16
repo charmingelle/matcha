@@ -3,12 +3,6 @@ export const getUserProfile = id =>
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id })
-  }).then(res => {
-    if (!res.ok) {
-      throw Error(res.code);
-    }
-
-    return res.json();
   });
 
 export const saveUserProfile = userInfo =>

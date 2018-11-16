@@ -22,7 +22,7 @@ const { generateHash } = require('random-hash');
 
 const requireLogin = (req, res, next) => {
   if (!req.session.user) {
-    res.redirect('/login');
+    res.status(500).send(JSON.stringify({ result: 'Not signed in' }));
   } else {
     next();
   }
@@ -44,12 +44,15 @@ app.use(
 );
 
 app.use((req, res, next) => {
+  console.log('req.url', req.url);
   if (req.session && req.session.user) {
+    console.log('session cookie is here');
     db.any('SELECT user FROM users WHERE login = ${login}', {
       login: req.session.user
     }).then(data => {
       if (data.length === 1) {
-        req.session.user = data[0].user;
+        console.log('the user is authorized');
+        // req.session.user = data[0].user;
       }
       next();
     });
@@ -59,19 +62,18 @@ app.use((req, res, next) => {
 });
 
 app.post('/getUserProfile', requireLogin, (req, res) => {
+  console.log('getUserProfile is received');
   Promise.all([
     db.any('SELECT * FROM users WHERE id = $1', [req.body.id]),
     db.any('SELECT interest FROM interests')
-  ])
-    .then(data =>
-      res.send(
-        JSON.stringify({
-          user: data[0][0],
-          allInterests: data[1].map(interest => interest.interest)
-        })
-      )
+  ]).then(data =>
+    res.status(200).send(
+      JSON.stringify({
+        user: data[0][0],
+        allInterests: data[1].map(interest => interest.interest)
+      })
     )
-    .catch(error => console.error('ERROR:', error));
+  );
 });
 
 const checkBusyEmail = (email, id) => {
@@ -164,6 +166,7 @@ app.post('/saveLocation', requireLogin, (req, res) => {
 });
 
 app.post('/getUsers', requireLogin, (req, res) => {
+  console.log('getUsers is received');
   db.any('SELECT * FROM users').then(data => res.send(JSON.stringify(data)));
 });
 
@@ -280,7 +283,7 @@ app.get('/confirm', (req, res) => {
           email: req.query.email
         }
       ).then(() => {
-        res.redirect('http://localhost:3000');
+        res.redirect('http://localhost:3000/');
       });
     } else {
       res.end();
@@ -289,6 +292,6 @@ app.get('/confirm', (req, res) => {
 });
 
 app.post('/signout', (req, res) => {
-  console.log('session was reset');
-  res.redirect('http://localhost:3000');
+  req.session.reset();
+  res.redirect('http://localhost:3000/');
 });
