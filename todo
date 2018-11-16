@@ -6,4 +6,3 @@
 - add validation of signup data on server
 - user API and OAuth2.0 for sending emails
 - use React router to send get request to Node server
-pkolomiy

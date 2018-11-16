@@ -132,19 +132,17 @@ app.post('/getUsers', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-  db.any(
-    'SELECT * FROM users WHERE login = ${login} AND password = ${password}',
-    {
-      login: req.body.login,
-      password: req.body.password
-    }
-  ).then(data => {
+  db.any('SELECT password FROM users WHERE login = ${login}', {
+    login: req.body.login
+  }).then(data => {
     if (data.length === 1) {
-      res.status(200).send();
-    } else {
-      res
-        .status(500)
-        .send(JSON.stringify({ result: 'Invalid login or password' }));
+      bcrypt.compare(req.body.password, data[0].password).then(result => {
+        result === true
+          ? res.status(200).send()
+          : res
+              .status(500)
+              .send(JSON.stringify({ result: 'Invalid login or password' }));
+      });
     }
   });
 });
@@ -237,11 +235,14 @@ app.get('/confirm', (req, res) => {
     hash: req.query.hash
   }).then(data => {
     if (data.length === 1) {
-      db.any('UPDATE users SET active = true, hash = null WHERE email = ${email}', {
-        email: req.query.email
-      }).then(() => {
+      db.any(
+        'UPDATE users SET active = true, hash = null WHERE email = ${email}',
+        {
+          email: req.query.email
+        }
+      ).then(() => {
         res.redirect('http://localhost:3000');
-      })
+      });
     } else {
       res.end();
     }
