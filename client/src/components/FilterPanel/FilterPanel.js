@@ -56,7 +56,6 @@ class TextFields extends React.Component {
   };
 
   componentDidMount() {
-    console.log(this.props.users);
     this.setState({
       profileLocation: this.props.profileLocation,
       interests: this.props.interests,

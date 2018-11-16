@@ -8,3 +8,5 @@ pg_ctl -D /Users/grevenko/.brew/var/postgres start (stop)
 psql postgres
 \du - list users
 \l - list databases
+
+https://www.linkedin.com/pulse/nodejs-user-session-management-web-applications-using-harshad-bankar - session

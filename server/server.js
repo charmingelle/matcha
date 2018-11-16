@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const session = require('client-sessions');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -19,11 +20,45 @@ const transporter = nodemailer.createTransport({
 const { check } = require('express-validator/check');
 const { generateHash } = require('random-hash');
 
+const requireLogin = (req, res, next) => {
+  if (!req.session.user) {
+    res.redirect('/login');
+  } else {
+    next();
+  }
+};
+
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.listen(port, () => console.log(`The server is running on port ${port}`));
 
-app.post('/getUserProfile', (req, res) => {
+app.use(
+  session({
+    cookieName: 'session',
+    secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
+    httpOnly: true,
+    ephemeral: true
+  })
+);
+
+app.use((req, res, next) => {
+  if (req.session && req.session.user) {
+    db.any('SELECT user FROM users WHERE login = ${login}', {
+      login: req.session.user
+    }).then(data => {
+      if (data.length === 1) {
+        req.session.user = data[0].user;
+      }
+      next();
+    });
+  } else {
+    next();
+  }
+});
+
+app.post('/getUserProfile', requireLogin, (req, res) => {
   Promise.all([
     db.any('SELECT * FROM users WHERE id = $1', [req.body.id]),
     db.any('SELECT interest FROM interests')
@@ -71,6 +106,7 @@ const updateProfile = reqBody => {
 
 app.post(
   '/saveUserProfile',
+  requireLogin,
   [check('firstname').isEmpty(), check('lastname').isEmpty()],
   (req, res) => {
     checkBusyEmail(req.body.email, req.body.id)
@@ -89,7 +125,7 @@ app.post(
   }
 );
 
-app.post('/saveUserPhoto', (req, res) => {
+app.post('/saveUserPhoto', requireLogin, (req, res) => {
   const fileName = crypto.randomBytes(20).toString('hex');
 
   fs.writeFile(
@@ -113,21 +149,21 @@ app.post('/saveUserPhoto', (req, res) => {
   );
 });
 
-app.post('/setAvatar', (req, res) => {
+app.post('/setAvatar', requireLogin, (req, res) => {
   db.any('UPDATE users SET avatarid = $1 WHERE id = $2', [
     req.body.avatarid,
     req.body.userid
   ]);
 });
 
-app.post('/saveLocation', (req, res) => {
+app.post('/saveLocation', requireLogin, (req, res) => {
   db.any('UPDATE users SET location = ${location} WHERE id = ${userid}', {
     location: req.body.location,
     userid: req.body.userid
   });
 });
 
-app.post('/getUsers', (req, res) => {
+app.post('/getUsers', requireLogin, (req, res) => {
   db.any('SELECT * FROM users').then(data => res.send(JSON.stringify(data)));
 });
 
@@ -137,17 +173,20 @@ app.post('/signin', (req, res) => {
   }).then(data => {
     if (data.length === 1) {
       bcrypt.compare(req.body.password, data[0].password).then(result => {
-        result === true
-          ? res.status(200).send(JSON.stringify({ id: data[0].id }))
-          : res
-              .status(500)
-              .send(JSON.stringify({ result: 'Invalid login or password' }));
+        if (result === true) {
+          req.session.user = req.body.login;
+          res.status(200).send(JSON.stringify({ id: data[0].id }));
+        } else {
+          res
+            .status(500)
+            .send(JSON.stringify({ result: 'Invalid login or password' }));
+        }
       });
     }
   });
 });
 
-app.post('/signun', (req, res) => {
+app.post('/signup', (req, res) => {
   db.any('SELECT * FROM users WHERE email = ${email} OR login = ${login}', {
     email: req.body.email,
     login: req.body.login
@@ -247,4 +286,9 @@ app.get('/confirm', (req, res) => {
       res.end();
     }
   });
+});
+
+app.post('/signout', (req, res) => {
+  console.log('session was reset');
+  res.redirect('http://localhost:3000');
 });
