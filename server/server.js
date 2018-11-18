@@ -21,10 +21,18 @@ const { check } = require('express-validator/check');
 const { generateHash } = require('random-hash');
 
 const requireLogin = (req, res, next) => {
-  if (!req.session.user) {
-    res.status(500).send(JSON.stringify({ result: 'Not signed in' }));
+  if (req.session && req.session.user) {
+    db.any('SELECT user FROM users WHERE login = ${login}', {
+      login: req.session.user
+    }).then(data => {
+      if (data.length === 1) {
+        next();
+      } else {
+        res.status(500).send(JSON.stringify({ result: 'Not signed in' }));
+      }
+    });
   } else {
-    next();
+    res.status(500).send(JSON.stringify({ result: 'Not signed in' }));
   }
 };
 
@@ -42,24 +50,6 @@ app.use(
     ephemeral: true
   })
 );
-
-app.use((req, res, next) => {
-  console.log('req.url', req.url);
-  if (req.session && req.session.user) {
-    console.log('session cookie is here');
-    db.any('SELECT user FROM users WHERE login = ${login}', {
-      login: req.session.user
-    }).then(data => {
-      if (data.length === 1) {
-        console.log('the user is authorized');
-        // req.session.user = data[0].user;
-      }
-      next();
-    });
-  } else {
-    next();
-  }
-});
 
 app.post('/getUserProfile', requireLogin, (req, res) => {
   console.log('getUserProfile is received');
@@ -271,6 +261,32 @@ app.post('/signup', (req, res) => {
   });
 });
 
+app.post('/signout', (req, res) => {
+  req.session.reset();
+  res.redirect('http://localhost:3000/');
+});
+
+app.post('/signinOrMain', (req, res) => {
+  if (req.session && req.session.user) {
+    console.log('req.session.user', req.session.user);
+    db.any('SELECT user FROM users WHERE login = ${login}', {
+      login: req.session.user
+    }).then(data => {
+      console.log('data', data);
+      if (data.length === 1) {
+        console.log('MAIN');
+        res.send(JSON.stringify({ result: 'main' }));
+      } else {
+        console.log('SIGN IN 1');
+        res.send(JSON.stringify({ result: 'signin' }));
+      }
+    });
+  } else {
+    console.log('SIGN IN 2');
+    res.send(JSON.stringify({ result: 'signin' }));
+  }
+});
+
 app.get('/confirm', (req, res) => {
   db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
     email: req.query.email,
@@ -291,7 +307,6 @@ app.get('/confirm', (req, res) => {
   });
 });
 
-app.post('/signout', (req, res) => {
-  req.session.reset();
-  res.redirect('http://localhost:3000/');
+app.get('*', (req, res) => {
+  res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
 });

@@ -10,7 +10,7 @@ import {
   isPasswordValid,
   isFirstLastNameValid
 } from './../../utils/utils.js';
-import { signup } from './../../api/signupRequests.js';
+import { signup } from './../../api/api.js';
 
 const styles = theme => ({
   root: {

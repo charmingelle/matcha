@@ -8,7 +8,7 @@ import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js';
 import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { saveUserProfile } from './../../api/profileRequests.js';
+import { saveUserProfile } from './../../api/api.js';
 import { isEmailValid } from './../../utils/utils.js';
 
 const styles = theme => ({

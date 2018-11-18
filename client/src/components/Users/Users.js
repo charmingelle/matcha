@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
-import { getUsers } from './../../api/usersRequests.js';
+import { getUsers } from './../../api/api.js';
 import UserDetails from './../UserDetails/UserDetails.js';
 import FilterPanel from './../FilterPanel/FilterPanel.js';
 

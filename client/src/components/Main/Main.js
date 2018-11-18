@@ -16,8 +16,8 @@ import Profile from './../Profile/Profile.js';
 import ListIcon from '@material-ui/icons/List';
 import Users from './../Users/Users.js';
 import Signin from '../Signin/Signin.js';
-import { getUserProfile, saveLocation } from './../../api/profileRequests.js';
-import { signout } from './../../api/signoutRequests.js';
+import { getUserProfile, saveLocation } from './../../api/api.js';
+import { signout } from './../../api/api.js';
 
 function TabContainer(props) {
   return (
@@ -112,7 +112,7 @@ class ScrollableTabsButtonForce extends React.Component {
 
   signout = () => {
     signout().then(() => this.setState({ profile: 'signin' }));
-  }
+  };
 
   render = () => {
     if (this.state.profile === null) {
