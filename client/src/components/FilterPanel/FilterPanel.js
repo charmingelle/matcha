@@ -134,7 +134,7 @@ class TextFields extends React.Component {
 
   render() {
     if (!this.state.interests) {
-      return <span>Loader is here</span>;
+      return <span>Loading...</span>;
     }
     const { classes } = this.props;
 

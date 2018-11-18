@@ -40,7 +40,7 @@ class TitlebarGridList extends React.Component {
 
   render = () => {
     if (!this.state) {
-      return <span>Loader is here</span>;
+      return <span>Loading...</span>;
     }
     const { classes } = this.props;
 

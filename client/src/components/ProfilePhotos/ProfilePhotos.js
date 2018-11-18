@@ -63,7 +63,7 @@ class ProfilePhotos extends React.Component {
   makeAvatar = (id, event) => {
     event.stopPropagation();
     this.setState({ avatarid: id });
-    setAvatar(this.state.userid, id);
+    setAvatar(id);
   };
 
   uploadPhoto = event => {
@@ -79,7 +79,7 @@ class ProfilePhotos extends React.Component {
         .drawImage(image, 0, 0, canvas.width, canvas.height);
       newGallery[this.photoid] = canvas.toDataURL();
       this.setState({ gallery: newGallery });
-      saveUserPhoto(this.state.userid, newGallery[this.photoid], this.photoid);
+      saveUserPhoto(newGallery[this.photoid], this.photoid);
     };
     image.src = window.URL.createObjectURL(event.target.files[0]);
   };

@@ -35,7 +35,7 @@ class UserDetails extends React.Component {
 
   render = () => {
     if (!this.state) {
-      return <span>Loader is here</span>;
+      return <span>Loading...</span>;
 		}	
     return (
       <GridListTileBar

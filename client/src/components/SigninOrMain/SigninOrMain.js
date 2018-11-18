@@ -16,7 +16,7 @@ export default class SigninOrMain extends Component {
 
   render = () => {
     if (!this.state.page) {
-      return <span>Loading... </span>;
+      return <span>Loading...</span>;
     }
     if (this.state.page === 'signin') {
       return <Signin />;

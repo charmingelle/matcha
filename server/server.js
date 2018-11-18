@@ -21,9 +21,9 @@ const { check } = require('express-validator/check');
 const { generateHash } = require('random-hash');
 
 const requireLogin = (req, res, next) => {
-  if (req.session && req.session.user) {
+  if (req.session && req.session.login) {
     db.any('SELECT user FROM users WHERE login = ${login}', {
-      login: req.session.user
+      login: req.session.login
     }).then(data => {
       if (data.length === 1) {
         next();
@@ -52,9 +52,10 @@ app.use(
 );
 
 app.post('/getUserProfile', requireLogin, (req, res) => {
-  console.log('getUserProfile is received');
   Promise.all([
-    db.any('SELECT * FROM users WHERE id = $1', [req.body.id]),
+    db.any('SELECT * FROM users WHERE login = ${login}', {
+      login: req.session.login
+    }),
     db.any('SELECT interest FROM interests')
   ]).then(data =>
     res.status(200).send(
@@ -77,9 +78,9 @@ const checkBusyEmail = (email, id) => {
   });
 };
 
-const updateProfile = reqBody => {
+const updateProfile = (reqBody, login) => {
   return db.any(
-    'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE id = ${id}',
+    'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE login = ${login}',
     {
       firstname: reqBody.firstname,
       lastname: reqBody.lastname,
@@ -91,7 +92,7 @@ const updateProfile = reqBody => {
       interests: reqBody.interests,
       gallery: reqBody.gallery,
       avatarid: reqBody.avatarid,
-      id: reqBody.id
+      login: login
     }
   );
 };
@@ -103,7 +104,7 @@ app.post(
   (req, res) => {
     checkBusyEmail(req.body.email, req.body.id)
       .then(
-        () => updateProfile(req.body),
+        () => updateProfile(req.body, req.session.login),
         () =>
           res
             .status(500)
@@ -126,37 +127,36 @@ app.post('/saveUserPhoto', requireLogin, (req, res) => {
     'base64',
     err => console.error(err)
   );
-  db.one('SELECT gallery FROM users WHERE id = $1', [req.body.userid]).then(
-    data => {
-      let gallery = data.gallery;
+  db.one('SELECT gallery FROM users WHERE login = ${login}', {
+    login: req.session.login
+  }).then(data => {
+    let gallery = data.gallery;
 
-      fs.unlink(`client/public/${gallery[req.body.photoid]}`, () => {
-        gallery[req.body.photoid] = `photos/${fileName}.png`;
-        db.any('UPDATE users SET gallery = $1 WHERE id = $2', [
-          gallery,
-          req.body.userid
-        ]);
+    fs.unlink(`client/public/${gallery[req.body.photoid]}`, () => {
+      gallery[req.body.photoid] = `photos/${fileName}.png`;
+      db.any('UPDATE users SET gallery = ${gallery} WHERE login = ${login}', {
+        gallery,
+        login: req.session.login
       });
-    }
-  );
+    });
+  });
 });
 
 app.post('/setAvatar', requireLogin, (req, res) => {
-  db.any('UPDATE users SET avatarid = $1 WHERE id = $2', [
-    req.body.avatarid,
-    req.body.userid
-  ]);
+  db.any('UPDATE users SET avatarid = ${avatarid} WHERE login = ${login}', {
+    avatarid: req.body.avatarid,
+    login: req.session.login
+  });
 });
 
 app.post('/saveLocation', requireLogin, (req, res) => {
-  db.any('UPDATE users SET location = ${location} WHERE id = ${userid}', {
+  db.any('UPDATE users SET location = ${location} WHERE login = ${login}', {
     location: req.body.location,
-    userid: req.body.userid
+    login: req.session.login
   });
 });
 
 app.post('/getUsers', requireLogin, (req, res) => {
-  console.log('getUsers is received');
   db.any('SELECT * FROM users').then(data => res.send(JSON.stringify(data)));
 });
 
@@ -167,7 +167,7 @@ app.post('/signin', (req, res) => {
     if (data.length === 1) {
       bcrypt.compare(req.body.password, data[0].password).then(result => {
         if (result === true) {
-          req.session.user = req.body.login;
+          req.session.login = req.body.login;
           res.status(200).send(JSON.stringify({ id: data[0].id }));
         } else {
           res
@@ -267,22 +267,17 @@ app.post('/signout', (req, res) => {
 });
 
 app.post('/signinOrMain', (req, res) => {
-  if (req.session && req.session.user) {
-    console.log('req.session.user', req.session.user);
-    db.any('SELECT user FROM users WHERE login = ${login}', {
-      login: req.session.user
+  if (req.session && req.session.login) {
+    db.any('SELECT login FROM users WHERE login = ${login}', {
+      login: req.session.login
     }).then(data => {
-      console.log('data', data);
       if (data.length === 1) {
-        console.log('MAIN');
         res.send(JSON.stringify({ result: 'main' }));
       } else {
-        console.log('SIGN IN 1');
         res.send(JSON.stringify({ result: 'signin' }));
       }
     });
   } else {
-    console.log('SIGN IN 2');
     res.send(JSON.stringify({ result: 'signin' }));
   }
 });

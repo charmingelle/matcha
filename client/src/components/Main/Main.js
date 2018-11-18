@@ -16,8 +16,7 @@ import Profile from './../Profile/Profile.js';
 import ListIcon from '@material-ui/icons/List';
 import Users from './../Users/Users.js';
 import Signin from '../Signin/Signin.js';
-import { getUserProfile, saveLocation } from './../../api/api.js';
-import { signout } from './../../api/api.js';
+import { getUserProfile, saveLocation, signout } from './../../api/api.js';
 
 function TabContainer(props) {
   return (
@@ -53,14 +52,14 @@ class ScrollableTabsButtonForce extends React.Component {
       method: 'POST'
     })
       .then(response => response.json())
-      .then(data => saveLocation(userid, [data.lat, data.lon]))
+      .then(data => saveLocation([data.lat, data.lon]))
       .catch(error => console.error(error));
   };
 
   getLocation = userid => {
     navigator.geolocation.getCurrentPosition(
       position =>
-        saveLocation(userid, [
+        saveLocation([
           position.coords.latitude,
           position.coords.longitude
         ]),
@@ -69,14 +68,11 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 
   componentDidMount() {
-    getUserProfile(12).then(res => {
-      console.log('res.status', res.status);
+    getUserProfile().then(res => {
       if (res.status === 200) {
         res.json().then(data => {
-          console.log('data', data);
           this.setState({
             profile: {
-              id: data.user.id,
               firstname: data.user.firstname,
               lastname: data.user.lastname,
               email: data.user.email,
@@ -96,7 +92,6 @@ class ScrollableTabsButtonForce extends React.Component {
           this.getLocation(data.user.id);
         });
       } else {
-        console.log('profile should be set to empty');
         this.setState({ profile: 'signin' });
       }
     });
@@ -116,7 +111,7 @@ class ScrollableTabsButtonForce extends React.Component {
 
   render = () => {
     if (this.state.profile === null) {
-      return <span>Loader is here</span>;
+      return <span>Loading...</span>;
     }
     if (this.state.profile === 'signin') {
       return <Signin />;

@@ -1,8 +1,6 @@
-export const getUserProfile = id =>
+export const getUserProfile = () =>
   fetch('/getUserProfile', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id })
+    method: 'POST'
   });
 
 export const saveUserProfile = userInfo =>
@@ -12,31 +10,31 @@ export const saveUserProfile = userInfo =>
     body: JSON.stringify(userInfo)
   });
 
-export const saveUserPhoto = (userid, photo, photoid) =>
+export const saveUserPhoto = (photo, photoid) =>
   fetch('/saveUserPhoto', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userid, photo, photoid })
+    body: JSON.stringify({ photo, photoid })
   });
 
-export const setAvatar = (userid, avatarid) =>
+export const setAvatar = ( avatarid) =>
   fetch('/setAvatar', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userid, avatarid })
+    body: JSON.stringify({  avatarid })
   });
 
-export const saveLocation = (userid, location) =>
+export const saveLocation = (location) =>
   fetch('/saveLocation', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userid, location })
+    body: JSON.stringify({ location })
   });
 
 export const signinOrMain = () => {
   return fetch('/signinOrMain', {
     method: 'POST'
-  })
+  });
 };
 
 export const signin = (login, password) =>
