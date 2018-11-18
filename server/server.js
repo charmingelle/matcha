@@ -22,7 +22,7 @@ const { generateHash } = require('random-hash');
 
 const requireLogin = (req, res, next) => {
   if (req.session && req.session.login) {
-    db.any('SELECT user FROM users WHERE login = ${login}', {
+    db.any('SELECT * FROM users WHERE login = ${login}', {
       login: req.session.login
     }).then(data => {
       if (data.length === 1) {
@@ -161,20 +161,26 @@ app.post('/getUsers', requireLogin, (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-  db.any('SELECT password FROM users WHERE login = ${login}', {
+  db.any('SELECT active, password FROM users WHERE login = ${login}', {
     login: req.body.login
   }).then(data => {
     if (data.length === 1) {
-      bcrypt.compare(req.body.password, data[0].password).then(result => {
-        if (result === true) {
-          req.session.login = req.body.login;
-          res.status(200).send();
-        } else {
-          res
-            .status(500)
-            .send(JSON.stringify({ result: 'Invalid login or password' }));
-        }
-      });
+      if (!data[0].active) {
+        res
+          .status(500)
+          .send(JSON.stringify({ result: 'Activate your account first' }));
+      } else {
+        bcrypt.compare(req.body.password, data[0].password).then(result => {
+          if (result === true) {
+            req.session.login = req.body.login;
+            res.status(200).send();
+          } else {
+            res
+              .status(500)
+              .send(JSON.stringify({ result: 'Invalid login or password' }));
+          }
+        });
+      }
     } else {
       res
         .status(500)
