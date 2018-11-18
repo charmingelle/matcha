@@ -121,6 +121,7 @@ class Signin extends React.Component {
             Sign In
           </Button>
           <Link to={'/signup'}>Sign Up</Link>
+          <Link to={'/forgot-password'}>Forgot Password</Link>
           {/* <Button className={classes.button}>Forgot password?</Button> */}
         </form>
       </div>

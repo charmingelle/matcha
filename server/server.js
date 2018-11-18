@@ -292,6 +292,43 @@ app.post('/signinOrMain', (req, res) => {
   }
 });
 
+app.post('/getResetPasswordEmail', (req, res) => {
+  db.any('SELECT * FROM users WHERE email = ${email}', {
+    email: req.body.email
+  }).then(data => {
+    if (data.length === 1) {
+      transporter.sendMail(
+        {
+          from: 'annar703unit@gmail.com',
+          to: req.body.email,
+          subject: 'Reset Your Matcha Password',
+          text: 'You can reset your password now'
+        },
+        error => {
+          if (error) {
+            console.log('ERROR', error);
+            db.any('DELETE FROM users WHERE id = ${id}', {
+              id: data.id
+            }).then(() =>
+              res.status(500).send(
+                JSON.stringify({
+                  result: 'Your email is invalid'
+                })
+              )
+            );
+          } else {
+            res
+              .status(200)
+              .send(JSON.stringify({ result: 'Check your email' }));
+          }
+        }
+      );
+    } else {
+      res.status(500).send(JSON.stringify({ result: 'Invalid email' }));
+    }
+  });
+});
+
 app.get('/confirm', (req, res) => {
   db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
     email: req.query.email,

@@ -5,4 +5,4 @@
 - check how to remove errors from browser console when 500 response status is returned frim server
 - add validation of signup data on server
 - user API and OAuth2.0 for sending emails
-- use React router to send get request to Node server
+- make sure the user cannot change his email to the email of other user

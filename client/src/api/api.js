@@ -17,14 +17,14 @@ export const saveUserPhoto = (photo, photoid) =>
     body: JSON.stringify({ photo, photoid })
   });
 
-export const setAvatar = ( avatarid) =>
+export const setAvatar = avatarid =>
   fetch('/setAvatar', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({  avatarid })
+    body: JSON.stringify({ avatarid })
   });
 
-export const saveLocation = (location) =>
+export const saveLocation = location =>
   fetch('/saveLocation', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -66,4 +66,11 @@ export const getUsers = () =>
     }
 
     return res.json();
+  });
+
+export const getResetPasswordEmail = email =>
+  fetch('getResetPasswordEmail', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
   });
