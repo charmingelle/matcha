@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
 import { getResetPasswordEmail } from '../../api/api.js';
 
 const styles = theme => ({
@@ -38,7 +39,6 @@ class ForgotPassword extends React.Component {
   };
 
   handleKeyPress = event => {
-    console.log('handleKeyPress happened');
     if (keycode(event) === 'enter') {
       this.getResetPasswordEmail();
     }
@@ -51,7 +51,6 @@ class ForgotPassword extends React.Component {
   };
 
   getResetPasswordEmail = () => {
-    console.log('getResetPasswordEmail is called');
     if (this.state.email === '') {
       this.setState({
         message: 'Please fill in your email',
@@ -96,7 +95,6 @@ class ForgotPassword extends React.Component {
   };
 
   render = () => {
-    console.log('render is called');
     const { classes } = this.props;
 
     return (
@@ -117,6 +115,7 @@ class ForgotPassword extends React.Component {
           >
             Get reset password email
           </Button>
+          <Link to="/">Home</Link>
         </div>
       </div>
     );

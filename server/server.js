@@ -297,35 +297,54 @@ app.post('/getResetPasswordEmail', (req, res) => {
     email: req.body.email
   }).then(data => {
     if (data.length === 1) {
-      transporter.sendMail(
-        {
-          from: 'annar703unit@gmail.com',
-          to: req.body.email,
-          subject: 'Reset Your Matcha Password',
-          text: 'You can reset your password now'
-        },
-        error => {
-          if (error) {
-            console.log('ERROR', error);
-            db.any('DELETE FROM users WHERE id = ${id}', {
-              id: data.id
-            }).then(() =>
-              res.status(500).send(
-                JSON.stringify({
-                  result: 'Your email is invalid'
-                })
-              )
-            );
-          } else {
+      const hash = generateHash({
+        length: 16,
+        charset:
+          'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
+      });
+
+      db.any('UPDATE users SET hash = ${hash} WHERE email = ${email}', {
+        hash: hash,
+        email: req.body.email
+      }).then(() => {
+        transporter.sendMail(
+          {
+            from: 'annar703unit@gmail.com',
+            to: req.body.email,
+            subject: 'Reset Your Matcha Password',
+            text: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
+              req.body.email
+            }&hash=${hash}`
+          },
+          () => {
             res
               .status(200)
               .send(JSON.stringify({ result: 'Check your email' }));
           }
-        }
-      );
+        );
+      });
     } else {
       res.status(500).send(JSON.stringify({ result: 'Invalid email' }));
     }
+  });
+});
+
+app.post('/resetPassword', (req, res) => {
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) {
+      return next(err);
+    }
+    bcrypt.hash(req.body.password, salt, (err, hash) => {
+      if (err) {
+        return next(err);
+      }
+      db.any('UPDATE users SET password = ${password} WHERE email = ${email}', {
+        password: hash,
+        email: req.body.email
+      }).then(() =>
+        res.send(JSON.stringify({ result: 'Your password has been changed' }))
+      );
+    });
   });
 });
 
@@ -345,6 +364,23 @@ app.get('/confirm', (req, res) => {
       });
     } else {
       res.end();
+    }
+  });
+});
+
+app.post('/resetPasswordOrExpired', (req, res) => {
+  db.any('SELECT hash FROM users WHERE email = ${email}', {
+    email: req.body.email
+  }).then(data => {
+    if (data.length !== 1) {
+      res.send(JSON.stringify({ result: 'expired' }));
+    }
+    if (data[0].hash === req.body.hash) {
+      db.any('UPDATE users SET hash = null WHERE email = ${email}', {
+        email: req.body.email
+      }).then(() => res.send(JSON.stringify({ result: 'reset-password' })));
+    } else {
+      res.send(JSON.stringify({ result: 'expired' }));
     }
   });
 });

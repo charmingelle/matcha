@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
 import {
   isEmailValid,
   isLoginValid,
@@ -205,6 +206,7 @@ class Signup extends React.Component {
           <Button className={classes.button} onClick={this.signup}>
             Sign Up
           </Button>
+          <Link to="/">Home</Link>
         </form>
       </div>
     );

@@ -6,3 +6,5 @@
 - add validation of signup data on server
 - user API and OAuth2.0 for sending emails
 - make sure the user cannot change his email to the email of other user
+- make sure that all functions are arrow functions
+- clean all components

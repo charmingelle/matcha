@@ -31,11 +31,10 @@ export const saveLocation = location =>
     body: JSON.stringify({ location })
   });
 
-export const signinOrMain = () => {
-  return fetch('/signinOrMain', {
+export const signinOrMain = () =>
+  fetch('/signinOrMain', {
     method: 'POST'
   });
-};
 
 export const signin = (login, password) =>
   fetch('/signin', {
@@ -69,8 +68,22 @@ export const getUsers = () =>
   });
 
 export const getResetPasswordEmail = email =>
-  fetch('getResetPasswordEmail', {
+  fetch('/getResetPasswordEmail', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email })
+  });
+
+export const resetPassword = (password, email) =>
+  fetch('/resetPassword', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password, email })
+  });
+
+export const resetPasswordOrExpired = (email, hash) =>
+  fetch('/resetPasswordOrExpired', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, hash })
   });
