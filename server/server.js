@@ -4,6 +4,7 @@ const port = 5000;
 const pgp = require('pg-promise')(/*options*/);
 const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
 // const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
+const format = require('pg-format');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const fs = require('fs');
@@ -67,23 +68,43 @@ app.post('/getUserProfile', requireLogin, (req, res) => {
   );
 });
 
-const updateProfile = (reqBody, login) => {
-  return db.any(
-    'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE login = ${login}',
-    {
-      firstname: reqBody.firstname,
-      lastname: reqBody.lastname,
-      email: reqBody.email,
-      age: reqBody.age,
-      gender: reqBody.gender,
-      preferences: reqBody.preferences,
-      bio: reqBody.bio,
-      interests: reqBody.interests,
-      gallery: reqBody.gallery,
-      avatarid: reqBody.avatarid,
-      login: login
+const saveNewInterests = reqBody => {
+  db.any('SELECT interest FROM interests').then(data => {
+    data = data.map(interest => interest.interest);
+
+    let toSave = reqBody.interests.filter(
+      interest => data.indexOf(interest) === -1
+    );
+
+    toSave = toSave.map(interest => [interest]);
+
+    if (toSave.length >= 1) {
+      let query = format('INSERT INTO interests(interest) VALUES %L', toSave);
+
+      db.any(query);
     }
-  );
+  });
+};
+
+const updateProfile = (reqBody, login) => {
+  return db
+    .any(
+      'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE login = ${login}',
+      {
+        firstname: reqBody.firstname,
+        lastname: reqBody.lastname,
+        email: reqBody.email,
+        age: reqBody.age,
+        gender: reqBody.gender,
+        preferences: reqBody.preferences,
+        bio: reqBody.bio,
+        interests: reqBody.interests,
+        gallery: reqBody.gallery,
+        avatarid: reqBody.avatarid,
+        login: login
+      }
+    )
+    .then(() => saveNewInterests(reqBody));
 };
 
 const checkBusyEmail = (email, login) => {
@@ -105,6 +126,7 @@ app.post(
   requireLogin,
   [check('firstname').isEmpty(), check('lastname').isEmpty()],
   (req, res) => {
+    // console.log('req.body', req.body);
     checkBusyEmail(req.body.email, req.session.login)
       .then(
         () => updateProfile(req.body, req.session.login),
@@ -301,14 +323,12 @@ app.post('/getResetPasswordEmail', (req, res) => {
   }).then(data => {
     if (data.length === 1) {
       if (!data[0].active) {
-        res
-          .status(500)
-          .send(
-            JSON.stringify({
-              result:
-                'Please activate your account using the link received in Matcha Registration Confirmation email first'
-            })
-          );
+        res.status(500).send(
+          JSON.stringify({
+            result:
+              'Please activate your account using the link received in Matcha Registration Confirmation email first'
+          })
+        );
       } else {
         const hash = generateHash({
           length: 16,

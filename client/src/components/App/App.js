@@ -14,7 +14,11 @@ class App extends Component {
         <div>
           <Route exact path="/signup" component={Signup} />
           <Route exact path="/forgot-password" component={ForgotPassword} />
-          <Route exact path="/reset-password" component={ResetPasswordOrExpired} />
+          <Route
+            exact
+            path="/reset-password"
+            component={ResetPasswordOrExpired}
+          />
           <Route path="/" component={SigninOrMain} />
         </div>
       </BrowserRouter>
