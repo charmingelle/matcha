@@ -67,17 +67,6 @@ app.post('/getUserProfile', requireLogin, (req, res) => {
   );
 });
 
-const checkBusyEmail = (email, id) => {
-  return new Promise((resolve, reject) => {
-    db.any('SELECT email FROM users WHERE email = ${email} AND id <> ${id}', {
-      email,
-      id
-    }).then(data => {
-      data.length === 0 ? resolve() : reject();
-    });
-  });
-};
-
 const updateProfile = (reqBody, login) => {
   return db.any(
     'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE login = ${login}',
@@ -97,12 +86,23 @@ const updateProfile = (reqBody, login) => {
   );
 };
 
+const checkBusyEmail = (email, login) => {
+  return new Promise((resolve, reject) => {
+    db.any('SELECT email FROM users WHERE email = ${email} AND login <> ${login}', {
+      email,
+      login
+    }).then(data => {
+      data.length === 0 ? resolve() : reject();
+    });
+  });
+};
+
 app.post(
   '/saveUserProfile',
   requireLogin,
   [check('firstname').isEmpty(), check('lastname').isEmpty()],
   (req, res) => {
-    checkBusyEmail(req.body.email, req.body.id)
+    checkBusyEmail(req.body.email, req.session.login)
       .then(
         () => updateProfile(req.body, req.session.login),
         () =>
