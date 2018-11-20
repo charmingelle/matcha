@@ -88,10 +88,13 @@ const updateProfile = (reqBody, login) => {
 
 const checkBusyEmail = (email, login) => {
   return new Promise((resolve, reject) => {
-    db.any('SELECT email FROM users WHERE email = ${email} AND login <> ${login}', {
-      email,
-      login
-    }).then(data => {
+    db.any(
+      'SELECT email FROM users WHERE email = ${email} AND login <> ${login}',
+      {
+        email,
+        login
+      }
+    ).then(data => {
       data.length === 0 ? resolve() : reject();
     });
   });
@@ -297,32 +300,43 @@ app.post('/getResetPasswordEmail', (req, res) => {
     email: req.body.email
   }).then(data => {
     if (data.length === 1) {
-      const hash = generateHash({
-        length: 16,
-        charset:
-          'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
-      });
+      if (!data[0].active) {
+        res
+          .status(500)
+          .send(
+            JSON.stringify({
+              result:
+                'Please activate your account using the link received in Matcha Registration Confirmation email first'
+            })
+          );
+      } else {
+        const hash = generateHash({
+          length: 16,
+          charset:
+            'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
+        });
 
-      db.any('UPDATE users SET hash = ${hash} WHERE email = ${email}', {
-        hash: hash,
-        email: req.body.email
-      }).then(() => {
-        transporter.sendMail(
-          {
-            from: 'annar703unit@gmail.com',
-            to: req.body.email,
-            subject: 'Reset Your Matcha Password',
-            text: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
-              req.body.email
-            }&hash=${hash}`
-          },
-          () => {
-            res
-              .status(200)
-              .send(JSON.stringify({ result: 'Check your email' }));
-          }
-        );
-      });
+        db.any('UPDATE users SET hash = ${hash} WHERE email = ${email}', {
+          hash: hash,
+          email: req.body.email
+        }).then(() => {
+          transporter.sendMail(
+            {
+              from: 'annar703unit@gmail.com',
+              to: req.body.email,
+              subject: 'Reset Your Matcha Password',
+              text: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
+                req.body.email
+              }&hash=${hash}`
+            },
+            () => {
+              res
+                .status(200)
+                .send(JSON.stringify({ result: 'Check your email' }));
+            }
+          );
+        });
+      }
     } else {
       res.status(500).send(JSON.stringify({ result: 'Invalid email' }));
     }
