@@ -9,7 +9,6 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import leftButtonIcon from '@material-ui/icons/ArrowRightAlt';
 import { getUsers } from './../../api/api.js';
-import UserDetails from './../UserDetails/UserDetails.js';
 import FilterPanel from './../FilterPanel/FilterPanel.js';
 
 const styles = theme => ({
@@ -24,8 +23,10 @@ const styles = theme => ({
     width: '50%'
   },
   gridListTile: {
-    width: '100% !important',
-    height: 'initial !important'
+    width: '100% !important'
+  },
+  photo: {
+    width: '100%'
   },
   icon: {
     color: 'rgba(255, 255, 255, 0.54)'
@@ -114,12 +115,13 @@ class TitlebarGridList extends React.Component {
           filteredUsers={this.state.users}
           onChange={this.showFilteredUsers}
         />
-        <GridList cellHeight={180} className={classes.gridList}>
+        <GridList cellHeight='auto' className={classes.gridList}>
           {this.state.filteredUsers.map((user, index) => {
             if (!user.expanded) {
               return (
                 <GridListTile key={index} className={classes.gridListTile}>
                   <img
+                    className={classes.photo}
                     src={user.gallery[user.currentPhoto]}
                     alt={`${user.firstname} ${user.lastname}`}
                   />{' '}

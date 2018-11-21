@@ -24,7 +24,11 @@ const styles = theme => ({
     flexWrap: 'unset'
   },
   gridListTile: {
-    width: '500px !important'
+    width: 'auto !important',
+  },
+  photo: {
+    width: 'auto',
+    height: '100%'
   },
   titleBar: {
     background:
@@ -96,7 +100,7 @@ class ProfilePhotos extends React.Component {
           onChange={this.uploadPhoto}
           className={classes.hidden}
         />
-        <GridList cellHeight={200} spacing={1} className={classes.gridList}>
+        <GridList cellHeight="auto" spacing={1} className={classes.gridList}>
           {this.state.gallery.map((photo, photoid) => (
             <GridListTile
               key={photoid}
@@ -105,7 +109,7 @@ class ProfilePhotos extends React.Component {
               onClick={this.upload.bind(this, photoid)}
               className={classes.gridListTile}
             >
-              <img src={photo} alt="" />
+              <img className={classes.photo} src={photo} alt="" />
               <GridListTileBar
                 titlePosition="top"
                 actionIcon={
