@@ -3,22 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 
-const styles = theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit
-  },
-  dense: {
-    marginTop: 16
-  },
-  menu: {
-    width: 200
-  }
-});
+const styles = theme => ({});
 
 class OutlinedTextField extends React.Component {
   state = {
@@ -37,13 +22,13 @@ class OutlinedTextField extends React.Component {
   };
 
   render() {
-    const { label, placeholder } = this.props;
+    const { label, placeholder, disabled } = this.props;
 
     return (
       <TextField
+        className={this.props.classes.root}
         id="outlined-full-width"
         label={label}
-        style={{ margin: 8 }}
         placeholder={placeholder}
         fullWidth
         margin="normal"
@@ -53,6 +38,7 @@ class OutlinedTextField extends React.Component {
         }}
         onChange={this.handleChange}
         value={this.state[this.props.name]}
+        disabled={disabled}
       />
     );
   }

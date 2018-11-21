@@ -4,16 +4,12 @@ import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import PhoneIcon from '@material-ui/icons/Phone';
+import ListIcon from '@material-ui/icons/List';
 import PersonPinIcon from '@material-ui/icons/PersonPin';
-import HelpIcon from '@material-ui/icons/Help';
-import ShoppingBasket from '@material-ui/icons/ShoppingBasket';
-import ThumbDown from '@material-ui/icons/ThumbDown';
-import ThumbUp from '@material-ui/icons/ThumbUp';
+import ChatIcon from '@material-ui/icons/Chat';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Profile from './../Profile/Profile.js';
-import ListIcon from '@material-ui/icons/List';
 import Users from './../Users/Users.js';
 import Signin from '../Signin/Signin.js';
 import { getUserProfile, saveLocation, signout } from './../../api/api.js';
@@ -59,10 +55,7 @@ class ScrollableTabsButtonForce extends React.Component {
   getLocation = userid => {
     navigator.geolocation.getCurrentPosition(
       position =>
-        saveLocation([
-          position.coords.latitude,
-          position.coords.longitude
-        ]),
+        saveLocation([position.coords.latitude, position.coords.longitude]),
       () => this.ipLookUp(userid)
     );
   };
@@ -132,11 +125,7 @@ class ScrollableTabsButtonForce extends React.Component {
           >
             <Tab label="Users" icon={<ListIcon />} />
             <Tab label="Profile" icon={<PersonPinIcon />} />
-            <Tab label="Item Three" icon={<PhoneIcon />} />
-            <Tab label="Item Four" icon={<HelpIcon />} />
-            <Tab label="Item Five" icon={<ShoppingBasket />} />
-            <Tab label="Item Six" icon={<ThumbDown />} />
-            <Tab label="Item Seven" icon={<ThumbUp />} />
+            <Tab label="Chat" icon={<ChatIcon />} />
             <Button className={classes.signoutButton} onClick={this.signout}>
               Sign Out
             </Button>
@@ -156,14 +145,11 @@ class ScrollableTabsButtonForce extends React.Component {
               name="profile"
               value={this.state.profile}
               onChange={this.onProfileChange}
+              editable={true}
             />
           </TabContainer>
         )}
-        {tabid === 2 && <TabContainer>Item Three</TabContainer>}
-        {tabid === 3 && <TabContainer>Item Four</TabContainer>}
-        {tabid === 4 && <TabContainer>Item Five</TabContainer>}
-        {tabid === 5 && <TabContainer>Item Six</TabContainer>}
-        {tabid === 6 && <TabContainer>Item Seven</TabContainer>}
+        {tabid === 2 && <TabContainer>Chat</TabContainer>}
       </div>
     );
   };

@@ -17,6 +17,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper
   },
   gridList: {
+    width: '100%',
     height: '450px',
     // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
     transform: 'translateZ(0)',
@@ -24,7 +25,10 @@ const styles = theme => ({
     flexWrap: 'unset'
   },
   gridListTile: {
-    width: 'auto !important',
+    width: 'auto !important'
+  },
+  gridListTileEmpty: {
+    width: '450px !important'
   },
   photo: {
     width: 'auto',
@@ -107,7 +111,7 @@ class ProfilePhotos extends React.Component {
               cols={2}
               rows={2}
               onClick={this.upload.bind(this, photoid)}
-              className={classes.gridListTile}
+              className={photo === '' ? classes.gridListTileEmpty: classes.gridListTile}
             >
               <img className={classes.photo} src={photo} alt="" />
               <GridListTileBar

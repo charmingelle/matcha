@@ -10,6 +10,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import leftButtonIcon from '@material-ui/icons/ArrowRightAlt';
 import { getUsers } from './../../api/api.js';
 import FilterPanel from './../FilterPanel/FilterPanel.js';
+import Profile from './../Profile/Profile.js';
 
 const styles = theme => ({
   root: {
@@ -54,10 +55,10 @@ class TitlebarGridList extends React.Component {
     const data = await getUsers();
 
     data.forEach(user => {
-      user.expanded = false;
       user.currentPhoto = user.avatarid;
     });
     this.setState({
+      selectedUser: -1,
       users: data,
       filteredUsers: data
     });
@@ -90,15 +91,16 @@ class TitlebarGridList extends React.Component {
   };
 
   showDetails = index => {
-    let updatedUsers = this.state.users;
-
-    updatedUsers[index].expanded = true;
     this.setState({
-      users: updatedUsers
+      selectedUser: index
     });
   };
 
-  hideDetails = index => {};
+  back = () => {
+    this.setState({
+      selectedUser: -1
+    });
+  }
 
   render = () => {
     if (!this.state) {
@@ -106,6 +108,17 @@ class TitlebarGridList extends React.Component {
     }
     const { classes } = this.props;
 
+    if (this.state.selectedUser !== -1) {
+      return (
+        <Profile
+          name="profile"
+          value={this.state.users[this.state.selectedUser]}
+          backButton
+          editable={false}
+          back={this.back}
+        />
+      );
+    }
     return (
       <div className={classes.root}>
         <FilterPanel
@@ -115,59 +128,45 @@ class TitlebarGridList extends React.Component {
           filteredUsers={this.state.users}
           onChange={this.showFilteredUsers}
         />
-        <GridList cellHeight='auto' className={classes.gridList}>
-          {this.state.filteredUsers.map((user, index) => {
-            if (!user.expanded) {
-              return (
-                <GridListTile key={index} className={classes.gridListTile}>
-                  <img
-                    className={classes.photo}
-                    src={user.gallery[user.currentPhoto]}
-                    alt={`${user.firstname} ${user.lastname}`}
-                  />{' '}
-                  */}
-                  {user.currentPhoto > 0 && (
-                    <Button
-                      onClick={() => this.showPreviousPhoto(index)}
-                      className={classes.leftButton}
-                    >
-                      Left
-                    </Button>
-                  )}
-                  {user.currentPhoto < 4 && (
-                    <Button
-                      onClick={() => this.showNextPhoto(index)}
-                      className={classes.rightButton}
-                    >
-                      Right
-                    </Button>
-                  )}
-                  <GridListTileBar
-                    title={`${user.firstname} ${user.lastname}`}
-                    subtitle={<span>{user.bio}</span>}
-                    actionIcon={
-                      <IconButton
-                        onClick={() => this.showDetails(index)}
-                        className={this.props.classes.icon}
-                      >
-                        <InfoIcon />
-                      </IconButton>
-                    }
-                  />
-                </GridListTile>
-              );
-            }
-            return (
-              <div className={classes.details}>
-                <IconButton
-                  onClick={() => this.showDetails(index)}
-                  className={this.props.classes.icon}
+        <GridList cellHeight="auto" className={classes.gridList}>
+          {this.state.filteredUsers.map((user, index) => (
+            <GridListTile key={index} className={classes.gridListTile}>
+              <img
+                className={classes.photo}
+                src={user.gallery[user.currentPhoto]}
+                alt={`${user.firstname} ${user.lastname}`}
+              />{' '}
+              */}
+              {user.currentPhoto > 0 && (
+                <Button
+                  onClick={() => this.showPreviousPhoto(index)}
+                  className={classes.leftButton}
                 >
-                  <InfoIcon />
-                </IconButton>
-              </div>
-            );
-          })}
+                  Left
+                </Button>
+              )}
+              {user.currentPhoto < 4 && (
+                <Button
+                  onClick={() => this.showNextPhoto(index)}
+                  className={classes.rightButton}
+                >
+                  Right
+                </Button>
+              )}
+              <GridListTileBar
+                title={`${user.firstname} ${user.lastname}`}
+                subtitle={<span>{user.bio}</span>}
+                actionIcon={
+                  <IconButton
+                    onClick={() => this.showDetails(index)}
+                    className={this.props.classes.icon}
+                  >
+                    <InfoIcon />
+                  </IconButton>
+                }
+              />
+            </GridListTile>
+          ))}
         </GridList>
       </div>
     );

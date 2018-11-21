@@ -7,14 +7,20 @@ import InterestsInput from './../../components/InterestsInput/InterestsInput.js'
 import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js';
 import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import InfoIcon from '@material-ui/icons/Info';
 import TextField from '@material-ui/core/TextField';
 import { saveUserProfile } from './../../api/api.js';
 import { isEmailValid } from './../../utils/utils.js';
 
 const styles = theme => ({
-  ageInput: {
-    marginTop: '8px'
+  profileDetails: {
+    display: 'flex',
+    flexDirection: 'column'
   }
+  // ageInput: {
+  //   marginTop: '8px'
+  // }
 });
 
 class Profile extends React.Component {
@@ -24,7 +30,7 @@ class Profile extends React.Component {
 
   isEmailValid = email => {
     const validStatus = isEmailValid(email);
-    
+
     if (!validStatus) {
       this.setState({
         changeStatus: 'Please make sure that your email address is correct',
@@ -116,66 +122,102 @@ class Profile extends React.Component {
 
     return (
       <form>
+        {this.props.backButton && (
+          <IconButton onClick={this.props.back}>
+            <InfoIcon />
+          </IconButton>
+        )}
         <ProfilePhotos userid={id} gallery={gallery} avatarid={avatarid} />
-        {this.renderChangeStatus()}
-        <OutlinedTextFields
-          label="First name"
-          name="firstname"
-          value={firstname}
-          onChange={this.onChange}
-        />
-        <OutlinedTextFields
-          label="Last name"
-          name="lastname"
-          value={lastname}
-          onChange={this.onChange}
-        />
-        <OutlinedTextFields
-          label="Email address"
-          name="email"
-          value={email}
-          validate={this.isEmailValid}
-          onChange={this.onChange}
-        />
-        <TextField
-          label="Age"
-          name="age"
-          value={this.state.age}
-          onChange={this.onAgeChange}
-          type="number"
-          variant="outlined"
-          className={this.props.classes.ageInput}
-        />
-        <SimpleSelect
-          title="Gender"
-          items={['male', 'female']}
-          name="gender"
-          value={gender}
-          onChange={this.onChange}
-        />
-        <SimpleSelect
-          title="Preferences"
-          items={['heterosexual', 'homosexual', 'bisexual']}
-          name="preferences"
-          value={preferences}
-          onChange={this.onChange}
-        />
-        <OutlinedTextFields
-          label="Biography"
-          placeholder="Tell us a few words about yourself"
-          name="bio"
-          value={bio}
-          onChange={this.onChange}
-        />
-        <InterestsInput
-          name="interests"
-          value={interests}
-          all={this.state.allInterests}
-          onChange={this.onChange}
-        />
-        <Button variant="outlined" onClick={this.onSubmit}>
-          Save changes
-        </Button>
+        <div className={this.props.classes.profileDetails}>
+          {this.renderChangeStatus()}
+          <OutlinedTextFields
+            label="First name"
+            name="firstname"
+            value={firstname}
+            onChange={this.onChange}
+            disabled={!this.props.editable}
+          />
+          <OutlinedTextFields
+            label="Last name"
+            name="lastname"
+            value={lastname}
+            onChange={this.onChange}
+            disabled={!this.props.editable}
+          />
+          <OutlinedTextFields
+            label="Email address"
+            name="email"
+            value={email}
+            validate={this.isEmailValid}
+            onChange={this.onChange}
+            disabled={!this.props.editable}
+          />
+          <OutlinedTextFields
+            label="Age"
+            name="age"
+            value={this.state.age}
+            onChange={this.onAgeChange}
+            type="number"
+            variant="outlined"
+            className={this.props.classes.ageInput}
+            disabled={!this.props.editable}
+          />
+          {this.props.editable ? (
+            <SimpleSelect
+              title="Gender"
+              items={['male', 'female']}
+              name="gender"
+              value={gender}
+              onChange={this.onChange}
+            />
+          ) : (
+            <OutlinedTextFields label="Gender" value={gender} disabled />
+          )}
+          {this.props.editable ? (
+            <SimpleSelect
+              title="Preferences"
+              items={['heterosexual', 'homosexual', 'bisexual']}
+              name="preferences"
+              value={preferences}
+              onChange={this.onChange}
+            />
+          ) : (
+            <OutlinedTextFields
+              label="Preferences"
+              value={preferences}
+              disabled
+            />
+          )}
+          <OutlinedTextFields
+            label="Biography"
+            placeholder={
+              this.props.editable ? 'Tell us a few words about yourself' : ''
+            }
+            name="bio"
+            value={bio}
+            onChange={this.onChange}
+            disabled={!this.props.editable}
+          />
+          {this.props.editable ? (
+            <InterestsInput
+              name="interests"
+              value={interests}
+              all={this.state.allInterests}
+              onChange={this.onChange}
+            />
+          ) : (
+            <OutlinedTextFields
+              label="Interests"
+              value={interests.join(' ,')}
+              disabled
+            />
+          )}
+          {this.props.editable && (
+            <Button variant="outlined" onClick={this.onSubmit}>
+              Save changes
+            </Button>
+          )}
+        </div>
       </form>
     );
   }

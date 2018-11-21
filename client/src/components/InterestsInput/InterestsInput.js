@@ -20,6 +20,7 @@ const Interests = props => {
         ...otherInputProps
       }}
       {...other}
+      variant="outlined"
     />
   );
 };
@@ -215,11 +216,12 @@ DownshiftMultiple.propTypes = {
 
 const styles = theme => ({
   root: {
-    margin: '8px',
     flexGrow: 1
   },
   container: {
-    margin: '8px',
+    marginTop: '8px',
+    marginBottom: '16px',
+    marginRight: '16px',    
     flexGrow: 1,
     position: 'relative'
   },
