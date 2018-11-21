@@ -6,6 +6,7 @@ import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTe
 import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
 import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js';
 import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
+import ProfileActions from './../ProfileActions/ProfileActions.js';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
@@ -18,9 +19,6 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'column'
   }
-  // ageInput: {
-  //   marginTop: '8px'
-  // }
 });
 
 class Profile extends React.Component {
@@ -122,10 +120,8 @@ class Profile extends React.Component {
 
     return (
       <form>
-        {this.props.backButton && (
-          <IconButton onClick={this.props.back}>
-            <InfoIcon />
-          </IconButton>
+        {this.props.profileActions && (
+          <ProfileActions canLike={this.props.canLike} login={login} />
         )}
         <ProfilePhotos userid={id} gallery={gallery} avatarid={avatarid} />
         <div className={this.props.classes.profileDetails}>

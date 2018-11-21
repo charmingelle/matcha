@@ -116,6 +116,8 @@ class TitlebarGridList extends React.Component {
           backButton
           editable={false}
           back={this.back}
+          profileActions
+          canLike={this.props.canLike}
         />
       );
     }

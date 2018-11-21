@@ -79,7 +79,9 @@ class ScrollableTabsButtonForce extends React.Component {
               location: data.user.location,
               allInterests: data.allInterests,
               changeStatus: null,
-              error: false
+              error: false,
+              canLike:
+                data.user.gallery.filter(image => image !== '').length > 0
             }
           });
           this.getLocation(data.user.id);
@@ -136,6 +138,7 @@ class ScrollableTabsButtonForce extends React.Component {
             <Users
               interests={this.state.profile.interests}
               profileLocation={this.state.profile.location}
+              canLike={this.state.profile.canLike}
             />
           </TabContainer>
         )}

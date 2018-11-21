@@ -419,6 +419,19 @@ app.post('/resetPasswordOrExpired', (req, res) => {
   });
 });
 
+app.post('/getLikeStatus', (req, res) => {
+  db.any('SELECT * FROM likes WHERE liker = ${liker} AND likee = ${likee}', {
+    liker: req.session.login,
+    likee: req.body.login
+  }).then(data => {
+    if (data.length === 1) {
+      res.send(JSON.stringify({ canLike: false }));
+    } else {
+      res.send(JSON.stringify({ canLike: true }));
+    }
+  });
+});
+
 app.get('*', (req, res) => {
   res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
 });

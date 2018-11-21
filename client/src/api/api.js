@@ -87,3 +87,10 @@ export const resetPasswordOrExpired = (email, hash) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, hash })
   });
+
+export const getLikeStatus = id =>
+  fetch('/getLikeStatus', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
