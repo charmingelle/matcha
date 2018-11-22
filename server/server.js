@@ -52,6 +52,30 @@ app.use(
   })
 );
 
+app.get('*', (req, res) => {
+  res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
+});
+
+app.get('/confirm', (req, res) => {
+  db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
+    email: req.query.email,
+    hash: req.query.hash
+  }).then(data => {
+    if (data.length === 1) {
+      db.any(
+        'UPDATE users SET active = true, hash = null WHERE email = ${email}',
+        {
+          email: req.query.email
+        }
+      ).then(() => {
+        res.redirect('http://localhost:3000/');
+      });
+    } else {
+      res.end();
+    }
+  });
+});
+
 app.post('/getUserProfile', requireLogin, (req, res) => {
   Promise.all([
     db.any('SELECT * FROM users WHERE login = ${login}', {
@@ -382,26 +406,6 @@ app.post('/resetPassword', (req, res) => {
   });
 });
 
-app.get('/confirm', (req, res) => {
-  db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
-    email: req.query.email,
-    hash: req.query.hash
-  }).then(data => {
-    if (data.length === 1) {
-      db.any(
-        'UPDATE users SET active = true, hash = null WHERE email = ${email}',
-        {
-          email: req.query.email
-        }
-      ).then(() => {
-        res.redirect('http://localhost:3000/');
-      });
-    } else {
-      res.end();
-    }
-  });
-});
-
 app.post('/resetPasswordOrExpired', (req, res) => {
   db.any('SELECT hash FROM users WHERE email = ${email}', {
     email: req.body.email
@@ -419,19 +423,23 @@ app.post('/resetPasswordOrExpired', (req, res) => {
   });
 });
 
-app.post('/getLikeStatus', (req, res) => {
+app.post('/getLikeStatus', requireLogin, (req, res) => {
   db.any('SELECT * FROM likes WHERE liker = ${liker} AND likee = ${likee}', {
     liker: req.session.login,
     likee: req.body.login
-  }).then(data => {
-    if (data.length === 1) {
-      res.send(JSON.stringify({ canLike: false }));
-    } else {
-      res.send(JSON.stringify({ canLike: true }));
-    }
-  });
+  }).then(data => res.send(JSON.stringify({ canLike: !(data.length === 1) })));
 });
 
-app.get('*', (req, res) => {
-  res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
+app.post('/changeLikeStatus', requireLogin, (req, res) => {
+  if (req.body.canLike) {
+    db.any('INSERT INTO likes(liker, likee) VALUES (${liker}, ${likee})', {
+      liker: req.session.login,
+      likee: req.body.login
+    }).then(res.send());
+  } else {
+    db.any('DELETE FROM likes WHERE liker = ${liker} AND likee = ${likee}', {
+      liker: req.session.login,
+      likee: req.body.login
+    }).then(res.send());
+  }
 });

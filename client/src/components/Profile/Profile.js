@@ -6,7 +6,7 @@ import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTe
 import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
 import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js';
 import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
-import ProfileActions from './../ProfileActions/ProfileActions.js';
+import ProfileActions from './ProfileActions/ProfileActions.js';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
@@ -107,6 +107,7 @@ class Profile extends React.Component {
     }
     const {
       id,
+      login,
       firstname,
       lastname,
       email,

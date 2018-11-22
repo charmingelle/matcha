@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import LikeButton from './../LikeButton/LikeButton.js';
 import Button from '@material-ui/core/Button';
+import LikeButton from './LikeButton/LikeButton.js';
 
 const styles = theme => ({
   root: {
@@ -15,8 +15,6 @@ const styles = theme => ({
 
 class ProfileActions extends React.Component {
   componentDidMount = () => {
-    console.log('this.props', this.props);
-
     this.setState({
       canLike: this.props.canLike
     });

@@ -88,9 +88,16 @@ export const resetPasswordOrExpired = (email, hash) =>
     body: JSON.stringify({ email, hash })
   });
 
-export const getLikeStatus = id =>
+export const getLikeStatus = login =>
   fetch('/getLikeStatus', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id })
+    body: JSON.stringify({ login })
+  });
+
+export const changeLikeStatus = (login, canLike) =>
+  fetch('/changeLikeStatus', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ login, canLike })
   });
