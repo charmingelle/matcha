@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import SimpleSelect from './../../components/SimpleSelect/SimpleSelect.js';
 import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTextFields.js';
 import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
-import ProfilePhotos from './../ProfilePhotos/ProfilePhotos.js';
+import ProfilePhotos from './ProfilePhotos/ProfilePhotos.js';
 import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import ProfileActions from './ProfileActions/ProfileActions.js';
 import Button from '@material-ui/core/Button';

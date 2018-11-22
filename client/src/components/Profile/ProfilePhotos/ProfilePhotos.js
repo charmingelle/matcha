@@ -6,7 +6,7 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
 import FaceIcon from '@material-ui/icons/Face';
-import { saveUserPhoto, setAvatar } from './../../api/api.js';
+import { saveUserPhoto, setAvatar } from './../../../api/api.js';
 
 const styles = theme => ({
   root: {
