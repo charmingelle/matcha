@@ -7,10 +7,12 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
-import leftButtonIcon from '@material-ui/icons/ArrowRightAlt';
+import LeftButtonIcon from '@material-ui/icons/ChevronLeft';
+import RightButtonIcon from '@material-ui/icons/ChevronRight';
 import { getUsers } from './../../api/api.js';
-import FilterPanel from './../FilterPanel/FilterPanel.js';
+import FilterPanel from './FilterPanel/FilterPanel.js';
 import Profile from './../Profile/Profile.js';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 
 const styles = theme => ({
   root: {
@@ -21,9 +23,11 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper
   },
   gridList: {
-    width: '50%'
+    width: '100%',
+    maxWidth: '1000px'
   },
   gridListTile: {
+    padding: '0 !important',
     width: '100% !important'
   },
   photo: {
@@ -40,13 +44,15 @@ const styles = theme => ({
     position: 'absolute',
     left: 0,
     top: 0,
-    color: 'rgba(255, 255, 255, 0.54)'
+    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    color: 'white'
   },
   rightButton: {
     position: 'absolute',
     right: 0,
     top: 0,
-    color: 'rgba(255, 255, 255, 0.54)'
+    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    color: 'white'
   }
 });
 
@@ -56,6 +62,7 @@ class TitlebarGridList extends React.Component {
 
     data.forEach(user => {
       user.currentPhoto = user.avatarid;
+      user.gallery = user.gallery.filter(photo => photo !== '');
     });
     this.setState({
       selectedUser: -1,
@@ -71,9 +78,7 @@ class TitlebarGridList extends React.Component {
   showPreviousPhoto = index => {
     let updatedUsers = this.state.users;
 
-    if (updatedUsers[index].currentPhoto > 0) {
-      updatedUsers[index].currentPhoto--;
-    }
+    updatedUsers[index].currentPhoto--;
     this.setState({
       users: updatedUsers
     });
@@ -82,9 +87,7 @@ class TitlebarGridList extends React.Component {
   showNextPhoto = index => {
     let updatedUsers = this.state.users;
 
-    if (updatedUsers[index].currentPhoto < 4) {
-      updatedUsers[index].currentPhoto++;
-    }
+    updatedUsers[index].currentPhoto++;
     this.setState({
       users: updatedUsers
     });
@@ -100,7 +103,7 @@ class TitlebarGridList extends React.Component {
     this.setState({
       selectedUser: -1
     });
-  }
+  };
 
   render = () => {
     if (!this.state) {
@@ -108,69 +111,103 @@ class TitlebarGridList extends React.Component {
     }
     const { classes } = this.props;
 
-    if (this.state.selectedUser !== -1) {
-      return (
-        <Profile
-          name="profile"
-          value={this.state.users[this.state.selectedUser]}
-          backButton
-          editable={false}
-          back={this.back}
-          profileActions
-          canLike={this.props.canLike}
-        />
-      );
-    }
     return (
-      <div className={classes.root}>
-        <FilterPanel
-          profileLocation={this.props.profileLocation}
-          interests={this.props.interests}
-          users={this.state.users}
-          filteredUsers={this.state.users}
-          onChange={this.showFilteredUsers}
-        />
-        <GridList cellHeight="auto" className={classes.gridList}>
-          {this.state.filteredUsers.map((user, index) => (
-            <GridListTile key={index} className={classes.gridListTile}>
-              <img
-                className={classes.photo}
-                src={user.gallery[user.currentPhoto]}
-                alt={`${user.firstname} ${user.lastname}`}
-              />{' '}
-              */}
-              {user.currentPhoto > 0 && (
-                <Button
-                  onClick={() => this.showPreviousPhoto(index)}
-                  className={classes.leftButton}
-                >
-                  Left
-                </Button>
-              )}
-              {user.currentPhoto < 4 && (
-                <Button
-                  onClick={() => this.showNextPhoto(index)}
-                  className={classes.rightButton}
-                >
-                  Right
-                </Button>
-              )}
-              <GridListTileBar
-                title={`${user.firstname} ${user.lastname}`}
-                subtitle={<span>{user.bio}</span>}
-                actionIcon={
-                  <IconButton
-                    onClick={() => this.showDetails(index)}
-                    className={this.props.classes.icon}
-                  >
-                    <InfoIcon />
-                  </IconButton>
+      <BrowserRouter>
+        <div>
+          <Route
+            exact
+            path="/user/:login"
+            render={({ match }) => {
+              let value = null;
+
+              for (let i = 0; i < this.state.users.length; i++) {
+                if (this.state.users[i].login === match.params.login) {
+                  value = this.state.users[i];
                 }
-              />
-            </GridListTile>
-          ))}
-        </GridList>
-      </div>
+              }
+              return (
+                <Profile
+                  name="profile"
+                  value={value}
+                  login={match.params.login}
+                  backButton
+                  editable={false}
+                  back={this.back}
+                  profileActions
+                  canLike={this.props.canLike}
+                />
+              );
+            }}
+          />
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <div className={classes.root}>
+                <FilterPanel
+                  profileLocation={this.props.profileLocation}
+                  interests={this.props.interests}
+                  users={this.state.users}
+                  filteredUsers={this.state.users}
+                  onChange={this.showFilteredUsers}
+                />
+                <GridList cellHeight="auto" className={classes.gridList}>
+                  {this.state.filteredUsers.map((user, index) => {
+                    console.log('user.currentPhoto', user.gallery.length);
+                    console.log(
+                      'user.currentPhoto < user.gallery.length',
+                      user.currentPhoto < user.gallery.length
+                    );
+                    return (
+                      <GridListTile
+                        key={index}
+                        className={classes.gridListTile}
+                      >
+                        <img
+                          className={classes.photo}
+                          src={user.gallery[user.currentPhoto]}
+                          alt={`${user.firstname} ${user.lastname}`}
+                        />{' '}
+                        */}
+                        {user.currentPhoto > 0 && (
+                          <Button
+                            onClick={() => this.showPreviousPhoto(index)}
+                            className={classes.leftButton}
+                          >
+                            <LeftButtonIcon />
+                          </Button>
+                        )}
+                        {user.currentPhoto < user.gallery.length - 1 && (
+                          <Button
+                            onClick={() => this.showNextPhoto(index)}
+                            className={classes.rightButton}
+                          >
+                            <RightButtonIcon />
+                          </Button>
+                        )}
+                        <GridListTileBar
+                          title={`${user.firstname} ${user.lastname}`}
+                          subtitle={<span>{user.bio}</span>}
+                          actionIcon={
+                            <Link to={`/user/${user.login}`}>
+                              <IconButton
+                                // onClick={() => this.showDetails(index)}
+                                className={this.props.classes.icon}
+                              >
+                                <InfoIcon />
+                              </IconButton>
+                            </Link>
+                          }
+                        />
+                      </GridListTile>
+                    );
+                  })}
+                </GridList>
+              </div>
+            )}
+          />
+        </div>
+      </BrowserRouter>
     );
   };
 }

@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const pgp = require('pg-promise')(/*options*/);
-const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
-// const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
+// const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
+const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const format = require('pg-format');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
@@ -52,9 +52,10 @@ app.use(
   })
 );
 
-app.get('*', (req, res) => {
-  res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
-});
+// app.get('*', (req, res) => {
+//   // res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
+//   res.sendFile('C:/Users/Anna/Documents/unit/matcha/client/public/index.html');
+// });
 
 app.get('/confirm', (req, res) => {
   db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
@@ -90,6 +91,23 @@ app.post('/getUserProfile', requireLogin, (req, res) => {
       })
     )
   );
+});
+
+app.post('/getUserProfileByLogin', requireLogin, (req, res) => {
+  db.any('SELECT * FROM users WHERE login = ${login}', {
+    login: req.body.login
+  }).then(data => {
+    console.log('data', data);
+    if (data.length === 1) {
+      res.status(200).send(JSON.stringify(data[0][0]));
+    } else {
+      res.status(500).send(
+        JSON.stringify({
+          result: 'User not found'
+        })
+      );
+    }
+  });
 });
 
 const saveNewInterests = reqBody => {
@@ -150,7 +168,6 @@ app.post(
   requireLogin,
   [check('firstname').isEmpty(), check('lastname').isEmpty()],
   (req, res) => {
-    // console.log('req.body', req.body);
     checkBusyEmail(req.body.email, req.session.login)
       .then(
         () => updateProfile(req.body, req.session.login),
@@ -171,7 +188,7 @@ app.post('/saveUserPhoto', requireLogin, (req, res) => {
   const fileName = crypto.randomBytes(20).toString('hex');
 
   fs.writeFile(
-    `client/public/photos/${fileName}.png`,
+    `client/public/user/photos/${fileName}.png`,
     req.body.photo.replace(/^data:image\/png;base64,/, ''),
     'base64',
     err => console.error(err)
@@ -290,7 +307,7 @@ app.post('/signup', (req, res) => {
                     },
                     error => {
                       if (error) {
-                        console.log('ERROR', error);
+                        console.error('ERROR', error);
                         db.any('DELETE FROM users WHERE id = ${id}', {
                           id: data.id
                         }).then(() =>

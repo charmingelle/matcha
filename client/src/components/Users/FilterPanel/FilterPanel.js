@@ -14,6 +14,8 @@ import Button from '@material-ui/core/Button';
 const styles = theme => ({
   root: {
     display: 'flex',
+    justifyContent: 'space-between',
+    // alignItems: 'baseline',
     flexWrap: 'wrap',
     width: '100%'
   },
@@ -30,6 +32,9 @@ const styles = theme => ({
   },
   formControlSelect: {
     width: '100%'
+  },
+  filterButton: {
+    margin: '8px'
   }
 });
 
@@ -195,7 +200,7 @@ class TextFields extends React.Component {
           margin="normal"
         />
 
-        <Button variant="outlined" onClick={this.filter}>
+        <Button className={classes.filterButton} variant="outlined" onClick={this.filter}>
           Filter
         </Button>
       </div>

@@ -3,6 +3,13 @@ export const getUserProfile = () =>
     method: 'POST'
   });
 
+export const getUserProfileByLogin = login =>
+  fetch('/getUserProfileByLogin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ login })
+  });
+
 export const saveUserProfile = userInfo =>
   fetch('/saveUserProfile', {
     method: 'POST',

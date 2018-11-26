@@ -8,22 +8,39 @@ import ProfilePhotos from './ProfilePhotos/ProfilePhotos.js';
 import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import ProfileActions from './ProfileActions/ProfileActions.js';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
-import TextField from '@material-ui/core/TextField';
-import { saveUserProfile } from './../../api/api.js';
+import { saveUserProfile, getUserProfileByLogin } from './../../api/api.js';
 import { isEmailValid } from './../../utils/utils.js';
 
 const styles = theme => ({
   profileDetails: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    padding: '10px'
   }
 });
 
 class Profile extends React.Component {
   componentDidMount() {
-    this.setState(this.props.value);
+    if (this.props.value === null) {
+      getUserProfileByLogin(this.props.login)
+        .then(response => {
+          if (response.status === 500) {
+            this.setState({
+              notFound: true
+            });
+          } else {
+            this.setState({
+              notFound: false
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          this.setState(data);
+        });
+    } else {
+      this.setState(this.props.value);
+    }
   }
 
   isEmailValid = email => {
@@ -105,6 +122,9 @@ class Profile extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
+    if (this.state.notFound) {
+      return <div>User not found</div>;
+    }
     const {
       id,
       login,
@@ -124,7 +144,12 @@ class Profile extends React.Component {
         {this.props.profileActions && (
           <ProfileActions canLike={this.props.canLike} login={login} />
         )}
-        <ProfilePhotos userid={id} gallery={gallery} avatarid={avatarid} />
+        <ProfilePhotos
+          userid={id}
+          gallery={gallery}
+          avatarid={avatarid}
+          editable={this.props.editable}
+        />
         <div className={this.props.classes.profileDetails}>
           {this.renderChangeStatus()}
           <OutlinedTextFields

@@ -16,7 +16,7 @@ import { getUserProfile, saveLocation, signout } from './../../api/api.js';
 
 function TabContainer(props) {
   return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
+    <Typography component="div">
       {props.children}
     </Typography>
   );
@@ -118,6 +118,7 @@ class ScrollableTabsButtonForce extends React.Component {
       <div className={classes.root}>
         <AppBar position="static" color="default">
           <Tabs
+            className={classes.tabs}
             value={tabid}
             onChange={this.handleChange}
             scrollable
@@ -134,7 +135,7 @@ class ScrollableTabsButtonForce extends React.Component {
           </Tabs>
         </AppBar>
         {tabid === 0 && (
-          <TabContainer>
+          <TabContainer className={classes.tabContainer}>
             <Users
               interests={this.state.profile.interests}
               profileLocation={this.state.profile.location}

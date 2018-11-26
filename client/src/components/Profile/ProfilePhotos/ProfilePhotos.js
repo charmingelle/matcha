@@ -5,7 +5,7 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
-import FaceIcon from '@material-ui/icons/Face';
+import CheckIcon from '@material-ui/icons/Check';
 import { saveUserPhoto, setAvatar } from './../../../api/api.js';
 
 const styles = theme => ({
@@ -25,6 +25,7 @@ const styles = theme => ({
     flexWrap: 'unset'
   },
   gridListTile: {
+    padding: '0 !important',
     width: 'auto !important'
   },
   gridListTileEmpty: {
@@ -43,7 +44,7 @@ const styles = theme => ({
     color: 'white'
   },
   avatar: {
-    color: 'yellow'
+    color: '#00f700'
   },
   hidden: {
     display: 'none'
@@ -93,7 +94,7 @@ class ProfilePhotos extends React.Component {
   };
 
   render = () => {
-    const { classes } = this.props;
+    const { classes, editable } = this.props;
 
     return (
       <div className={classes.root}>
@@ -111,26 +112,30 @@ class ProfilePhotos extends React.Component {
               cols={2}
               rows={2}
               onClick={this.upload.bind(this, photoid)}
-              className={photo === '' ? classes.gridListTileEmpty: classes.gridListTile}
+              className={
+                photo === '' ? classes.gridListTileEmpty : classes.gridListTile
+              }
             >
               <img className={classes.photo} src={photo} alt="" />
-              <GridListTileBar
-                titlePosition="top"
-                actionIcon={
-                  <IconButton
-                    className={
-                      this.state.avatarid === photoid
-                        ? classes.avatar
-                        : classes.icon
-                    }
-                    onClick={this.makeAvatar.bind(this, photoid)}
-                  >
-                    <FaceIcon />
-                  </IconButton>
-                }
-                actionPosition="left"
-                className={classes.titleBar}
-              />
+              {editable && (
+                <GridListTileBar
+                  titlePosition="top"
+                  actionIcon={
+                    <IconButton
+                      className={
+                        this.state.avatarid === photoid
+                          ? classes.avatar
+                          : classes.icon
+                      }
+                      onClick={this.makeAvatar.bind(this, photoid)}
+                    >
+                      <CheckIcon />
+                    </IconButton>
+                  }
+                  actionPosition="left"
+                  className={classes.titleBar}
+                />
+              )}
             </GridListTile>
           ))}
         </GridList>
