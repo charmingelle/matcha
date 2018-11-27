@@ -11,7 +11,8 @@ import LeftButtonIcon from '@material-ui/icons/ChevronLeft';
 import RightButtonIcon from '@material-ui/icons/ChevronRight';
 import { getUsers } from './../../api/api.js';
 import FilterPanel from './FilterPanel/FilterPanel.js';
-import { Link } from 'react-router-dom';
+import Profile from './../Profile/Profile.js';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 
 const styles = theme => ({
   root: {
@@ -53,7 +54,7 @@ const styles = theme => ({
   }
 });
 
-class Users extends React.Component {
+class Visited extends React.Component {
   async componentDidMount() {
     const data = await getUsers();
 
@@ -157,8 +158,8 @@ class Users extends React.Component {
   };
 }
 
-Users.propTypes = {
+Visited.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Users);
+export default withStyles(styles)(Visited);

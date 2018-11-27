@@ -41,17 +41,17 @@ class User extends React.Component {
       login,
       firstname,
       lastname,
-      email,
       gender,
       preferences,
       bio,
       interests,
-      gallery
+      gallery,
+      fame
     } = this.state;
 
     return (
       <form>
-        <UserActions canLike={this.props.canLike} login={login} />
+        <UserActions canLike={this.props.canLike} login={login} fame={fame} />
         <UserPhotos gallery={gallery} />
         <div className={this.props.classes.profileDetails}>
           <OutlinedTextFields
@@ -64,12 +64,6 @@ class User extends React.Component {
             label="Last name"
             name="lastname"
             value={lastname}
-            disabled
-          />
-          <OutlinedTextFields
-            label="Email address"
-            name="email"
-            value={email}
             disabled
           />
           <OutlinedTextFields

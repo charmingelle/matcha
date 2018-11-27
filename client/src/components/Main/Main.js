@@ -7,8 +7,9 @@ import Tab from '@material-ui/core/Tab';
 import ListIcon from '@material-ui/icons/List';
 import PersonPinIcon from '@material-ui/icons/PersonPin';
 import ChatIcon from '@material-ui/icons/Chat';
+import CheckIcon from '@material-ui/icons/Check';
+import SignoutIcon from '@material-ui/icons/RemoveCircleOutline';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import Profile from './../Profile/Profile.js';
 import User from './../User/User.js';
 import Users from './../Users/Users.js';
@@ -33,9 +34,6 @@ const styles = theme => ({
   link: {
     color: 'black',
     textDecoration: 'none'
-  },
-  signoutButton: {
-    width: 'fit-content'
   }
 });
 
@@ -138,16 +136,31 @@ class ScrollableTabsButtonForce extends React.Component {
               <Link className={classes.link} to="/chat">
                 <Tab label="Chat" icon={<ChatIcon />} />
               </Link>
-              <Button className={classes.signoutButton} onClick={this.signout}>
-                Sign Out
-              </Button>
+              <Link className={classes.link} to="/visited">
+                <Tab label="Visited" icon={<CheckIcon />} />
+              </Link>
+              <Link className={classes.link} to="/">
+                <Tab label="Sign Out" icon={<SignoutIcon />} onClick={this.signout} />
+              </Link>
             </Tabs>
           </AppBar>
           <Route
             exact
+            path="/"
+            render={() => (
+              <TabContainer className={classes.tabContainer}>
+                <Users
+                  interests={this.state.profile.interests}
+                  profileLocation={this.state.profile.location}
+                />
+              </TabContainer>
+            )}
+          />
+          <Route
+            exact
             path="/profile"
             render={() => (
-              <TabContainer>
+              <TabContainer className={classes.tabContainer}>
                 <Profile
                   name="profile"
                   value={this.state.profile}
@@ -160,27 +173,28 @@ class ScrollableTabsButtonForce extends React.Component {
           <Route
             exact
             path="/chat"
-            render={() => <TabContainer>Chat</TabContainer>}
+            render={() => (
+              <TabContainer className={classes.tabContainer}>Chat</TabContainer>
+            )}
           />
           <Route
             exact
             path="/users/:login"
-            render={({ match }) => {
-              return (
-                <User login={match.params.login} canLike={this.props.canLike} />
-              );
-            }}
+            render={({ match }) => (
+              <TabContainer className={classes.tabContainer}>
+                <User
+                  login={match.params.login}
+                  canLike={this.state.profile.canLike}
+                />
+              </TabContainer>
+            )}
           />
           <Route
             exact
-            path='/'
+            path="/visited"
             render={() => (
               <TabContainer className={classes.tabContainer}>
-                <Users
-                  interests={this.state.profile.interests}
-                  profileLocation={this.state.profile.location}
-                  canLike={this.state.profile.canLike}
-                />
+                Visited
               </TabContainer>
             )}
           />

@@ -7,6 +7,7 @@ import LikeButton from './LikeButton/LikeButton.js';
 const styles = theme => ({
   root: {
     display: 'flex',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingTop: '8px',
     paddingBottom: '8px'
@@ -27,8 +28,14 @@ class UserActions extends React.Component {
     return (
       <div className={this.props.classes.root}>
         {this.state.canLike && <LikeButton login={this.props.login} />}
-        <div>this.props.fame</div>
-        <div>this.props.lastLoginTime</div>
+        <div>
+          <span>Fame: </span>
+          <span>{this.props.fame}</span>
+        </div>
+        <div>
+          <span>Last login time: </span>
+          <span>{this.props.lastLoginTime}</span>
+        </div>
         <Button>Report Fake</Button>
         <Button>Block</Button>
       </div>

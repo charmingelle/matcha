@@ -104,7 +104,6 @@ class Profile extends React.Component {
     }
     const {
       id,
-      login,
       firstname,
       lastname,
       email,
