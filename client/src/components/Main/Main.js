@@ -10,16 +10,14 @@ import ChatIcon from '@material-ui/icons/Chat';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Profile from './../Profile/Profile.js';
+import User from './../User/User.js';
 import Users from './../Users/Users.js';
 import Signin from '../Signin/Signin.js';
 import { getUserProfile, saveLocation, signout } from './../../api/api.js';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 
 function TabContainer(props) {
-  return (
-    <Typography component="div">
-      {props.children}
-    </Typography>
-  );
+  return <Typography component="div">{props.children}</Typography>;
 }
 
 TabContainer.propTypes = {
@@ -31,6 +29,10 @@ const styles = theme => ({
     flexGrow: 1,
     width: '100%',
     backgroundColor: theme.palette.background.paper
+  },
+  link: {
+    color: 'black',
+    textDecoration: 'none'
   },
   signoutButton: {
     width: 'fit-content'
@@ -115,46 +117,75 @@ class ScrollableTabsButtonForce extends React.Component {
     const { tabid } = this.state;
 
     return (
-      <div className={classes.root}>
-        <AppBar position="static" color="default">
-          <Tabs
-            className={classes.tabs}
-            value={tabid}
-            onChange={this.handleChange}
-            scrollable
-            scrollButtons="on"
-            indicatorColor="primary"
-            textColor="primary"
-          >
-            <Tab label="Users" icon={<ListIcon />} />
-            <Tab label="Profile" icon={<PersonPinIcon />} />
-            <Tab label="Chat" icon={<ChatIcon />} />
-            <Button className={classes.signoutButton} onClick={this.signout}>
-              Sign Out
-            </Button>
-          </Tabs>
-        </AppBar>
-        {tabid === 0 && (
-          <TabContainer className={classes.tabContainer}>
-            <Users
-              interests={this.state.profile.interests}
-              profileLocation={this.state.profile.location}
-              canLike={this.state.profile.canLike}
-            />
-          </TabContainer>
-        )}
-        {tabid === 1 && (
-          <TabContainer>
-            <Profile
-              name="profile"
-              value={this.state.profile}
-              onChange={this.onProfileChange}
-              editable={true}
-            />
-          </TabContainer>
-        )}
-        {tabid === 2 && <TabContainer>Chat</TabContainer>}
-      </div>
+      <BrowserRouter>
+        <div className={classes.root}>
+          <AppBar position="static" color="default">
+            <Tabs
+              className={classes.tabs}
+              value={tabid}
+              onChange={this.handleChange}
+              scrollable
+              scrollButtons="on"
+              indicatorColor="primary"
+              textColor="primary"
+            >
+              <Link className={classes.link} to="/">
+                <Tab label="Users" icon={<ListIcon />} />
+              </Link>
+              <Link className={classes.link} to="/profile">
+                <Tab label="Profile" icon={<PersonPinIcon />} />
+              </Link>
+              <Link className={classes.link} to="/chat">
+                <Tab label="Chat" icon={<ChatIcon />} />
+              </Link>
+              <Button className={classes.signoutButton} onClick={this.signout}>
+                Sign Out
+              </Button>
+            </Tabs>
+          </AppBar>
+          <Route
+            exact
+            path="/profile"
+            render={() => (
+              <TabContainer>
+                <Profile
+                  name="profile"
+                  value={this.state.profile}
+                  onChange={this.onProfileChange}
+                  editable={true}
+                />
+              </TabContainer>
+            )}
+          />
+          <Route
+            exact
+            path="/chat"
+            render={() => <TabContainer>Chat</TabContainer>}
+          />
+          <Route
+            exact
+            path="/users/:login"
+            render={({ match }) => {
+              return (
+                <User login={match.params.login} canLike={this.props.canLike} />
+              );
+            }}
+          />
+          <Route
+            exact
+            path='/'
+            render={() => (
+              <TabContainer className={classes.tabContainer}>
+                <Users
+                  interests={this.state.profile.interests}
+                  profileLocation={this.state.profile.location}
+                  canLike={this.state.profile.canLike}
+                />
+              </TabContainer>
+            )}
+          />
+        </div>
+      </BrowserRouter>
     );
   };
 }

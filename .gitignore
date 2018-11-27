@@ -3,7 +3,7 @@
 # dependencies
 node_modules
 client/node_modules
-client/public/user/photos/
+client/public/users/photos/
 .vscode/settings.json
 package-lock.json
 package.json

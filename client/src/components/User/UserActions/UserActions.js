@@ -13,7 +13,7 @@ const styles = theme => ({
   }
 });
 
-class ProfileActions extends React.Component {
+class UserActions extends React.Component {
   componentDidMount = () => {
     this.setState({
       canLike: this.props.canLike
@@ -36,8 +36,8 @@ class ProfileActions extends React.Component {
   };
 }
 
-ProfileActions.propTypes = {
+UserActions.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(ProfileActions);
+export default withStyles(styles)(UserActions);

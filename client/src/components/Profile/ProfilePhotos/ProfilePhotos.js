@@ -116,7 +116,7 @@ class ProfilePhotos extends React.Component {
                 photo === '' ? classes.gridListTileEmpty : classes.gridListTile
               }
             >
-              <img className={classes.photo} src={photo} alt="" />
+              <img className={classes.photo} src={`users/photos/${photo}`} alt="" />
               {editable && (
                 <GridListTileBar
                   titlePosition="top"
