@@ -34,7 +34,8 @@ const styles = theme => ({
   },
   link: {
     color: 'black',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    indicator: 'false'
   }
 });
 
@@ -100,12 +101,10 @@ class ScrollableTabsButtonForce extends React.Component {
   signout = () => {
     signout().then(() => this.setState({ profile: 'signin' }));
   };
-  
-  highlightTab = tabid => {
-    this.setState({
-      tabid
-    });
-  }
+
+  handleChange = (event, value) => {
+    this.setState({ tabid: value });
+  };
 
   render = () => {
     if (this.state.profile === null) {
@@ -124,30 +123,38 @@ class ScrollableTabsButtonForce extends React.Component {
             <Tabs
               className={classes.tabs}
               value={tabid}
+              onChange={this.handleChange}
               scrollable
               scrollButtons="on"
               indicatorColor="primary"
               textColor="primary"
             >
-              <Link className={classes.link} to="/" onClick={this.highlightTab.bind(this, 0)}>
-                <Tab label="Users" icon={<ListIcon />} />
-              </Link>
-              <Link className={classes.link} to="/profile" onClick={this.highlightTab.bind(this, 1)}>
-                <Tab label="Profile" icon={<PersonPinIcon />} />
-              </Link>
-              <Link className={classes.link} to="/chat" onClick={this.highlightTab.bind(this, 2)}>
-                <Tab label="Chat" icon={<ChatIcon />} />
-              </Link>
-              <Link className={classes.link} to="/visited" onClick={this.highlightTab.bind(this, 3)}>
-                <Tab label="Visited" icon={<CheckIcon />} />
-              </Link>
-              <Link className={classes.link} to="/">
-                <Tab
-                  label="Sign Out"
-                  icon={<SignoutIcon />}
-                  onClick={this.signout}
-                />
-              </Link>
+              <Tab label="Users" icon={<ListIcon />} component={Link} to="/" />
+              <Tab
+                label="Profile"
+                icon={<PersonPinIcon />}
+                component={Link}
+                to="/profile"
+              />
+              <Tab
+                label="Chat"
+                icon={<ChatIcon />}
+                component={Link}
+                to="/chat"
+              />
+              <Tab
+                label="Visited"
+                icon={<CheckIcon />}
+                component={Link}
+                to="/visited"
+              />
+              <Tab
+                label="Sign Out"
+                icon={<SignoutIcon />}
+                onClick={this.signout}
+                component={Link}
+                to="/"
+              />
             </Tabs>
           </AppBar>
           <Route
