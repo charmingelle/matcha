@@ -56,7 +56,6 @@ class Users extends React.Component {
   async componentDidMount() {
     const data = await getVisited();
 
-    console.log('data', data);
     data.forEach(user => {
       user.currentPhoto = user.avatarid;
       user.gallery = user.gallery.filter(photo => photo !== '');

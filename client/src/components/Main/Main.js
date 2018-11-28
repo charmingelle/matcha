@@ -93,10 +93,6 @@ class ScrollableTabsButtonForce extends React.Component {
     });
   }
 
-  handleChange = (event, value) => {
-    this.setState({ tabid: value });
-  };
-
   onProfileChange = target => {
     this.setState({ profile: target });
   };
@@ -104,6 +100,12 @@ class ScrollableTabsButtonForce extends React.Component {
   signout = () => {
     signout().then(() => this.setState({ profile: 'signin' }));
   };
+  
+  highlightTab = tabid => {
+    this.setState({
+      tabid
+    });
+  }
 
   render = () => {
     if (this.state.profile === null) {
@@ -122,22 +124,21 @@ class ScrollableTabsButtonForce extends React.Component {
             <Tabs
               className={classes.tabs}
               value={tabid}
-              onChange={this.handleChange}
               scrollable
               scrollButtons="on"
               indicatorColor="primary"
               textColor="primary"
             >
-              <Link className={classes.link} to="/">
+              <Link className={classes.link} to="/" onClick={this.highlightTab.bind(this, 0)}>
                 <Tab label="Users" icon={<ListIcon />} />
               </Link>
-              <Link className={classes.link} to="/profile">
+              <Link className={classes.link} to="/profile" onClick={this.highlightTab.bind(this, 1)}>
                 <Tab label="Profile" icon={<PersonPinIcon />} />
               </Link>
-              <Link className={classes.link} to="/chat">
+              <Link className={classes.link} to="/chat" onClick={this.highlightTab.bind(this, 2)}>
                 <Tab label="Chat" icon={<ChatIcon />} />
               </Link>
-              <Link className={classes.link} to="/visited">
+              <Link className={classes.link} to="/visited" onClick={this.highlightTab.bind(this, 3)}>
                 <Tab label="Visited" icon={<CheckIcon />} />
               </Link>
               <Link className={classes.link} to="/">
