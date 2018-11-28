@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const pgp = require('pg-promise')(/*options*/);
-const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
-// const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
+// const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
+const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const format = require('pg-format');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
@@ -120,7 +120,7 @@ const saveNewInterests = reqBody => {
     toSave = toSave.map(interest => [interest]);
 
     if (toSave.length >= 1) {
-      let query = format('INSERT INTO interests(interest) VALUES %L', toSave);
+      const query = format('INSERT INTO interests(interest) VALUES %L', toSave);
 
       db.any(query);
     }
@@ -458,4 +458,18 @@ app.post('/changeLikeStatus', requireLogin, (req, res) => {
       likee: req.body.login
     }).then(res.send());
   }
+});
+
+app.post('/getVisited', requireLogin, (req, res) => {
+  db.any('SELECT visited FROM users WHERE login = ${login}', {
+    login: req.session.login
+  }).then(data => {
+    if (data[0].visited.length > 0) {
+      db.any('SELECT * FROM users WHERE login IN ($1:csv)', [
+        data[0].visited
+      ]).then(data => res.send(JSON.stringify(data)));
+    } else {
+      res.send(JSON.stringify([]));
+    }
+  });
 });

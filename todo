@@ -2,7 +2,7 @@
 - make sure that you save photos with different names
 - check how to make photos square or what else to do with proportions
 - add the rest params that need to be changed to user profile
-- check how to remove errors from browser console when 500 response status is returned frim server
+- check how to remove errors from browser console when 500 response status is returned from server
 - add validation of signup data on server
 - user API and OAuth2.0 for sending emails
 - make sure that all functions are arrow functions

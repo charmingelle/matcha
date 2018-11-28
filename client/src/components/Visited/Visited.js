@@ -9,10 +9,8 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import LeftButtonIcon from '@material-ui/icons/ChevronLeft';
 import RightButtonIcon from '@material-ui/icons/ChevronRight';
-import { getUsers } from './../../api/api.js';
-import FilterPanel from './FilterPanel/FilterPanel.js';
-import Profile from './../Profile/Profile.js';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { getVisited } from './../../api/api.js';
+import { Link } from 'react-router-dom';
 
 const styles = theme => ({
   root: {
@@ -54,10 +52,11 @@ const styles = theme => ({
   }
 });
 
-class Visited extends React.Component {
+class Users extends React.Component {
   async componentDidMount() {
-    const data = await getUsers();
+    const data = await getVisited();
 
+    console.log('data', data);
     data.forEach(user => {
       user.currentPhoto = user.avatarid;
       user.gallery = user.gallery.filter(photo => photo !== '');
@@ -105,13 +104,6 @@ class Visited extends React.Component {
 
     return (
       <div className={classes.root}>
-        <FilterPanel
-          profileLocation={this.props.profileLocation}
-          interests={this.props.interests}
-          users={this.state.users}
-          filteredUsers={this.state.users}
-          onChange={this.showFilteredUsers}
-        />
         <GridList cellHeight="auto" className={classes.gridList}>
           {this.state.filteredUsers.map((user, index) => {
             return (
@@ -158,8 +150,8 @@ class Visited extends React.Component {
   };
 }
 
-Visited.propTypes = {
+Users.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Visited);
+export default withStyles(styles)(Users);

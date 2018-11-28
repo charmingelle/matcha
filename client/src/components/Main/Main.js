@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -13,9 +14,9 @@ import Typography from '@material-ui/core/Typography';
 import Profile from './../Profile/Profile.js';
 import User from './../User/User.js';
 import Users from './../Users/Users.js';
-import Signin from '../Signin/Signin.js';
+import Signin from './../Signin/Signin.js';
+import Visited from './../Visited/Visited.js';
 import { getUserProfile, saveLocation, signout } from './../../api/api.js';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
 
 function TabContainer(props) {
   return <Typography component="div">{props.children}</Typography>;
@@ -140,7 +141,11 @@ class ScrollableTabsButtonForce extends React.Component {
                 <Tab label="Visited" icon={<CheckIcon />} />
               </Link>
               <Link className={classes.link} to="/">
-                <Tab label="Sign Out" icon={<SignoutIcon />} onClick={this.signout} />
+                <Tab
+                  label="Sign Out"
+                  icon={<SignoutIcon />}
+                  onClick={this.signout}
+                />
               </Link>
             </Tabs>
           </AppBar>
@@ -194,7 +199,7 @@ class ScrollableTabsButtonForce extends React.Component {
             path="/visited"
             render={() => (
               <TabContainer className={classes.tabContainer}>
-                Visited
+                <Visited />
               </TabContainer>
             )}
           />

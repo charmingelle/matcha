@@ -108,3 +108,14 @@ export const changeLikeStatus = (login, canLike) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ login, canLike })
   });
+
+export const getVisited = () =>
+  fetch('/getVisited', {
+    method: 'POST'
+  }).then(res => {
+    if (!res.ok) {
+      throw Error(res.code);
+    }
+
+    return res.json();
+  });
