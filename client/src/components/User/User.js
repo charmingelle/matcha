@@ -37,6 +37,7 @@ class User extends React.Component {
     if (!this.state.login) {
       return <div>User not found</div>;
     }
+    console.log('this.state', this.state);
     const {
       login,
       firstname,
@@ -46,12 +47,13 @@ class User extends React.Component {
       bio,
       interests,
       gallery,
-      fame
+      fame,
+      lastlogintime
     } = this.state;
 
     return (
       <form>
-        <UserActions canLike={this.props.canLike} login={login} fame={fame} />
+        <UserActions canLike={this.props.canLike} login={login} fame={fame} lastLoginTime={lastlogintime} />
         <UserPhotos gallery={gallery} />
         <div className={this.props.classes.profileDetails}>
           <OutlinedTextFields

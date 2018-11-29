@@ -52,10 +52,10 @@ app.use(
   })
 );
 
-// app.get('*', (req, res) => {
-//   // res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
-//   res.sendFile('C:/Users/Anna/Documents/unit/matcha/client/public/index.html');
-// });
+app.get('*', (req, res) => {
+  // res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
+  res.sendFile('C:/Users/Anna/Documents/unit/matcha/client/public/index.html');
+});
 
 app.get('/confirm', (req, res) => {
   db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
@@ -513,6 +513,15 @@ app.post('/getChatLogins', requireLogin, (req, res) => {
           res.send(JSON.stringify([]));
         }
       });
+    } else {
+      res.send(JSON.stringify([]));
     }
+  });
+});
+
+app.post('/saveLastLoginTime', requireLogin, (req, res) => {
+  db.any('UPDATE users SET lastlogintime = ${now} WHERE login = ${login}', {
+    now: Date.now(),
+    login: req.session.login
   });
 });

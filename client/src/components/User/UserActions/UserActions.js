@@ -43,7 +43,7 @@ class UserActions extends React.Component {
         </div>
         <div>
           <span>Last login time: </span>
-          <span>{this.props.lastLoginTime}</span>
+          <span>{new Date(parseInt(this.props.lastLoginTime)).toLocaleString()}</span>
         </div>
         <Button>Report Fake</Button>
         <Button>Block</Button>

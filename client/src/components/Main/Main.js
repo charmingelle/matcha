@@ -88,7 +88,7 @@ class ScrollableTabsButtonForce extends React.Component {
                 data.user.gallery.filter(image => image !== '').length > 0
             }
           });
-          this.getLocation(data.user.id);
+          // this.getLocation(data.user.id);
         });
       } else {
         this.setState({ profile: 'signin' });
