@@ -16,11 +16,14 @@ export default class LikeButton extends React.Component {
   };
 
   changeLikeStatus = () => {
-    changeLikeStatus(this.props.login, this.state.canLike).then(
-      this.setState({
-        canLike: !this.state.canLike
-      })
-    );
+    changeLikeStatus(this.props.login, this.state.canLike)
+      .then(response => response.json())
+      .then(data => {
+        this.props.changeFame(data.step);
+        this.setState({
+          canLike: !this.state.canLike
+        });
+      });
   };
 
   render = () => {

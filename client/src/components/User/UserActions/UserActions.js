@@ -17,7 +17,14 @@ const styles = theme => ({
 class UserActions extends React.Component {
   componentDidMount = () => {
     this.setState({
-      canLike: this.props.canLike
+      canLike: this.props.canLike,
+      fame: this.props.fame
+    });
+  };
+
+  changeFame = step => {
+    this.setState({
+      fame: this.state.fame + step
     });
   };
 
@@ -27,10 +34,12 @@ class UserActions extends React.Component {
     }
     return (
       <div className={this.props.classes.root}>
-        {this.state.canLike && <LikeButton login={this.props.login} />}
+        {this.state.canLike && (
+          <LikeButton login={this.props.login} changeFame={this.changeFame} />
+        )}
         <div>
           <span>Fame: </span>
-          <span>{this.props.fame}</span>
+          <span>{this.state.fame}</span>
         </div>
         <div>
           <span>Last login time: </span>
