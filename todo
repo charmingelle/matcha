@@ -8,3 +8,5 @@
 - make sure that all functions are arrow functions
 - clean all components
 - consider requesting small amount of information for user list as separate request is being sent to get user details
+
+PROFILE OF OTHER USERS

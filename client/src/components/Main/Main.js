@@ -16,6 +16,7 @@ import User from './../User/User.js';
 import Users from './../Users/Users.js';
 import Signin from './../Signin/Signin.js';
 import Visited from './../Visited/Visited.js';
+import Chat from './../Chat/Chat.js';
 import { getUserProfile, saveLocation, signout } from './../../api/api.js';
 
 function TabContainer(props) {
@@ -189,7 +190,9 @@ class ScrollableTabsButtonForce extends React.Component {
             exact
             path="/chat"
             render={() => (
-              <TabContainer className={classes.tabContainer}>Chat</TabContainer>
+              <TabContainer className={classes.tabContainer}>
+                <Chat />
+              </TabContainer>
             )}
           />
           <Route

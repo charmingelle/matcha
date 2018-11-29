@@ -480,3 +480,27 @@ app.post('/saveVisited', requireLogin, (req, res) => {
     login: req.session.login
   });
 });
+
+app.post('/getChatLogins', requireLogin, (req, res) => {
+  db.any('SELECT likee FROM likes WHERE liker = ${login}', {
+    login: req.session.login
+  }).then(data => {
+    if (data.length > 0) {
+      data = data.map(record => record.likee);
+
+      const query = format(
+        'SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L',
+        data,
+        req.session.login
+      );
+
+      db.any(query).then(data => {
+        if (data.length > 0) {
+          res.send(JSON.stringify(data.map(record => record.liker)));
+        } else {
+          res.send(JSON.stringify([]));
+        }
+      });
+    }
+  });
+});
