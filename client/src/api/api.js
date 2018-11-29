@@ -119,3 +119,10 @@ export const getVisited = () =>
 
     return res.json();
   });
+
+export const saveVisited = visited =>
+  fetch('/saveVisited', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ visited })
+  });

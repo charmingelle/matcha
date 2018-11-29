@@ -9,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import LeftButtonIcon from '@material-ui/icons/ChevronLeft';
 import RightButtonIcon from '@material-ui/icons/ChevronRight';
-import { getUsers } from './../../api/api.js';
+import { getUsers, saveVisited } from './../../api/api.js';
 import FilterPanel from './FilterPanel/FilterPanel.js';
 import { Link } from 'react-router-dom';
 
@@ -64,7 +64,8 @@ class Users extends React.Component {
     this.setState({
       selectedUser: -1,
       users: data,
-      filteredUsers: data
+      filteredUsers: data,
+      visited: this.props.visited
     });
   }
 
@@ -94,6 +95,17 @@ class Users extends React.Component {
     this.setState({
       selectedUser: -1
     });
+  };
+
+  addToVisited = login => {
+    if (!this.state.visited.includes(login)) {
+      let tempVisited = this.state.visited;
+
+      tempVisited.push(login);
+      saveVisited(tempVisited).then(() => this.setState({
+        visited: tempVisited
+      }));
+    }
   };
 
   render = () => {
@@ -141,7 +153,10 @@ class Users extends React.Component {
                   title={`${user.firstname} ${user.lastname}`}
                   subtitle={<span>{user.bio}</span>}
                   actionIcon={
-                    <Link to={`/users/${user.login}`}>
+                    <Link
+                      to={`/users/${user.login}`}
+                      onClick={this.addToVisited.bind(this, user.login)}
+                    >
                       <IconButton className={this.props.classes.icon}>
                         <InfoIcon />
                       </IconButton>

@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const pgp = require('pg-promise')(/*options*/);
-// const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
-const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
+const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
+// const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const format = require('pg-format');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
@@ -471,5 +471,12 @@ app.post('/getVisited', requireLogin, (req, res) => {
     } else {
       res.send(JSON.stringify([]));
     }
+  });
+});
+
+app.post('/saveVisited', requireLogin, (req, res) => {
+  db.any('UPDATE users SET visited = ${visited} WHERE login = ${login}', {
+    visited: req.body.visited,
+    login: req.session.login
   });
 });

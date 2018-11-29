@@ -79,6 +79,7 @@ class ScrollableTabsButtonForce extends React.Component {
               gallery: data.user.gallery,
               avatarid: data.user.avatarid,
               location: data.user.location,
+              visited: data.user.visited,
               allInterests: data.allInterests,
               changeStatus: null,
               error: false,
@@ -163,6 +164,7 @@ class ScrollableTabsButtonForce extends React.Component {
             render={() => (
               <TabContainer className={classes.tabContainer}>
                 <Users
+                  visited={this.state.profile.visited}
                   interests={this.state.profile.interests}
                   profileLocation={this.state.profile.location}
                 />
