@@ -136,3 +136,10 @@ export const saveLastLoginTime = () =>
   fetch('/saveLastLoginTime', {
     method: 'POST'
   });
+
+export const reportFake = login =>
+  fetch('/reportFake', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ login })
+  });

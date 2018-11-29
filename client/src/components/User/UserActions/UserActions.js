@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import LikeButton from './LikeButton/LikeButton.js';
+import { reportFake } from './../../../api/api.js';
 
 const styles = theme => ({
   root: {
@@ -28,6 +29,10 @@ class UserActions extends React.Component {
     });
   };
 
+  reportFake = () => {
+    reportFake(this.props.login);
+  };
+
   render = () => {
     if (!this.state) {
       return <span>Loading...</span>;
@@ -43,9 +48,11 @@ class UserActions extends React.Component {
         </div>
         <div>
           <span>Last login time: </span>
-          <span>{new Date(parseInt(this.props.lastLoginTime)).toLocaleString()}</span>
+          <span>
+            {new Date(parseInt(this.props.lastLoginTime)).toLocaleString()}
+          </span>
         </div>
-        <Button>Report Fake</Button>
+        <Button onClick={this.reportFake}>Report Fake</Button>
         <Button>Block</Button>
       </div>
     );

@@ -525,3 +525,9 @@ app.post('/saveLastLoginTime', requireLogin, (req, res) => {
     login: req.session.login
   });
 });
+
+app.post('/reportFake', requireLogin, (req, res) => {
+  db.any('UPDATE users SET fake = true WHERE login = ${login}', {
+    login: req.body.login
+  });
+});

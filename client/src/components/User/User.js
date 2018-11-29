@@ -37,7 +37,6 @@ class User extends React.Component {
     if (!this.state.login) {
       return <div>User not found</div>;
     }
-    console.log('this.state', this.state);
     const {
       login,
       firstname,
