@@ -116,7 +116,11 @@ class ScrollableTabsButtonForce extends React.Component {
       return <Signin />;
     }
     const { classes } = this.props;
-    const { tabid } = this.state;
+    const {
+      tabid,
+      profile,
+      profile: { visited, interests, location, firstname, lastname, canLike }
+    } = this.state;
 
     return (
       <BrowserRouter>
@@ -165,9 +169,9 @@ class ScrollableTabsButtonForce extends React.Component {
             render={() => (
               <TabContainer className={classes.tabContainer}>
                 <Users
-                  visited={this.state.profile.visited}
-                  interests={this.state.profile.interests}
-                  profileLocation={this.state.profile.location}
+                  visited={visited}
+                  interests={interests}
+                  profileLocation={location}
                 />
               </TabContainer>
             )}
@@ -179,7 +183,7 @@ class ScrollableTabsButtonForce extends React.Component {
               <TabContainer className={classes.tabContainer}>
                 <Profile
                   name="profile"
-                  value={this.state.profile}
+                  value={profile}
                   onChange={this.onProfileChange}
                   editable={true}
                 />
@@ -191,7 +195,11 @@ class ScrollableTabsButtonForce extends React.Component {
             path="/chat"
             render={() => (
               <TabContainer className={classes.tabContainer}>
-                <Chat />
+                <Chat
+                  author={`${firstname} ${
+                    lastname
+                  }`}
+                />
               </TabContainer>
             )}
           />
@@ -202,7 +210,7 @@ class ScrollableTabsButtonForce extends React.Component {
               <TabContainer className={classes.tabContainer}>
                 <User
                   login={match.params.login}
-                  canLike={this.state.profile.canLike}
+                  canLike={canLike}
                 />
               </TabContainer>
             )}

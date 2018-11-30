@@ -39,7 +39,10 @@ const requireLogin = (req, res, next) => {
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-app.listen(port, () => console.log(`The server is running on port ${port}`));
+
+const server = app.listen(port, () =>
+  console.log(`The server is running on port ${port}`)
+);
 
 app.use(
   session({
@@ -589,4 +592,13 @@ app.post('/changeBlockStatus', requireLogin, (req, res) => {
       }
     ).then(() => res.end());
   }
+});
+
+// Chat
+
+const socket = require('socket.io');
+const io = socket(server);
+
+io.on('connection', socket => {
+  socket.on('chat', data => io.sockets.emit('chat', data));
 });
