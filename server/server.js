@@ -527,14 +527,16 @@ app.post('/getChatLogins', requireLogin, (req, res) => {
   });
 });
 
-app.post('/saveOnline', requireLogin, (req, res) => {
+app.post('/saveOnline', requireLogin, (req, res) =>
   db.any('UPDATE users SET online = true WHERE login = ${login}', {
     login: req.session.login
-  });
-});
+  })
+);
 
-app.post('/reportFake', requireLogin, (req, res) => {
-  db.any('UPDATE users SET fake = true WHERE login = ${login}', {
-    login: req.body.login
-  });
-});
+app.post('/reportFake', requireLogin, (req, res) =>
+  db
+    .any('UPDATE users SET fake = true WHERE login = ${login}', {
+      login: req.body.login
+    })
+    .then(() => res.end())
+);

@@ -16,22 +16,24 @@ const styles = theme => ({
 });
 
 class UserActions extends React.Component {
-  componentDidMount = () => {
+  componentDidMount = () =>
     this.setState({
       canLike: this.props.canLike,
-      fame: this.props.fame
+      fame: this.props.fame,
+      fake: this.props.fake
     });
-  };
 
-  changeFame = step => {
+  changeFame = step =>
     this.setState({
       fame: this.state.fame + step
     });
-  };
 
-  reportFake = () => {
-    reportFake(this.props.login);
-  };
+  reportFake = () =>
+    reportFake(this.props.login).then(() =>
+      this.setState({
+        fake: true
+      })
+    );
 
   render = () => {
     if (!this.state) {
@@ -48,14 +50,19 @@ class UserActions extends React.Component {
           <span>Fame: </span>
           <span>{this.state.fame}</span>
         </div>
-        {online && <div>Online</div>}
-        {!online && (
+        {online ? (
+          <div>Online</div>
+        ) : (
           <div>
             <span>Last login time: </span>
             <span>{new Date(parseInt(time)).toLocaleString()}</span>
           </div>
         )}
-        <Button onClick={this.reportFake}>Report Fake</Button>
+        {this.state.fake ? (
+          <div>Fake</div>
+        ) : (
+          <Button onClick={this.reportFake}>Report Fake</Button>
+        )}
         <Button>Block</Button>
       </div>
     );
