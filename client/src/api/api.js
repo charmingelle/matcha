@@ -143,3 +143,17 @@ export const reportFake = login =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ login })
   });
+
+export const getBlockStatus = login =>
+  fetch('/getBlockStatus', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ login })
+  });
+
+export const changeBlockStatus = (login, canBlock) =>
+  fetch('/changeBlockStatus', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ login, canBlock })
+  });

@@ -222,7 +222,21 @@ app.post('/saveLocation', requireLogin, (req, res) => {
 });
 
 app.post('/getUsers', requireLogin, (req, res) => {
-  db.any('SELECT * FROM users').then(data => res.send(JSON.stringify(data)));
+  db.any('SELECT blockee FROM blocks WHERE blocker = ${blocker}', {
+    blocker: req.session.login
+  }).then(data => {
+    if (data.length === 0) {
+      db.any('SELECT * FROM users').then(data =>
+        res.send(JSON.stringify(data))
+      );
+    } else {
+      data = data.map(record => record.blockee);
+
+      const query = format('SELECT * FROM users WHERE login NOT IN (%L)', data);
+
+      db.any(query).then(data => res.send(JSON.stringify(data)));
+    }
+  });
 });
 
 app.post('/signin', (req, res) => {
@@ -447,12 +461,14 @@ app.post('/resetPasswordOrExpired', (req, res) => {
   });
 });
 
-app.post('/getLikeStatus', requireLogin, (req, res) => {
-  db.any('SELECT * FROM likes WHERE liker = ${liker} AND likee = ${likee}', {
-    liker: req.session.login,
-    likee: req.body.login
-  }).then(data => res.send(JSON.stringify({ canLike: !(data.length === 1) })));
-});
+app.post('/getLikeStatus', requireLogin, (req, res) =>
+  db
+    .any('SELECT * FROM likes WHERE liker = ${liker} AND likee = ${likee}', {
+      liker: req.session.login,
+      likee: req.body.login
+    })
+    .then(data => res.send(JSON.stringify({ canLike: !(data.length === 1) })))
+);
 
 app.post('/changeLikeStatus', requireLogin, (req, res) => {
   if (req.body.canLike) {
@@ -480,26 +496,28 @@ app.post('/changeLikeStatus', requireLogin, (req, res) => {
   }
 });
 
-app.post('/getVisited', requireLogin, (req, res) => {
-  db.any('SELECT visited FROM users WHERE login = ${login}', {
-    login: req.session.login
-  }).then(data => {
-    if (data[0].visited.length > 0) {
-      db.any('SELECT * FROM users WHERE login IN ($1:csv)', [
-        data[0].visited
-      ]).then(data => res.send(JSON.stringify(data)));
-    } else {
-      res.send(JSON.stringify([]));
-    }
-  });
-});
+app.post('/getVisited', requireLogin, (req, res) =>
+  db
+    .any('SELECT visited FROM users WHERE login = ${login}', {
+      login: req.session.login
+    })
+    .then(data => {
+      if (data[0].visited.length > 0) {
+        db.any('SELECT * FROM users WHERE login IN ($1:csv)', [
+          data[0].visited
+        ]).then(data => res.send(JSON.stringify(data)));
+      } else {
+        res.send(JSON.stringify([]));
+      }
+    })
+);
 
-app.post('/saveVisited', requireLogin, (req, res) => {
+app.post('/saveVisited', requireLogin, (req, res) =>
   db.any('UPDATE users SET visited = ${visited} WHERE login = ${login}', {
     visited: req.body.visited,
     login: req.session.login
-  });
-});
+  })
+);
 
 app.post('/getChatLogins', requireLogin, (req, res) => {
   db.any('SELECT likee FROM likes WHERE liker = ${login}', {
@@ -540,3 +558,35 @@ app.post('/reportFake', requireLogin, (req, res) =>
     })
     .then(() => res.end())
 );
+
+app.post('/getBlockStatus', requireLogin, (req, res) =>
+  db
+    .any(
+      'SELECT * FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
+      {
+        blocker: req.session.login,
+        blockee: req.body.login
+      }
+    )
+    .then(data => res.send(JSON.stringify({ canBlock: !(data.length === 1) })))
+);
+
+app.post('/changeBlockStatus', requireLogin, (req, res) => {
+  if (req.body.canBlock) {
+    db.any(
+      'INSERT INTO blocks(blocker, blockee) VALUES (${blocker}, ${blockee})',
+      {
+        blocker: req.session.login,
+        blockee: req.body.login
+      }
+    ).then(() => res.end());
+  } else {
+    db.any(
+      'DELETE FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
+      {
+        blocker: req.session.login,
+        blockee: req.body.login
+      }
+    ).then(() => res.end());
+  }
+});

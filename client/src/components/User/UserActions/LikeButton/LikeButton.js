@@ -5,7 +5,7 @@ import DisplikeIcon from '@material-ui/icons/Star';
 import { getLikeStatus, changeLikeStatus } from './../../../../api/api.js';
 
 export default class LikeButton extends React.Component {
-  componentDidMount = () => {
+  componentDidMount = () =>
     getLikeStatus(this.props.login)
       .then(response => response.json())
       .then(data =>
@@ -13,9 +13,8 @@ export default class LikeButton extends React.Component {
           canLike: data.canLike
         })
       );
-  };
 
-  changeLikeStatus = () => {
+  changeLikeStatus = () =>
     changeLikeStatus(this.props.login, this.state.canLike)
       .then(response => response.json())
       .then(data => {
@@ -24,7 +23,6 @@ export default class LikeButton extends React.Component {
           canLike: !this.state.canLike
         });
       });
-  };
 
   render = () => {
     if (!this.state) {

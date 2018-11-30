@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import LikeButton from './LikeButton/LikeButton.js';
+import BlockButton from './BlockButton/BlockButton.js';
 import { reportFake } from './../../../api/api.js';
 
 const styles = theme => ({
@@ -63,7 +64,7 @@ class UserActions extends React.Component {
         ) : (
           <Button onClick={this.reportFake}>Report Fake</Button>
         )}
-        <Button>Block</Button>
+        <BlockButton login={login} />
       </div>
     );
   };
