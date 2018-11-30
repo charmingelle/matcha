@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const pgp = require('pg-promise')(/*options*/);
-const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
-// const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
+// const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
+const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const format = require('pg-format');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
@@ -337,8 +337,16 @@ app.post('/signup', (req, res) => {
 });
 
 app.post('/signout', (req, res) => {
-  req.session.reset();
-  res.redirect('http://localhost:3000/');
+  db.any(
+    'UPDATE users SET time = ${now}, online = false WHERE login = ${login}',
+    {
+      now: Date.now(),
+      login: req.session.login
+    }
+  ).then(() => {
+    req.session.reset();
+    res.redirect('http://localhost:3000/');
+  });
 });
 
 app.post('/signinOrMain', (req, res) => {
@@ -519,9 +527,8 @@ app.post('/getChatLogins', requireLogin, (req, res) => {
   });
 });
 
-app.post('/saveLastLoginTime', requireLogin, (req, res) => {
-  db.any('UPDATE users SET lastlogintime = ${now} WHERE login = ${login}', {
-    now: Date.now(),
+app.post('/saveOnline', requireLogin, (req, res) => {
+  db.any('UPDATE users SET online = true WHERE login = ${login}', {
     login: req.session.login
   });
 });

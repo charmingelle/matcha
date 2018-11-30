@@ -37,21 +37,24 @@ class UserActions extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
+    const { classes, login, online, time } = this.props;
+
     return (
-      <div className={this.props.classes.root}>
+      <div className={classes.root}>
         {this.state.canLike && (
-          <LikeButton login={this.props.login} changeFame={this.changeFame} />
+          <LikeButton login={login} changeFame={this.changeFame} />
         )}
         <div>
           <span>Fame: </span>
           <span>{this.state.fame}</span>
         </div>
-        <div>
-          <span>Last login time: </span>
-          <span>
-            {new Date(parseInt(this.props.lastLoginTime)).toLocaleString()}
-          </span>
-        </div>
+        {online && <div>Online</div>}
+        {!online && (
+          <div>
+            <span>Last login time: </span>
+            <span>{new Date(parseInt(time)).toLocaleString()}</span>
+          </div>
+        )}
         <Button onClick={this.reportFake}>Report Fake</Button>
         <Button>Block</Button>
       </div>

@@ -6,7 +6,7 @@ import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Main from '../Main/Main.js';
-import { signin, saveLastLoginTime } from '../../api/api.js';
+import { signin, saveOnline } from '../../api/api.js';
 
 const styles = theme => ({
   root: {
@@ -66,7 +66,7 @@ class Signin extends React.Component {
           this.setState({
             main: true
           });
-          saveLastLoginTime();
+          saveOnline();
         } else {
           res.json().then(data =>
             this.setState({

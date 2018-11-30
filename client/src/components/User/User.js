@@ -47,12 +47,13 @@ class User extends React.Component {
       interests,
       gallery,
       fame,
-      lastlogintime
+      time,
+      online
     } = this.state;
 
     return (
       <form>
-        <UserActions canLike={this.props.canLike} login={login} fame={fame} lastLoginTime={lastlogintime} />
+        <UserActions canLike={this.props.canLike} login={login} fame={fame} time={time} online={online} />
         <UserPhotos gallery={gallery} />
         <div className={this.props.classes.profileDetails}>
           <OutlinedTextFields

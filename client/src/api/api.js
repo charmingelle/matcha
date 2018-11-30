@@ -132,8 +132,8 @@ export const getChatLogins = () =>
     method: 'POST'
   });
 
-export const saveLastLoginTime = () =>
-  fetch('/saveLastLoginTime', {
+export const saveOnline = () =>
+  fetch('/saveOnline', {
     method: 'POST'
   });
 
