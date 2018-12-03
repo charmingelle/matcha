@@ -253,7 +253,7 @@ class ScrollableTabsButtonForce extends React.Component {
               path="/chat"
               render={() => (
                 <TabContainer>
-                  <Chat author={login} />
+                  <Chat sender={login} />
                 </TabContainer>
               )}
             />

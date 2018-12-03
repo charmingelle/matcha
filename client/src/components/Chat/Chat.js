@@ -91,17 +91,17 @@ class Chat extends React.Component {
         this.socket.on('chat', data => {
           let user = null;
 
-          if (this.props.author === data.author) {
+          if (this.props.sender === data.sender) {
             user = data.receiver;
-          } else if (this.props.author === data.receiver) {
-            user = data.author;
+          } else if (this.props.sender === data.receiver) {
+            user = data.sender;
           }
           if (user) {
             let newUsers = this.state.users;
             let newLog = newUsers[user].log;
 
             newLog.unshift({
-              author: data.author,
+              sender: data.sender,
               message: data.message
             });
             newUsers[user].log = newLog;
@@ -112,20 +112,20 @@ class Chat extends React.Component {
           }
         });
         this.socket.on('typing', data => {
-          if (this.props.author === data.receiver) {
+          if (this.props.sender === data.receiver) {
             let newUsers = this.state.users;
 
-            newUsers[data.author].typing = true;
+            newUsers[data.sender].typing = true;
             this.setState({
               users: newUsers
             });
           }
         });
         this.socket.on('stoppedTyping', data => {
-          if (this.props.author === data.receiver) {
+          if (this.props.sender === data.receiver) {
             let newUsers = this.state.users;
 
-            newUsers[data.author].typing = false;
+            newUsers[data.sender].typing = false;
             this.setState({
               users: newUsers
             });
@@ -136,12 +136,12 @@ class Chat extends React.Component {
 
   changeHandler = event => {
     this.socket.emit('typing', {
-      author: this.props.author,
+      sender: this.props.sender,
       receiver: this.state.selectedUser
     });
     if (event.target.value === '') {
       this.socket.emit('stoppedTyping', {
-        author: this.props.author,
+        sender: this.props.sender,
         receiver: this.state.selectedUser
       });
     }
@@ -162,7 +162,7 @@ class Chat extends React.Component {
   send = () => {
     if (this.state.users[this.state.selectedUser].message !== '') {
       this.socket.emit('chat', {
-        author: this.props.author,
+        sender: this.props.sender,
         receiver: this.state.selectedUser,
         message: this.state.users[this.state.selectedUser].message
       });
@@ -201,7 +201,6 @@ class Chat extends React.Component {
             </div>
           ))}
         </List>
-
         <div className={classes.marioChat}>
           <div className={classes.chatWindow}>
             <div>
@@ -215,7 +214,7 @@ class Chat extends React.Component {
               {users[selectedUser].log.map((record, index) => (
                 <p className={classes.outputP} key={index}>
                   <strong className={classes.outputStrong}>
-                    {record.author}:
+                    {record.sender}:
                   </strong>
                   {record.message}
                 </p>

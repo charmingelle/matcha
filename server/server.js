@@ -600,7 +600,19 @@ const socket = require('socket.io');
 const io = socket(server);
 
 io.on('connection', socket => {
-  socket.on('chat', data => io.sockets.emit('chat', data));
+  socket.on('chat', data => {
+    db.any(
+      'INSERT INTO messages (sender, receiver, message, time) VALUES(${sender}, ${receiver}, ${message}, ${now})',
+      {
+        sender: data.sender,
+        receiver: data.receiver,
+        message: data.message,
+        now: Date.now()
+      }
+    ).then(() => io.sockets.emit('chat', data));
+  });
   socket.on('typing', data => socket.broadcast.emit('typing', data));
-  socket.on('stoppedTyping', data => socket.broadcast.emit('stoppedTyping', data));
+  socket.on('stoppedTyping', data =>
+    socket.broadcast.emit('stoppedTyping', data)
+  );
 });
