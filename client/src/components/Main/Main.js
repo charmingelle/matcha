@@ -18,7 +18,6 @@ import Signin from './../Signin/Signin.js';
 import Visited from './../Visited/Visited.js';
 import Chat from './../Chat/Chat.js';
 import { getUserProfile, saveLocation, signout } from './../../api/api.js';
-import Column from 'antd/lib/table/Column';
 
 function TabContainer(props) {
   return (
@@ -86,6 +85,7 @@ class ScrollableTabsButtonForce extends React.Component {
             profile: {
               firstname: data.user.firstname,
               lastname: data.user.lastname,
+              login: data.user.login,
               email: data.user.email,
               age: data.user.age,
               gender: data.user.gender,
@@ -134,7 +134,7 @@ class ScrollableTabsButtonForce extends React.Component {
     const {
       tabid,
       profile,
-      profile: { visited, interests, location, firstname, lastname, canLike }
+      profile: { visited, interests, location, login, canLike }
     } = this.state;
 
     return (
@@ -179,7 +179,7 @@ class ScrollableTabsButtonForce extends React.Component {
             </Tabs>
           </AppBar>
           <AppBar
-            position="initial"
+            position="relative"
             color="default"
             style={{ zIndex: 'initial' }}
           >
@@ -253,7 +253,7 @@ class ScrollableTabsButtonForce extends React.Component {
               path="/chat"
               render={() => (
                 <TabContainer>
-                  <Chat author={`${firstname} ${lastname}`} />
+                  <Chat author={login} />
                 </TabContainer>
               )}
             />

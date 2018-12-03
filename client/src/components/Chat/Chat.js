@@ -7,10 +7,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
-// import TextField from '@material-ui/core/TextField';
 import { getChatLogins } from './../../api/api.js';
 import socketIOClient from 'socket.io-client';
-import Column from 'antd/lib/table/Column';
 
 const styles = theme => ({
   root: {
@@ -24,6 +22,9 @@ const styles = theme => ({
     padding: 'unset',
     borderRight: '1px solid rgba(0, 0, 0, 0.08)'
   },
+  selectedUser: {
+    backgroundColor: 'rgba(0, 0, 0, 0.08)'
+  },
   marioChat: {
     flexGrow: 1,
     display: 'flex',
@@ -33,7 +34,7 @@ const styles = theme => ({
   chatWindow: {
     flexGrow: 1,
     overflow: 'auto',
-    borderBottom: '1px solid #e9e9e9',
+    borderBottom: '1px solid #e9e9e9'
   },
   message: {
     width: '100%',
@@ -68,78 +69,132 @@ class Chat extends React.Component {
 
   componentDidMount = () => {
     this.setState({
-      message: '',
-      log: [],
-      typing: {},
-      users: []
-    });
-    this.socket.on('chat', data => {
-      let newLog = this.state.log;
-      let newTyping = this.state.typing;
-
-      newLog.unshift({
-        author: data.author,
-        message: data.message
-      });
-      delete newTyping[data.author];
-      this.setState({
-        log: newLog,
-        typing: newTyping
-      });
-    });
-    this.socket.on('typing', data => {
-      let newTyping = this.state.typing;
-
-      newTyping[data.author] = true;
-      this.setState({
-        typing: newTyping
-      });
+      users: {},
+      selectedUser: null
     });
     getChatLogins()
       .then(response => response.json())
-      .then(users => this.setState({ users }));
+      .then(users => {
+        let objectUsers = {};
+
+        users.forEach(
+          user =>
+            (objectUsers[user] = {
+              log: [],
+              typing: false,
+              message: ''
+            })
+        );
+        this.setState({ users: objectUsers, selectedUser: users[0] });
+      })
+      .then(() => {
+        this.socket.on('chat', data => {
+          let user = null;
+
+          if (this.props.author === data.author) {
+            user = data.receiver;
+          } else if (this.props.author === data.receiver) {
+            user = data.author;
+          }
+          if (user) {
+            let newUsers = this.state.users;
+            let newLog = newUsers[user].log;
+
+            newLog.unshift({
+              author: data.author,
+              message: data.message
+            });
+            newUsers[user].log = newLog;
+            newUsers[user].typing = false;
+            this.setState({
+              users: newUsers
+            });
+          }
+        });
+        this.socket.on('typing', data => {
+          if (this.props.author === data.receiver) {
+            let newUsers = this.state.users;
+
+            newUsers[data.author].typing = true;
+            this.setState({
+              users: newUsers
+            });
+          }
+        });
+        this.socket.on('stoppedTyping', data => {
+          if (this.props.author === data.receiver) {
+            let newUsers = this.state.users;
+
+            newUsers[data.author].typing = false;
+            this.setState({
+              users: newUsers
+            });
+          }
+        });
+      });
   };
 
-  changeHandler = event =>
-    this.setState({
-      message: event.target.value
+  changeHandler = event => {
+    this.socket.emit('typing', {
+      author: this.props.author,
+      receiver: this.state.selectedUser
     });
+    if (event.target.value === '') {
+      this.socket.emit('stoppedTyping', {
+        author: this.props.author,
+        receiver: this.state.selectedUser
+      });
+    }
+    let newUsers = this.state.users;
+
+    newUsers[this.state.selectedUser].message = event.target.value;
+    this.setState({
+      users: newUsers
+    });
+  };
 
   keyPressHandler = event => {
-    this.socket.emit('typing', {
-      author: this.props.author
-    });
     if (event.key === 'Enter') {
       this.send();
     }
   };
 
   send = () => {
-    if (this.state.message !== '') {
+    if (this.state.users[this.state.selectedUser].message !== '') {
       this.socket.emit('chat', {
         author: this.props.author,
-        message: this.state.message
+        receiver: this.state.selectedUser,
+        message: this.state.users[this.state.selectedUser].message
+      });
+      let newUsers = this.state.users;
+
+      newUsers[this.state.selectedUser].message = '';
+      this.setState({
+        users: newUsers
       });
       this.setState({
-        message: ''
+        users: newUsers
       });
     }
   };
 
   render = () => {
-    if (!this.state) {
+    if (!this.state || !this.state.users || !this.state.selectedUser) {
       return <span>Loading...</span>;
     }
-    console.log('this.state', this.state);
-    const { message, log, typing, users } = this.state;
+    const { users, selectedUser } = this.state;
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
         <List component="nav" className={classes.users}>
-          {users.map((user, index) => (
+          {Object.keys(users).map((user, index) => (
             <div key={index}>
-              <ListItem button>
+              <ListItem
+                button
+                className={user === selectedUser ? classes.selectedUser : ''}
+                onClick={() => this.setState({ selectedUser: user })}
+              >
                 <ListItemText primary={user} />
               </ListItem>
               <Divider light />
@@ -150,14 +205,14 @@ class Chat extends React.Component {
         <div className={classes.marioChat}>
           <div className={classes.chatWindow}>
             <div>
-              {Object.keys(typing).map((record, index) => (
-                <p className={classes.typingP} key={index}>
-                  <em>{record} is typing a message...</em>
+              {users[selectedUser].typing && (
+                <p className={classes.typingP}>
+                  <em>{selectedUser} is typing a message...</em>
                 </p>
-              ))}
+              )}
             </div>
             <div>
-              {log.map((record, index) => (
+              {users[selectedUser].log.map((record, index) => (
                 <p className={classes.outputP} key={index}>
                   <strong className={classes.outputStrong}>
                     {record.author}:
@@ -167,18 +222,10 @@ class Chat extends React.Component {
               ))}
             </div>
           </div>
-          {/* <TextField
-            className={classes.message}
-            value={message}
-            label="Say something"
-            onChange={this.changeHandler}
-            onKeyPress={this.keyPressHandler}
-            variant="outlined"
-          /> */}
           <Input
             type="text"
             className={classes.message}
-            value={message}
+            value={users[selectedUser].message}
             placeholder="Say something..."
             onChange={this.changeHandler}
             onKeyPress={this.keyPressHandler}
