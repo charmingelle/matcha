@@ -594,6 +594,22 @@ app.post('/changeBlockStatus', requireLogin, (req, res) => {
   }
 });
 
+app.post('/getMessages', requireLogin, (req, res) => {
+  db.any(
+    'SELECT * FROM messages WHERE (sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender})',
+    {
+      sender: req.body.sender,
+      receiver: req.body.receiver
+    }
+  ).then(data => {
+    if (data.length > 0) {
+      res.send(JSON.stringify(data));
+    } else {
+      res.send(JSON.stringify([]));
+    }
+  });
+});
+
 // Chat
 
 const socket = require('socket.io');

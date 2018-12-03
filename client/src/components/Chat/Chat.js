@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import { getChatLogins } from './../../api/api.js';
 import socketIOClient from 'socket.io-client';
+import Room from './Room/Room.js';
 
 const styles = theme => ({
   root: {
@@ -185,6 +186,7 @@ class Chat extends React.Component {
     const { users, selectedUser } = this.state;
     const { classes } = this.props;
 
+    console.log('this.state.selectedUser', this.state.selectedUser);
     return (
       <div className={classes.root}>
         <List component="nav" className={classes.users}>
@@ -201,7 +203,8 @@ class Chat extends React.Component {
             </div>
           ))}
         </List>
-        <div className={classes.marioChat}>
+        
+        {/* <div className={classes.marioChat}>
           <div className={classes.chatWindow}>
             <div>
               {users[selectedUser].typing && (
@@ -237,7 +240,9 @@ class Chat extends React.Component {
           >
             Send
           </Button>
-        </div>
+        </div> */}
+        
+        <Room sender={this.props.sender} receiver={this.state.selectedUser} />
       </div>
     );
   };
