@@ -11,6 +11,9 @@ import { saveUserProfile } from './../../api/api.js';
 import { isEmailValid } from './../../utils/utils.js';
 
 const styles = theme => ({
+  root: {
+    overflow: 'auto'
+  },
   profileDetails: {
     display: 'flex',
     flexDirection: 'column',
@@ -114,16 +117,17 @@ class Profile extends React.Component {
       gallery,
       avatarid
     } = this.state;
+    const { classes } = this.props;
 
     return (
-      <form>
+      <form className={classes.root}>
         <ProfilePhotos
           userid={id}
           gallery={gallery}
           avatarid={avatarid}
           editable={this.props.editable}
         />
-        <div className={this.props.classes.profileDetails}>
+        <div className={classes.profileDetails}>
           {this.renderChangeStatus()}
           <OutlinedTextFields
             label="First name"
@@ -151,7 +155,6 @@ class Profile extends React.Component {
             onChange={this.onAgeChange}
             type="number"
             variant="outlined"
-            className={this.props.classes.ageInput}
           />
           <SimpleSelect
             title="Gender"

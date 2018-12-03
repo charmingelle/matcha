@@ -18,9 +18,17 @@ import Signin from './../Signin/Signin.js';
 import Visited from './../Visited/Visited.js';
 import Chat from './../Chat/Chat.js';
 import { getUserProfile, saveLocation, signout } from './../../api/api.js';
+import Column from 'antd/lib/table/Column';
 
 function TabContainer(props) {
-  return <Typography component="div">{props.children}</Typography>;
+  return (
+    <Typography
+      style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+      component="div"
+    >
+      {props.children}
+    </Typography>
+  );
 }
 
 TabContainer.propTypes = {
@@ -29,9 +37,16 @@ TabContainer.propTypes = {
 
 const styles = theme => ({
   root: {
-    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
     width: '100%',
+    height: '100vh',
     backgroundColor: theme.palette.background.paper
+  },
+  appContent: {
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column'
   },
   link: {
     color: 'black',
@@ -125,7 +140,7 @@ class ScrollableTabsButtonForce extends React.Component {
     return (
       <BrowserRouter>
         <div className={classes.root}>
-          <AppBar position="static" color="default">
+          <AppBar position="fixed" color="default">
             <Tabs
               className={classes.tabs}
               value={tabid}
@@ -163,67 +178,104 @@ class ScrollableTabsButtonForce extends React.Component {
               />
             </Tabs>
           </AppBar>
-          <Route
-            exact
-            path="/"
-            render={() => (
-              <TabContainer className={classes.tabContainer}>
-                <Users
-                  visited={visited}
-                  interests={interests}
-                  profileLocation={location}
-                />
-              </TabContainer>
-            )}
-          />
-          <Route
-            exact
-            path="/profile"
-            render={() => (
-              <TabContainer className={classes.tabContainer}>
-                <Profile
-                  name="profile"
-                  value={profile}
-                  onChange={this.onProfileChange}
-                  editable={true}
-                />
-              </TabContainer>
-            )}
-          />
-          <Route
-            exact
-            path="/chat"
-            render={() => (
-              <TabContainer className={classes.tabContainer}>
-                <Chat
-                  author={`${firstname} ${
-                    lastname
-                  }`}
-                />
-              </TabContainer>
-            )}
-          />
-          <Route
-            exact
-            path="/users/:login"
-            render={({ match }) => (
-              <TabContainer className={classes.tabContainer}>
-                <User
-                  login={match.params.login}
-                  canLike={canLike}
-                />
-              </TabContainer>
-            )}
-          />
-          <Route
-            exact
-            path="/visited"
-            render={() => (
-              <TabContainer className={classes.tabContainer}>
-                <Visited />
-              </TabContainer>
-            )}
-          />
+          <AppBar
+            position="initial"
+            color="default"
+            style={{ zIndex: 'initial' }}
+          >
+            <Tabs
+              className={classes.tabs}
+              value={tabid}
+              onChange={this.handleChange}
+              scrollable
+              scrollButtons="on"
+              indicatorColor="primary"
+              textColor="primary"
+            >
+              <Tab label="Users" icon={<ListIcon />} component={Link} to="/" />
+              <Tab
+                label="Profile"
+                icon={<PersonPinIcon />}
+                component={Link}
+                to="/profile"
+              />
+              <Tab
+                label="Chat"
+                icon={<ChatIcon />}
+                component={Link}
+                to="/chat"
+              />
+              <Tab
+                label="Visited"
+                icon={<CheckIcon />}
+                component={Link}
+                to="/visited"
+              />
+              <Tab
+                label="Sign Out"
+                icon={<SignoutIcon />}
+                onClick={this.signout}
+                component={Link}
+                to="/"
+              />
+            </Tabs>
+          </AppBar>
+          <div className={classes.appContent}>
+            <Route
+              exact
+              path="/"
+              render={() => (
+                <TabContainer>
+                  <Users
+                    visited={visited}
+                    interests={interests}
+                    profileLocation={location}
+                  />
+                </TabContainer>
+              )}
+            />
+            <Route
+              exact
+              path="/profile"
+              render={() => (
+                <TabContainer>
+                  <Profile
+                    name="profile"
+                    value={profile}
+                    onChange={this.onProfileChange}
+                    editable={true}
+                  />
+                </TabContainer>
+              )}
+            />
+            <Route
+              exact
+              path="/chat"
+              render={() => (
+                <TabContainer>
+                  <Chat author={`${firstname} ${lastname}`} />
+                </TabContainer>
+              )}
+            />
+            <Route
+              exact
+              path="/users/:login"
+              render={({ match }) => (
+                <TabContainer>
+                  <User login={match.params.login} canLike={canLike} />
+                </TabContainer>
+              )}
+            />
+            <Route
+              exact
+              path="/visited"
+              render={() => (
+                <TabContainer>
+                  <Visited />
+                </TabContainer>
+              )}
+            />
+          </div>
         </div>
       </BrowserRouter>
     );
