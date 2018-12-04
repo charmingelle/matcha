@@ -76,6 +76,7 @@ class Chat extends React.Component {
     getChatLogins()
       .then(response => response.json())
       .then(users => {
+        console.log('users', users);
         let objectUsers = {};
 
         users.forEach(
@@ -180,6 +181,7 @@ class Chat extends React.Component {
   };
 
   render = () => {
+    console.log('this.state', this.state);
     if (!this.state || !this.state.users || !this.state.selectedUser) {
       return <span>Loading...</span>;
     }

@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const pgp = require('pg-promise')(/*options*/);
-// const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
-const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
+const db = pgp('postgres://grevenko:postgres@localhost:5432/matcha');
+// const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const format = require('pg-format');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
@@ -56,8 +56,8 @@ app.use(
 );
 
 app.get('*', (req, res) => {
-  // res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
-  res.sendFile('C:/Users/Anna/Documents/unit/matcha/client/public/index.html');
+  res.sendFile('/Users/grevenko/projects/matcha/client/public/index.html');
+  // res.sendFile('C:/Users/Anna/Documents/unit/matcha/client/public/index.html');
 });
 
 app.get('/confirm', (req, res) => {
@@ -429,6 +429,9 @@ app.post('/getResetPasswordEmail', (req, res) => {
 });
 
 app.post('/resetPassword', (req, res) => {
+  console.log('req.body.email', req.body.email);
+  console.log('req.body.password', req.body.password);
+
   bcrypt.genSalt(10, (err, salt) => {
     if (err) {
       return next(err);
