@@ -5,11 +5,10 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
 import { getChatLogins } from './../../api/api.js';
 import socketIOClient from 'socket.io-client';
 import Room from './Room/Room.js';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 
 const styles = theme => ({
   root: {
@@ -17,6 +16,9 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'row',
     overflow: 'hidden'
+  },
+  link: {
+    textDecoration: 'none'
   },
   users: {
     width: '20%',
@@ -69,183 +71,48 @@ class Chat extends React.Component {
   }
 
   componentDidMount = () => {
-    this.setState({
-      users: {},
-      selectedUser: null
-    });
     getChatLogins()
       .then(response => response.json())
-      .then(users => {
-        console.log('users', users);
-        let objectUsers = {};
-
-        users.forEach(
-          user =>
-            (objectUsers[user] = {
-              log: [],
-              typing: false,
-              message: ''
-            })
-        );
-        this.setState({ users: objectUsers, selectedUser: users[0] });
-      })
-      .then(() => {
-        this.socket.on('chat', data => {
-          let user = null;
-
-          if (this.props.sender === data.sender) {
-            user = data.receiver;
-          } else if (this.props.sender === data.receiver) {
-            user = data.sender;
-          }
-          if (user) {
-            let newUsers = this.state.users;
-            let newLog = newUsers[user].log;
-
-            newLog.unshift({
-              sender: data.sender,
-              message: data.message
-            });
-            newUsers[user].log = newLog;
-            newUsers[user].typing = false;
-            this.setState({
-              users: newUsers
-            });
-          }
-        });
-        this.socket.on('typing', data => {
-          if (this.props.sender === data.receiver) {
-            let newUsers = this.state.users;
-
-            newUsers[data.sender].typing = true;
-            this.setState({
-              users: newUsers
-            });
-          }
-        });
-        this.socket.on('stoppedTyping', data => {
-          if (this.props.sender === data.receiver) {
-            let newUsers = this.state.users;
-
-            newUsers[data.sender].typing = false;
-            this.setState({
-              users: newUsers
-            });
-          }
-        });
-      });
-  };
-
-  changeHandler = event => {
-    this.socket.emit('typing', {
-      sender: this.props.sender,
-      receiver: this.state.selectedUser
-    });
-    if (event.target.value === '') {
-      this.socket.emit('stoppedTyping', {
-        sender: this.props.sender,
-        receiver: this.state.selectedUser
-      });
-    }
-    let newUsers = this.state.users;
-
-    newUsers[this.state.selectedUser].message = event.target.value;
-    this.setState({
-      users: newUsers
-    });
-  };
-
-  keyPressHandler = event => {
-    if (event.key === 'Enter') {
-      this.send();
-    }
-  };
-
-  send = () => {
-    if (this.state.users[this.state.selectedUser].message !== '') {
-      this.socket.emit('chat', {
-        sender: this.props.sender,
-        receiver: this.state.selectedUser,
-        message: this.state.users[this.state.selectedUser].message
-      });
-      let newUsers = this.state.users;
-
-      newUsers[this.state.selectedUser].message = '';
-      this.setState({
-        users: newUsers
-      });
-      this.setState({
-        users: newUsers
-      });
-    }
+      .then(users => this.setState({ users, selectedUser: users[0] }));
   };
 
   render = () => {
-    console.log('this.state', this.state);
-    if (!this.state || !this.state.users || !this.state.selectedUser) {
+    if (!this.state) {
       return <span>Loading...</span>;
     }
     const { users, selectedUser } = this.state;
     const { classes } = this.props;
 
-    console.log('this.state.selectedUser', this.state.selectedUser);
     return (
-      <div className={classes.root}>
-        <List component="nav" className={classes.users}>
-          {Object.keys(users).map((user, index) => (
-            <div key={index}>
-              <ListItem
-                button
-                className={user === selectedUser ? classes.selectedUser : ''}
-                onClick={() => this.setState({ selectedUser: user })}
-              >
-                <ListItemText primary={user} />
-              </ListItem>
-              <Divider light />
-            </div>
-          ))}
-        </List>
-        
-        {/* <div className={classes.marioChat}>
-          <div className={classes.chatWindow}>
-            <div>
-              {users[selectedUser].typing && (
-                <p className={classes.typingP}>
-                  <em>{selectedUser} is typing a message...</em>
-                </p>
-              )}
-            </div>
-            <div>
-              {users[selectedUser].log.map((record, index) => (
-                <p className={classes.outputP} key={index}>
-                  <strong className={classes.outputStrong}>
-                    {record.sender}:
-                  </strong>
-                  {record.message}
-                </p>
-              ))}
-            </div>
-          </div>
-          <Input
-            type="text"
-            className={classes.message}
-            value={users[selectedUser].message}
-            placeholder="Say something..."
-            onChange={this.changeHandler}
-            onKeyPress={this.keyPressHandler}
-            disableUnderline={true}
+      <BrowserRouter>
+        <div className={classes.root}>
+          <List component="nav" className={classes.users}>
+            {users.map((user, index) => (
+              <Link className={classes.link} key={index} to={`/chat/${user}`}>
+                <ListItem
+                  button
+                  className={user === selectedUser ? classes.selectedUser : ''}
+                  onClick={() => this.setState({ selectedUser: user })}
+                >
+                  <ListItemText primary={user} />
+                </ListItem>
+                <Divider light />
+              </Link>
+            ))}
+          </List>
+          <Route
+            exact
+            path="/chat/:receiver"
+            component={({ match }) => (
+              <Room
+                socket={this.socket}
+                sender={this.props.sender}
+                receiver={match.params.receiver}
+              />
+            )}
           />
-          <Button
-            className={classes.send}
-            onClick={this.send}
-            variant="outlined"
-          >
-            Send
-          </Button>
-        </div> */}
-        
-        <Room sender={this.props.sender} receiver={this.state.selectedUser} />
-      </div>
+        </div>
+      </BrowserRouter>
     );
   };
 }

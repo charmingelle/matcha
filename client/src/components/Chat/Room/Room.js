@@ -4,7 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import { getMessages } from './../../../api/api.js';
-import socketIOClient from 'socket.io-client';
 
 const styles = theme => ({
   marioChat: {
@@ -44,87 +43,76 @@ const styles = theme => ({
 });
 
 class Room extends React.Component {
-  // constructor() {
-  //   super();
-  //   this.socket = socketIOClient('http://localhost:5000');
-  // }
-
-  componentDidMount = () => {
-    this.setState({
+  constructor(props) {
+    super(props);
+    this.state = {
       sender: this.props.sender,
       receiver: this.props.receiver,
       log: [],
       typing: false,
       message: ''
-    });
+    };
+    this.socket = this.props.socket;
+  }
 
+  componentDidMount = () => {
     getMessages(this.props.sender, this.props.receiver)
       .then(response => response.json())
-      .then(log => this.setState({ log }));
+      .then(log => this.setState({ log }))
+      .then(() => {
+        this.socket.on('chat', data => {
+          let user = null;
 
-    // .then(() => {
-    //   this.socket.on('chat', data => {
-    //     let user = null;
+          if (this.props.sender === data.sender) {
+            user = data.receiver;
+          } else if (this.props.sender === data.receiver) {
+            user = data.sender;
+          }
+          if (user) {
+            let newLog = this.state.log;
 
-    //     if (this.props.sender === data.sender) {
-    //       user = data.receiver;
-    //     } else if (this.props.sender === data.receiver) {
-    //       user = data.sender;
-    //     }
-    //     if (user) {
-    //       let newUsers = this.state.users;
-    //       let newLog = newUsers[user].log;
-
-    //       newLog.unshift({
-    //         sender: data.sender,
-    //         message: data.message
-    //       });
-    //       newUsers[user].log = newLog;
-    //       newUsers[user].typing = false;
-    //       this.setState({
-    //         users: newUsers
-    //       });
-    //     }
-    //   });
-    //   this.socket.on('typing', data => {
-    //     if (this.props.sender === data.receiver) {
-    //       let newUsers = this.state.users;
-
-    //       newUsers[data.sender].typing = true;
-    //       this.setState({
-    //         users: newUsers
-    //       });
-    //     }
-    //   });
-    //   this.socket.on('stoppedTyping', data => {
-    //     if (this.props.sender === data.receiver) {
-    //       let newUsers = this.state.users;
-
-    //       newUsers[data.sender].typing = false;
-    //       this.setState({
-    //         users: newUsers
-    //       });
-    //     }
-    //   });
-    // });
+            newLog.unshift({
+              sender: data.sender,
+              receiver: data.receiver,
+              message: data.message,
+              now: Date.now()
+            });
+            this.setState({
+              log: newLog,
+              typing: false
+            });
+          }
+        });
+        this.socket.on('typing', data => {
+          if (this.props.sender === data.receiver) {
+            this.setState({
+              typing: true
+            });
+          }
+        });
+        this.socket.on('stoppedTyping', data => {
+          if (this.props.sender === data.receiver) {
+            this.setState({
+              typing: false
+            });
+          }
+        });
+      });
   };
 
   changeHandler = event => {
     this.socket.emit('typing', {
-      sender: this.props.sender,
-      receiver: this.state.selectedUser
+      sender: this.state.sender,
+      receiver: this.state.receiver
     });
     if (event.target.value === '') {
       this.socket.emit('stoppedTyping', {
-        sender: this.props.sender,
-        receiver: this.state.selectedUser
+        sender: this.state.sender,
+        receiver: this.state.receiver
       });
     }
-    let newUsers = this.state.users;
-
-    newUsers[this.state.selectedUser].message = event.target.value;
     this.setState({
-      users: newUsers
+      message: event.target.value
     });
   };
 
@@ -135,43 +123,32 @@ class Room extends React.Component {
   };
 
   send = () => {
-    if (this.state.users[this.state.selectedUser].message !== '') {
+    if (this.state.message !== '') {
       this.socket.emit('chat', {
-        sender: this.props.sender,
-        receiver: this.state.selectedUser,
-        message: this.state.users[this.state.selectedUser].message
-      });
-      let newUsers = this.state.users;
-
-      newUsers[this.state.selectedUser].message = '';
-      this.setState({
-        users: newUsers
+        sender: this.state.sender,
+        receiver: this.state.receiver,
+        message: this.state.message
       });
       this.setState({
-        users: newUsers
+        message: ''
       });
     }
   };
 
   render = () => {
-    // return <div>Room</div>;
-
-    if (!this.state) {
-      return <span>Loading...</span>;
-    }
-    const { log } = this.state;
+    const { receiver, log, typing, message } = this.state;
     const { classes } = this.props;
 
     return (
       <div className={classes.marioChat}>
         <div className={classes.chatWindow}>
-          {/* <div>
-            {users[selectedUser].typing && (
+          <div>
+            {typing && (
               <p className={classes.typingP}>
-                <em>{selectedUser} is typing a message...</em>
+                <em>{receiver} is typing a message...</em>
               </p>
             )}
-          </div> */}
+          </div>
           <div>
             {log.map((record, index) => (
               <p className={classes.outputP} key={index}>
@@ -183,10 +160,10 @@ class Room extends React.Component {
             ))}
           </div>
         </div>
-        {/* <Input
+        <Input
           type="text"
           className={classes.message}
-          value={users[selectedUser].message}
+          value={message}
           placeholder="Say something..."
           onChange={this.changeHandler}
           onKeyPress={this.keyPressHandler}
@@ -194,7 +171,7 @@ class Room extends React.Component {
         />
         <Button className={classes.send} onClick={this.send} variant="outlined">
           Send
-        </Button> */}
+        </Button>
       </div>
     );
   };

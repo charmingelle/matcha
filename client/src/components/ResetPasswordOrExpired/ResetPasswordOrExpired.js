@@ -23,9 +23,6 @@ export default class ResetPasswordOrExpired extends Component {
         ) {
           this.props.history.push('/');
         }
-        console.log('params[0]', params[0]);
-        console.log('params[1]', params[1]);
-
         this.setState({ email: params[0].substring(7) });
         resetPasswordOrExpired(params[0].substring(7), params[1].substring(5))
           .then(response => response.json())

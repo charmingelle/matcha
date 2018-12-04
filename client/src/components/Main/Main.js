@@ -46,11 +46,6 @@ const styles = theme => ({
     flexGrow: 1,
     display: 'flex',
     flexDirection: 'column'
-  },
-  link: {
-    color: 'black',
-    textDecoration: 'none',
-    indicator: 'false'
   }
 });
 
