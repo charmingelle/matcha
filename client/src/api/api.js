@@ -158,9 +158,9 @@ export const changeBlockStatus = (login, canBlock) =>
     body: JSON.stringify({ login, canBlock })
   });
 
-export const getMessages = (sender, receiver) =>
+export const getMessages = (sender, receiver, lastloadedid) =>
   fetch('/getMessages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sender, receiver })
+    body: JSON.stringify({ sender, receiver, lastloadedid })
   });

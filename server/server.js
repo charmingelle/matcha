@@ -371,11 +371,9 @@ app.post('/signinOrMain', (req, res) => {
     db.any('SELECT login FROM users WHERE login = ${login}', {
       login: req.session.login
     }).then(data => {
-      if (data.length === 1) {
-        res.send(JSON.stringify({ result: 'main' }));
-      } else {
-        res.send(JSON.stringify({ result: 'signin' }));
-      }
+      data.length === 1
+        ? res.send(JSON.stringify({ result: 'main' }))
+        : res.send(JSON.stringify({ result: 'signin' }));
     });
   } else {
     res.send(JSON.stringify({ result: 'signin' }));
@@ -598,13 +596,18 @@ app.post('/changeBlockStatus', requireLogin, (req, res) => {
 });
 
 app.post('/getMessages', requireLogin, (req, res) => {
-  db.any(
-    'SELECT * FROM messages WHERE (sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender})',
-    {
-      sender: req.body.sender,
-      receiver: req.body.receiver
-    }
-  ).then(data => {
+  let query =
+    'SELECT * FROM messages WHERE (sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender}) ORDER BY time DESC LIMIT 30';
+
+  if (req.body.lastloadedid !== null) {
+    query =
+      'SELECT * FROM messages WHERE id < ${lastloadedid} AND ((sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender})) ORDER BY time DESC LIMIT 30';
+  }
+  db.any(query, {
+    sender: req.body.sender,
+    receiver: req.body.receiver,
+    lastloadedid: req.body.lastloadedid
+  }).then(data => {
     if (data.length > 0) {
       res.send(JSON.stringify(data));
     } else {
@@ -620,15 +623,24 @@ const io = socket(server);
 
 io.on('connection', socket => {
   socket.on('chat', data => {
+    const now = Date.now();
+
     db.any(
-      'INSERT INTO messages (sender, receiver, message, time) VALUES(${sender}, ${receiver}, ${message}, ${now})',
+      'INSERT INTO messages (sender, receiver, message, time) VALUES(${sender}, ${receiver}, ${message}, ${time})',
       {
         sender: data.sender,
         receiver: data.receiver,
         message: data.message,
-        now: Date.now()
+        time: now
       }
-    ).then(() => io.sockets.emit('chat', data));
+    ).then(() =>
+      io.sockets.emit('chat', {
+        sender: data.sender,
+        receiver: data.receiver,
+        message: data.message,
+        time: now
+      })
+    );
   });
   socket.on('typing', data => socket.broadcast.emit('typing', data));
   socket.on('stoppedTyping', data =>

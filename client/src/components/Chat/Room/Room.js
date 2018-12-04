@@ -50,33 +50,36 @@ class Room extends React.Component {
       receiver: this.props.receiver,
       log: [],
       typing: false,
-      message: ''
+      message: '',
+      isLoading: false,
+      lastloadedid: null,
+      moreData: true
     };
     this.socket = this.props.socket;
   }
 
   componentDidMount = () => {
-    getMessages(this.props.sender, this.props.receiver)
+    getMessages(this.state.sender, this.state.receiver, this.state.lastloadedid)
       .then(response => response.json())
-      .then(log => this.setState({ log }))
+      .then(log => {
+        if (log.length !== 0) {
+          this.setState({ lastloadedid: log[log.length - 1].id });
+        }
+        this.setState({ log });
+      })
       .then(() => {
         this.socket.on('chat', data => {
           let user = null;
 
-          if (this.props.sender === data.sender) {
+          if (this.state.sender === data.sender) {
             user = data.receiver;
-          } else if (this.props.sender === data.receiver) {
+          } else if (this.state.sender === data.receiver) {
             user = data.sender;
           }
           if (user) {
             let newLog = this.state.log;
 
-            newLog.unshift({
-              sender: data.sender,
-              receiver: data.receiver,
-              message: data.message,
-              now: Date.now()
-            });
+            newLog.unshift(data);
             this.setState({
               log: newLog,
               typing: false
@@ -84,20 +87,26 @@ class Room extends React.Component {
           }
         });
         this.socket.on('typing', data => {
-          if (this.props.sender === data.receiver) {
+          if (this.state.sender === data.receiver) {
             this.setState({
               typing: true
             });
           }
         });
         this.socket.on('stoppedTyping', data => {
-          if (this.props.sender === data.receiver) {
+          if (this.state.sender === data.receiver) {
             this.setState({
               typing: false
             });
           }
         });
       });
+  };
+
+  componentWillUnmount = () => {
+    this.socket.off('chat');
+    this.socket.off('typing');
+    this.socket.off('stoppedTyping');
   };
 
   changeHandler = event => {
@@ -135,13 +144,53 @@ class Room extends React.Component {
     }
   };
 
+  isScrolledToBottom = target => {
+    return target.scrollTop >= target.scrollHeight - target.offsetHeight;
+  };
+
+  scrollHandler = event => {
+    if (this.isScrolledToBottom(event.target)) {
+      if (!this.state.isLoading && this.state.moreData) {
+        this.setState({
+          isLoading: true
+        });
+        getMessages(
+          this.state.sender,
+          this.state.receiver,
+          this.state.lastloadedid
+        )
+          .then(response => response.json())
+          .then(log => {
+            if (log.length === 0) {
+              this.setState({
+                moreData: false
+              });
+            } else {
+              let newLog = this.state.log;
+
+              newLog.push(...log);
+              this.setState({
+                log: newLog,
+                lastloadedid: newLog[newLog.length - 1].id
+              });
+            }
+          })
+          .then(() =>
+            this.setState({
+              isLoading: false
+            })
+          );
+      }
+    }
+  };
+
   render = () => {
     const { receiver, log, typing, message } = this.state;
     const { classes } = this.props;
 
     return (
       <div className={classes.marioChat}>
-        <div className={classes.chatWindow}>
+        <div className={classes.chatWindow} onScroll={this.scrollHandler}>
           <div>
             {typing && (
               <p className={classes.typingP}>
@@ -152,6 +201,9 @@ class Room extends React.Component {
           <div>
             {log.map((record, index) => (
               <p className={classes.outputP} key={index}>
+                <span>{`${new Date(
+                  parseInt(record.time)
+                ).toLocaleString()} `}</span>
                 <strong className={classes.outputStrong}>
                   {record.sender}:
                 </strong>
