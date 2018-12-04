@@ -114,10 +114,6 @@ class ScrollableTabsButtonForce extends React.Component {
     signout().then(() => this.setState({ profile: 'signin' }));
   };
 
-  // handleChange = (event, value) => {
-  //   this.setState({ tabid: value });
-  // };
-
   changeTab = tabid =>
     this.setState({
       tabid
@@ -144,7 +140,6 @@ class ScrollableTabsButtonForce extends React.Component {
             <Tabs
               className={classes.tabs}
               value={tabid}
-              // onChange={this.handleChange}
               scrollable
               scrollButtons="on"
               indicatorColor="primary"
