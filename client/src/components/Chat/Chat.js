@@ -71,6 +71,7 @@ class Chat extends React.Component {
   }
 
   componentDidMount = () => {
+    this.props.changeTab(2);
     getChatLogins()
       .then(response => response.json())
       .then(users => this.setState({ users, selectedUser: users[0] }));

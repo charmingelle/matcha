@@ -114,9 +114,14 @@ class ScrollableTabsButtonForce extends React.Component {
     signout().then(() => this.setState({ profile: 'signin' }));
   };
 
-  handleChange = (event, value) => {
-    this.setState({ tabid: value });
-  };
+  // handleChange = (event, value) => {
+  //   this.setState({ tabid: value });
+  // };
+
+  changeTab = tabid =>
+    this.setState({
+      tabid
+    });
 
   render = () => {
     if (this.state.profile === null) {
@@ -139,7 +144,7 @@ class ScrollableTabsButtonForce extends React.Component {
             <Tabs
               className={classes.tabs}
               value={tabid}
-              onChange={this.handleChange}
+              // onChange={this.handleChange}
               scrollable
               scrollButtons="on"
               indicatorColor="primary"
@@ -225,6 +230,7 @@ class ScrollableTabsButtonForce extends React.Component {
                     visited={visited}
                     interests={interests}
                     profileLocation={location}
+                    changeTab={this.changeTab}
                   />
                 </TabContainer>
               )}
@@ -239,6 +245,7 @@ class ScrollableTabsButtonForce extends React.Component {
                     value={profile}
                     onChange={this.onProfileChange}
                     editable={true}
+                    changeTab={this.changeTab}
                   />
                 </TabContainer>
               )}
@@ -248,7 +255,7 @@ class ScrollableTabsButtonForce extends React.Component {
               path="/chat"
               render={() => (
                 <TabContainer>
-                  <Chat sender={login} />
+                  <Chat sender={login} changeTab={this.changeTab} />
                 </TabContainer>
               )}
             />
@@ -266,7 +273,7 @@ class ScrollableTabsButtonForce extends React.Component {
               path="/visited"
               render={() => (
                 <TabContainer>
-                  <Visited />
+                  <Visited changeTab={this.changeTab} />
                 </TabContainer>
               )}
             />

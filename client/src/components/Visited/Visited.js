@@ -54,6 +54,7 @@ const styles = theme => ({
 
 class Users extends React.Component {
   async componentDidMount() {
+    this.props.changeTab(3);
     const data = await getVisited();
 
     data.forEach(user => {

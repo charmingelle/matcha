@@ -23,6 +23,7 @@ const styles = theme => ({
 
 class Profile extends React.Component {
   componentDidMount() {
+    this.props.changeTab(1);
     this.setState(this.props.value);
   }
 
