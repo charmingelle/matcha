@@ -427,9 +427,6 @@ app.post('/getResetPasswordEmail', (req, res) => {
 });
 
 app.post('/resetPassword', (req, res) => {
-  console.log('req.body.email', req.body.email);
-  console.log('req.body.password', req.body.password);
-
   bcrypt.genSalt(10, (err, salt) => {
     if (err) {
       return next(err);
@@ -628,28 +625,28 @@ io.use((socket, next) => {
 
 io.on('connection', socket => {
   socket.on('chat', data => {
-    const now = Date.now();
-
-    db.any(
-      'INSERT INTO messages (sender, receiver, message, time) VALUES(${sender}, ${receiver}, ${message}, ${time})',
+    db.one(
+      'INSERT INTO messages (sender, receiver, message, time) VALUES(${sender}, ${receiver}, ${message}, ${time}) RETURNING id, time',
       {
         sender: data.sender,
         receiver: data.receiver,
         message: data.message,
-        time: now
+        time: Date.now()
       }
-    ).then(() => {
+    ).then(result => {
       io.to(chatUsers[data.sender]).emit('chat', {
+        id: result.id,
         sender: data.sender,
         receiver: data.receiver,
         message: data.message,
-        time: now
+        time: result.time
       });
       io.to(chatUsers[data.receiver]).emit('chat', {
+        id: result.id,
         sender: data.sender,
         receiver: data.receiver,
         message: data.message,
-        time: now
+        time: result.time
       });
     });
   });

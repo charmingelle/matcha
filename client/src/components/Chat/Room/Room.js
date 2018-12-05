@@ -67,6 +67,11 @@ class Room extends React.Component {
         log: newLog,
         typing: ''
       });
+      if (this.state.lastloadedid === null) {
+        this.setState({
+          lastloadedid: data.id
+        });
+      }
     });
     this.socket.on('typing', data => {
       if (this.state.receiver === data.sender) {
