@@ -48,7 +48,7 @@ class Room extends React.Component {
     this.state = {
       sender: this.props.sender,
       receiver: this.props.receiver,
-      message: '',
+      message: this.props.message,
       log: [],
       typing: false,
       isLoading: false,
@@ -117,6 +117,7 @@ class Room extends React.Component {
   };
 
   componentWillUnmount = () => {
+    this.props.updateMessage(this.state.receiver, this.state.message);
     this.props.updateLog(this.state.receiver, this.state.log);
     this.socket.off('chat');
     this.socket.off('typing');

@@ -47,7 +47,7 @@ class Chat extends React.Component {
           user =>
             (this.users[user] = {
               log: [],
-              draft: ''
+              message: ''
             })
         );
         this.setState({
@@ -56,9 +56,13 @@ class Chat extends React.Component {
       });
   };
 
-  updateLog = (receiver, newLog) => {
-    this.users[receiver].log = newLog;
+  updateLog = (receiver, log) => {
+    this.users[receiver].log = log;
   };
+
+  updateMessage = (receiver, message) => {
+    this.users[receiver].message = message;
+  }
 
   render = () => {
     if (!this.state) {
@@ -93,7 +97,9 @@ class Chat extends React.Component {
                 sender={this.props.sender}
                 receiver={match.params.receiver}
                 log={this.users[match.params.receiver].log}
+                message={this.users[match.params.receiver].message}
                 updateLog={this.updateLog}
+                updateMessage={this.updateMessage}
               />
             )}
           />
