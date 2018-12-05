@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
 import { getMessages } from './../../../api/api.js';
 
 const styles = theme => ({
@@ -50,7 +50,7 @@ class Room extends React.Component {
       receiver: this.props.receiver,
       message: this.props.message,
       log: [],
-      typing: false,
+      typing: '',
       isLoading: false,
       lastloadedid: null,
       moreData: true
@@ -60,34 +60,25 @@ class Room extends React.Component {
 
   addSocketEventListeners = () => {
     this.socket.on('chat', data => {
-      let user = null;
+      let newLog = this.state.log;
 
-      if (this.state.sender === data.sender) {
-        user = data.receiver;
-      } else if (this.state.sender === data.receiver) {
-        user = data.sender;
-      }
-      if (user) {
-        let newLog = this.state.log;
-
-        newLog.unshift(data);
-        this.setState({
-          log: newLog,
-          typing: false
-        });
-      }
+      newLog.unshift(data);
+      this.setState({
+        log: newLog,
+        typing: ''
+      });
     });
     this.socket.on('typing', data => {
-      if (this.state.sender === data.receiver) {
+      if (this.state.receiver === data.sender) {
         this.setState({
-          typing: true
+          typing: data.sender
         });
       }
     });
     this.socket.on('stoppedTyping', data => {
-      if (this.state.sender === data.receiver) {
+      if (this.state.receiver === data.sender) {
         this.setState({
-          typing: false
+          typing: ''
         });
       }
     });
@@ -200,7 +191,7 @@ class Room extends React.Component {
   };
 
   render = () => {
-    const { receiver, message, log, typing } = this.state;
+    const { message, log, typing } = this.state;
     const { classes } = this.props;
 
     return (
@@ -209,7 +200,7 @@ class Room extends React.Component {
           <div>
             {typing && (
               <p className={classes.typingP}>
-                <em>{receiver} is typing a message...</em>
+                <em>{typing} is typing a message...</em>
               </p>
             )}
           </div>

@@ -618,8 +618,13 @@ app.post('/getMessages', requireLogin, (req, res) => {
 
 // Chat
 
-const socket = require('socket.io');
-const io = socket(server);
+const io = require('socket.io')(server);
+const chatUsers = {};
+
+io.use((socket, next) => {
+  chatUsers[socket.request._query.login] = socket.id;
+  next();
+});
 
 io.on('connection', socket => {
   socket.on('chat', data => {
@@ -633,17 +638,25 @@ io.on('connection', socket => {
         message: data.message,
         time: now
       }
-    ).then(() =>
-      io.sockets.emit('chat', {
+    ).then(() => {
+      io.to(chatUsers[data.sender]).emit('chat', {
         sender: data.sender,
         receiver: data.receiver,
         message: data.message,
         time: now
-      })
-    );
+      });
+      io.to(chatUsers[data.receiver]).emit('chat', {
+        sender: data.sender,
+        receiver: data.receiver,
+        message: data.message,
+        time: now
+      });
+    });
   });
-  socket.on('typing', data => socket.broadcast.emit('typing', data));
+  socket.on('typing', data =>
+    io.to(chatUsers[data.receiver]).emit('typing', data)
+  );
   socket.on('stoppedTyping', data =>
-    socket.broadcast.emit('stoppedTyping', data)
+    io.to(chatUsers[data.receiver]).emit('stoppedTyping', data)
   );
 });

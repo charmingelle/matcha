@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-import { getChatLogins } from './../../api/api.js';
 import socketIOClient from 'socket.io-client';
 import Room from './Room/Room.js';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { getChatLogins } from './../../api/api.js';
 
 const styles = theme => ({
   root: {
@@ -31,10 +31,10 @@ const styles = theme => ({
 });
 
 class Chat extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.users = {};
-    this.socket = socketIOClient('http://localhost:5000');
+    this.socket = socketIOClient('http://localhost:5000', { query: `login=${this.props.sender}` });
     this.socket.emit('test');
   }
 
