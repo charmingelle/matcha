@@ -535,7 +535,13 @@ app.post('/getChatLogins', requireLogin, (req, res) => {
 
       db.any(query).then(data => {
         if (data.length > 0) {
-          res.send(JSON.stringify(data.map(record => record.liker)));
+          data = data.map(record => record.liker);
+
+          const query = format(
+            'SELECT login, online FROM users WHERE login IN (%L)',
+            data
+          );
+          db.any(query).then(data => res.send(JSON.stringify(data)));
         } else {
           res.send(JSON.stringify([]));
         }

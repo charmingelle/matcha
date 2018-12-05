@@ -25,6 +25,12 @@ const styles = theme => ({
     padding: 'unset',
     borderRight: '1px solid rgba(0, 0, 0, 0.08)'
   },
+  onlineDot: {
+    width: '5px',
+    height: '5px',
+    borderRadius: '100%',
+    backgroundColor: 'green'
+  },
   selectedUser: {
     backgroundColor: 'rgba(0, 0, 0, 0.08)'
   }
@@ -34,7 +40,9 @@ class Chat extends React.Component {
   constructor(props) {
     super(props);
     this.users = {};
-    this.socket = socketIOClient('http://localhost:5000', { query: `login=${this.props.sender}` });
+    this.socket = socketIOClient('http://localhost:5000', {
+      query: `login=${this.props.sender}`
+    });
     this.socket.emit('test');
   }
 
@@ -43,15 +51,17 @@ class Chat extends React.Component {
     getChatLogins()
       .then(response => response.json())
       .then(users => {
+        console.log('users', users);
         users.forEach(
           user =>
-            (this.users[user] = {
+            (this.users[user.login] = {
+              online: user.online,
               log: [],
               message: ''
             })
         );
         this.setState({
-          selectedUser: users[0]
+          selectedUser: users[0].login
         });
       });
   };
@@ -62,7 +72,7 @@ class Chat extends React.Component {
 
   updateMessage = (receiver, message) => {
     this.users[receiver].message = message;
-  }
+  };
 
   render = () => {
     if (!this.state) {
@@ -83,6 +93,7 @@ class Chat extends React.Component {
                   onClick={() => this.setState({ selectedUser: user })}
                 >
                   <ListItemText primary={user} />
+                  {this.users[user].online && <div className={classes.onlineDot} />}
                 </ListItem>
                 <Divider light />
               </Link>
