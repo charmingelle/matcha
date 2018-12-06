@@ -40,12 +40,12 @@ class UserActions extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes, login, online, time } = this.props;
+    const { classes, login, online, time, socket } = this.props;
 
     return (
       <div className={classes.root}>
         {this.state.canLike && (
-          <LikeButton login={login} changeFame={this.changeFame} />
+          <LikeButton socket={socket} sender={this.props.sender} login={login} changeFame={this.changeFame} />
         )}
         <div>
           <span>Fame: </span>

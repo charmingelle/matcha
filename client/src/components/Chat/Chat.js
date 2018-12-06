@@ -6,7 +6,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-import socketIOClient from 'socket.io-client';
 import Room from './Room/Room.js';
 import { getChatLogins } from './../../api/api.js';
 
@@ -40,10 +39,10 @@ class Chat extends React.Component {
   constructor(props) {
     super(props);
     this.users = {};
-    this.socket = socketIOClient('http://localhost:5000', {
-      query: `login=${this.props.sender}`
-    });
-    this.socket.emit('test');
+    // this.socket = socketIOClient('http://localhost:5000', {
+    //   query: `login=${this.props.sender}`
+    // });
+    this.socket = this.props.socket;
   }
 
   componentDidMount = () => {
@@ -51,7 +50,6 @@ class Chat extends React.Component {
     getChatLogins()
       .then(response => response.json())
       .then(users => {
-        console.log('users', users);
         users.forEach(
           user =>
             (this.users[user.login] = {

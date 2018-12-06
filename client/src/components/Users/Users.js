@@ -1,55 +1,55 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
-import LeftButtonIcon from '@material-ui/icons/ChevronLeft';
-import RightButtonIcon from '@material-ui/icons/ChevronRight';
-import { getUsers, saveVisited } from './../../api/api.js';
-import FilterPanel from './FilterPanel/FilterPanel.js';
-import { Link } from 'react-router-dom';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import GridList from "@material-ui/core/GridList";
+import GridListTile from "@material-ui/core/GridListTile";
+import GridListTileBar from "@material-ui/core/GridListTileBar";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import InfoIcon from "@material-ui/icons/Info";
+import LeftButtonIcon from "@material-ui/icons/ChevronLeft";
+import RightButtonIcon from "@material-ui/icons/ChevronRight";
+import { getUsers, saveVisited } from "./../../api/api.js";
+import FilterPanel from "./FilterPanel/FilterPanel.js";
+import { Link } from "react-router-dom";
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'auto',
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    overflow: "auto",
     backgroundColor: theme.palette.background.paper
   },
   gridList: {
-    width: '100%',
-    maxWidth: '1000px'
+    width: "100%",
+    maxWidth: "1000px"
   },
   gridListTile: {
-    padding: '0 !important',
-    width: '100% !important'
+    padding: "0 !important",
+    width: "100% !important"
   },
   photo: {
-    width: '100%'
+    width: "100%"
   },
   icon: {
-    color: 'rgba(255, 255, 255, 0.54)'
+    color: "rgba(255, 255, 255, 0.54)"
   },
   details: {
-    width: '100% !important',
-    background: 'rgba(0, 0, 0, 0.5)'
+    width: "100% !important",
+    background: "rgba(0, 0, 0, 0.5)"
   },
   leftButton: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     top: 0,
-    color: 'white'
+    color: "white"
   },
   rightButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
-    color: 'white'
+    color: "white"
   }
 });
 
@@ -60,13 +60,12 @@ class Users extends React.Component {
 
     data.forEach(user => {
       user.currentPhoto = user.avatarid;
-      user.gallery = user.gallery.filter(photo => photo !== '');
+      user.gallery = user.gallery.filter(photo => photo !== "");
     });
     this.setState({
       selectedUser: -1,
       users: data,
       filteredUsers: data,
-      visited: this.props.visited
     });
   }
 
@@ -99,13 +98,17 @@ class Users extends React.Component {
   };
 
   addToVisited = login => {
-    if (!this.state.visited.includes(login)) {
-      let tempVisited = this.state.visited;
+    if (!this.props.visited.includes(login)) {
+      let newVisited = this.props.visited;
 
-      tempVisited.push(login);
-      saveVisited(tempVisited).then(() => this.setState({
-        visited: tempVisited
-      }));
+      newVisited.push(login);
+      saveVisited(newVisited).then(() => {
+        this.props.socket.emit("check", {
+          sender: this.props.sender,
+          receiver: login
+        });
+        this.props.updateVisited(newVisited);
+      });
     }
   };
 
@@ -132,7 +135,7 @@ class Users extends React.Component {
                   className={classes.photo}
                   src={`users/photos/${user.gallery[user.currentPhoto]}`}
                   alt={`${user.firstname} ${user.lastname}`}
-                />{' '}
+                />{" "}
                 */}
                 {user.currentPhoto > 0 && (
                   <Button

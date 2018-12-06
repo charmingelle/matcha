@@ -54,7 +54,7 @@ class User extends React.Component {
 
     return (
       <form>
-        <UserActions canLike={this.props.canLike} login={login} fame={fame} time={time} online={online} fake={fake} />
+        <UserActions socket={this.props.socket} canLike={this.props.canLike} sender={this.props.sender} login={login} fame={fame} time={time} online={online} fake={fake} />
         <UserPhotos gallery={gallery} />
         <div className={this.props.classes.profileDetails}>
           <OutlinedTextFields
