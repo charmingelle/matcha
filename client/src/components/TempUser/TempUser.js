@@ -64,8 +64,8 @@ const styles = {
     alignItems: 'center',
     padding: '15px'
   },
-  blockButton: {
-    marginLeft: '5px'
+  fake: {
+    marginRight: '5px'
   },
   fame: {
     marginLeft: '5px'
@@ -203,9 +203,9 @@ class TempUser extends React.Component {
           </div>
           <div className={classes.badActions}>
             {fake ? (
-              <div>Fake</div>
+              <div className={classes.fake} >Fake</div>
             ) : (
-              <button onClick={this.reportFake}>Report Fake</button>
+              <button className={classes.fake} onClick={this.reportFake}>Report Fake</button>
             )}
             <BlockButton className={classes.blockButton} login={login} />
           </div>

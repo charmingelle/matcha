@@ -7,11 +7,10 @@
 - user API and OAuth2.0 for sending emails
 - make sure that all functions are arrow functions
 - clean all components
-- consider requesting small amount of information for user list as separate request is being sent to get user details
 - think about how an empty chat looks like
 - add minWidth
 - make chat time format beautiful
-- start working on push notifications
 - correct chat bug with incorrect message display
+- add pagination to Users
 
 - complete TempUser component

@@ -121,12 +121,10 @@ class Profile extends React.Component {
     const { classes } = this.props;
 
     return (
-      <form className={classes.root}>
+      <div className={classes.root}>
         <ProfilePhotos
-          userid={id}
           gallery={gallery}
           avatarid={avatarid}
-          editable={this.props.editable}
         />
         <div className={classes.profileDetails}>
           {this.renderChangeStatus()}
@@ -188,7 +186,7 @@ class Profile extends React.Component {
             Save changes
           </Button>
         </div>
-      </form>
+      </div>
     );
   }
 }

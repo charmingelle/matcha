@@ -188,9 +188,10 @@ app.post(
 
 app.post("/saveUserPhoto", requireLogin, (req, res) => {
   const fileName = crypto.randomBytes(20).toString("hex");
-
+  
+  console.log('fileName', fileName);
   fs.writeFile(
-    `client/public/photos/${fileName}.png`,
+    `client/public/users/photos/${fileName}.png`,
     req.body.photo.replace(/^data:image\/png;base64,/, ""),
     "base64",
     err => console.error(err)
@@ -200,7 +201,7 @@ app.post("/saveUserPhoto", requireLogin, (req, res) => {
   }).then(data => {
     let gallery = data.gallery;
 
-    fs.unlink(`client/public/${gallery[req.body.photoid]}`, () => {
+    fs.unlink(`client/public/users/photos/${gallery[req.body.photoid]}`, () => {
       gallery[req.body.photoid] = `${fileName}.png`;
       db.any("UPDATE users SET gallery = ${gallery} WHERE login = ${login}", {
         gallery,
