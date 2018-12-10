@@ -57,8 +57,7 @@ class ProfilePhotos extends React.Component {
     uploadEl.click();
   };
 
-  makeAvatar = (id, event) => {
-    event.stopPropagation();
+  makeAvatar = id => {
     this.setState({ avatarid: id });
     setAvatar(id);
   };
@@ -87,7 +86,7 @@ class ProfilePhotos extends React.Component {
 
   render = () => {
     const { classes } = this.props;
-    const { gallery } = this.state;
+    const { gallery, avatarid } = this.state;
 
     return (
       <div className={classes.root}>
@@ -109,7 +108,13 @@ class ProfilePhotos extends React.Component {
                 src={`users/photos/${photo}`}
               />
               <div className={classes.photoActions}>
-                <button>Put on avatar</button>
+                {avatarid === index ? (
+                  'Avatar'
+                ) : (
+                  <button onClick={this.makeAvatar.bind(this, index)}>
+                    Put on avatar
+                  </button>
+                )}
                 <button onClick={this.upload.bind(this, index)}>
                   Replace a photo
                 </button>
