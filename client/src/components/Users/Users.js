@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { getUsers, saveVisited } from './../../api/api.js';
 import FilterPanel from './FilterPanel/FilterPanel.js';
-import TempUser from './TempUser/TempUser.js';
+import TempUser from './../TempUser/TempUser.js';
 
 const styles = theme => ({
   root: {
@@ -77,7 +77,12 @@ class Users extends React.Component {
         <ul className={classes.userList}>
           {this.state.filteredUsers.map((user, index) => (
             <li key={index}>
-              <TempUser user={user} full={false} />
+              <TempUser
+                user={user}
+                full={false}
+                socket={this.props.socket}
+                sender={this.props.sender}
+              />
             </li>
           ))}
         </ul>

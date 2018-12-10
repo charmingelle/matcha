@@ -14,6 +14,7 @@ import SignoutIcon from '@material-ui/icons/RemoveCircleOutline';
 import Typography from '@material-ui/core/Typography';
 import Profile from './../Profile/Profile.js';
 import User from './../User/User.js';
+import TempUser from './../TempUser/TempUser.js';
 import Users from './../Users/Users.js';
 import Signin from './../Signin/Signin.js';
 import Visited from './../Visited/Visited.js';
@@ -327,7 +328,14 @@ class ScrollableTabsButtonForce extends React.Component {
               path="/users/:login"
               render={({ match }) => (
                 <TabContainer>
-                  <User
+                  {/* <User
+                    socket={socket}
+                    sender={login}
+                    login={match.params.login}
+                    canLike={canLike}
+                  /> */}
+                  <TempUser
+                    user={profile}
                     socket={socket}
                     sender={login}
                     login={match.params.login}

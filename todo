@@ -13,3 +13,5 @@
 - make chat time format beautiful
 - start working on push notifications
 - correct chat bug with incorrect message display
+
+- complete TempUser component

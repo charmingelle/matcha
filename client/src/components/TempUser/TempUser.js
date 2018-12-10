@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import LikeButton from './LikeButton/LikeButton.js';
+import BlockButton from './BlockButton/BlockButton.js';
+import { reportFake } from './../../api/api.js';
 
-const styles = theme => ({
+const styles = {
   container: {
     margin: '40px',
     border: '1px solid rgba(0, 0, 0, 0.54)'
@@ -53,19 +56,19 @@ const styles = theme => ({
   },
   goodActions: {
     display: 'flex',
+    alignItems: 'center',
     padding: '15px'
   },
   badActions: {
+    display: 'flex',
+    alignItems: 'center',
     padding: '15px'
   },
-  fakeButton: {
-    marginRight: '5px'
-  },
-  likeButton: {
-    margin: '5px'
+  blockButton: {
+    marginLeft: '5px'
   },
   fame: {
-    margin: '5px'
+    marginLeft: '5px'
   },
   showMore: {
     display: 'flex',
@@ -79,7 +82,7 @@ const styles = theme => ({
   bold: {
     fontWeight: 'bold'
   }
-});
+};
 
 class TempUser extends React.Component {
   componentDidMount = () => {
@@ -117,12 +120,26 @@ class TempUser extends React.Component {
     });
   };
 
+  changeFame = step => {
+    this.setState({
+      fame: this.state.fame + step
+    });
+  };
+
+  reportFake = () =>
+    reportFake(this.state.login).then(() =>
+      this.setState({
+        fake: true
+      })
+    );
+
   render = () => {
     if (!this.state) {
       return <span>Loading...</span>;
     }
     const { classes } = this.props;
     const {
+      login,
       firstname,
       lastname,
       online,
@@ -135,10 +152,9 @@ class TempUser extends React.Component {
       gender,
       preferences,
       bio,
-      interests
+      interests,
+      fake
     } = this.state;
-
-    console.log('interests', interests);
 
     return (
       <div className={classes.container}>
@@ -177,12 +193,21 @@ class TempUser extends React.Component {
         </div>
         <div className={classes.actions}>
           <div className={classes.goodActions}>
-            <button className={classes.likeButton}>Like</button>
+            <LikeButton
+              changeFame={this.changeFame}
+              socket={this.props.socket}
+              sender={this.props.sender}
+              login={login}
+            />
             <div className={classes.fame}>{fame > 0 && fame}</div>
           </div>
           <div className={classes.badActions}>
-            <button className={classes.fakeButton}>Report Fake</button>
-            <button>Block</button>
+            {fake ? (
+              <div>Fake</div>
+            ) : (
+              <button onClick={this.reportFake}>Report Fake</button>
+            )}
+            <BlockButton className={classes.blockButton} login={login} />
           </div>
         </div>
         <div className={classes.showMore}>
