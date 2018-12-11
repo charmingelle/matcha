@@ -1,30 +1,30 @@
-import React from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import socketIOClient from 'socket.io-client';
-import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import ListIcon from '@material-ui/icons/List';
-import PersonPinIcon from '@material-ui/icons/PersonPin';
-import ChatIcon from '@material-ui/icons/Chat';
-import CheckIcon from '@material-ui/icons/Check';
-import SignoutIcon from '@material-ui/icons/RemoveCircleOutline';
-import Typography from '@material-ui/core/Typography';
-import Profile from './../Profile/Profile.js';
-import TempUser from './../TempUser/TempUser.js';
-import Users from './../Users/Users.js';
-import Signin from './../Signin/Signin.js';
-import Visited from './../Visited/Visited.js';
-import Chat from './../Chat/Chat.js';
-import { getUserProfile, saveLocation, signout } from './../../api/api.js';
-import Notifications from './../Notifications/Notifications.js';
+import React from "react";
+import { BrowserRouter, Route, Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import socketIOClient from "socket.io-client";
+import { withStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import ListIcon from "@material-ui/icons/List";
+import PersonPinIcon from "@material-ui/icons/PersonPin";
+import ChatIcon from "@material-ui/icons/Chat";
+import CheckIcon from "@material-ui/icons/Check";
+import SignoutIcon from "@material-ui/icons/RemoveCircleOutline";
+import Typography from "@material-ui/core/Typography";
+import Profile from "./../Profile/Profile.js";
+import User from "./../User/User.js";
+import Users from "./../Users/Users.js";
+import Signin from "./../Signin/Signin.js";
+import Visited from "./../Visited/Visited.js";
+import Chat from "./../Chat/Chat.js";
+import { getUserProfile, saveLocation, signout } from "./../../api/api.js";
+import Notifications from "./../Notifications/Notifications.js";
 
 function TabContainer(props) {
   return (
     <Typography
-      style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+      style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
       component="div"
     >
       {props.children}
@@ -38,16 +38,16 @@ TabContainer.propTypes = {
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    height: '100vh',
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "100vh",
     backgroundColor: theme.palette.background.paper
   },
   appContent: {
     flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column'
+    display: "flex",
+    flexDirection: "column"
   }
 });
 
@@ -61,8 +61,8 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 
   ipLookUp = userid => {
-    fetch('http://ip-api.com/json', {
-      method: 'POST'
+    fetch("http://ip-api.com/json", {
+      method: "POST"
     })
       .then(response => response.json())
       .then(data => saveLocation([data.lat, data.lon]))
@@ -87,19 +87,19 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 
   addSocketEventListeners = () => {
-    socket.on('like', data =>
+    socket.on("like", data =>
       this.addNotification(`${data.sender} has just liked you`)
     );
-    socket.on('check', data =>
+    socket.on("check", data =>
       this.addNotification(`${data.sender} has just checked your profile`)
     );
-    socket.on('chat', data =>
+    socket.on("chat", data =>
       this.addNotification(`${data.sender} has sent you a message`)
     );
-    socket.on('likeBack', data =>
+    socket.on("likeBack", data =>
       this.addNotification(`${data.sender} has just liked you back!`)
     );
-    socket.on('unlike', data =>
+    socket.on("unlike", data =>
       this.addNotification(
         `Unfortunately ${data.sender} has disconnected from you`
       )
@@ -110,7 +110,7 @@ class ScrollableTabsButtonForce extends React.Component {
     getUserProfile().then(res => {
       if (res.status === 200) {
         res.json().then(data => {
-          socket = socketIOClient('http://localhost:5000', {
+          socket = socketIOClient("http://localhost:5000", {
             query: `login=${data.user.login}`
           });
           this.addSocketEventListeners();
@@ -133,13 +133,13 @@ class ScrollableTabsButtonForce extends React.Component {
               changeStatus: null,
               error: false,
               canLike:
-                data.user.gallery.filter(image => image !== '').length > 0
+                data.user.gallery.filter(image => image !== "").length > 0
             }
           });
           // this.getLocation(data.user.id);
         });
       } else {
-        this.setState({ profile: 'signin' });
+        this.setState({ profile: "signin" });
       }
     });
   }
@@ -149,7 +149,7 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 
   signout = () => {
-    signout().then(() => this.setState({ profile: 'signin' }));
+    signout().then(() => this.setState({ profile: "signin" }));
   };
 
   changeTab = tabid =>
@@ -179,7 +179,7 @@ class ScrollableTabsButtonForce extends React.Component {
     if (this.state.profile === null) {
       return <span>Loading...</span>;
     }
-    if (this.state.profile === 'signin') {
+    if (this.state.profile === "signin") {
       return <Signin />;
     }
     const { classes } = this.props;
@@ -237,7 +237,7 @@ class ScrollableTabsButtonForce extends React.Component {
           <AppBar
             position="relative"
             color="default"
-            style={{ zIndex: 'initial' }}
+            style={{ zIndex: "initial" }}
           >
             <Tabs
               className={classes.tabs}
@@ -333,12 +333,14 @@ class ScrollableTabsButtonForce extends React.Component {
                     login={match.params.login}
                     canLike={canLike}
                   /> */}
-                  <TempUser
+                  <User
                     user={profile}
                     socket={socket}
                     sender={login}
                     login={match.params.login}
                     canLike={canLike}
+                    photoFolder="photos/"
+                    full={true}
                   />
                 </TabContainer>
               )}

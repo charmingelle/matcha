@@ -1,24 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { getUsers, saveVisited } from './../../api/api.js';
-import FilterPanel from './FilterPanel/FilterPanel.js';
-import TempUser from './../TempUser/TempUser.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import { getUsers, saveVisited } from "./../../api/api.js";
+import FilterPanel from "./FilterPanel/FilterPanel.js";
+import User from "./../User/User.js";
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'auto',
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    overflow: "auto",
     backgroundColor: theme.palette.background.paper
   },
   userList: {
     margin: 0,
-    minWidth: '614px',
-    maxWidth: '614px',
     padding: 0,
-    listStyleType: 'none'
+    listStyleType: "none"
   }
 });
 
@@ -50,7 +48,7 @@ class Users extends React.Component {
 
       newVisited.push(login);
       saveVisited(newVisited).then(() => {
-        this.props.socket.emit('check', {
+        this.props.socket.emit("check", {
           sender: this.props.sender,
           receiver: login
         });
@@ -77,7 +75,8 @@ class Users extends React.Component {
         <ul className={classes.userList}>
           {this.state.filteredUsers.map((user, index) => (
             <li key={index}>
-              <TempUser
+              <User
+                photoFolder="users/photos/"
                 user={user}
                 full={false}
                 socket={this.props.socket}
