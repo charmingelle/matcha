@@ -13,7 +13,6 @@ import CheckIcon from '@material-ui/icons/Check';
 import SignoutIcon from '@material-ui/icons/RemoveCircleOutline';
 import Typography from '@material-ui/core/Typography';
 import Profile from './../Profile/Profile.js';
-import User from './../User/User.js';
 import TempUser from './../TempUser/TempUser.js';
 import Users from './../Users/Users.js';
 import Signin from './../Signin/Signin.js';

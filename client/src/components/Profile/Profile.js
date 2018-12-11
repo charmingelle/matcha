@@ -107,7 +107,6 @@ class Profile extends React.Component {
       return <span>Loading...</span>;
     }
     const {
-      id,
       firstname,
       lastname,
       email,

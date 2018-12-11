@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const port = 5000;
 const pgp = require("pg-promise")(/*options*/);
-// const db = pgp("postgres://grevenko:postgres@localhost:5432/matcha");
-const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
+const db = pgp("postgres://grevenko:postgres@localhost:5432/matcha");
+// const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const format = require("pg-format");
 const bodyParser = require("body-parser");
 const crypto = require("crypto");
@@ -188,8 +188,7 @@ app.post(
 
 app.post("/saveUserPhoto", requireLogin, (req, res) => {
   const fileName = crypto.randomBytes(20).toString("hex");
-  
-  console.log('fileName', fileName);
+
   fs.writeFile(
     `client/public/users/photos/${fileName}.png`,
     req.body.photo.replace(/^data:image\/png;base64,/, ""),
@@ -206,7 +205,7 @@ app.post("/saveUserPhoto", requireLogin, (req, res) => {
       db.any("UPDATE users SET gallery = ${gallery} WHERE login = ${login}", {
         gallery,
         login: req.session.login
-      });
+      }).then(() => res.send(JSON.stringify({ fileName: `${fileName}.png` })));
     });
   });
 });
