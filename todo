@@ -11,3 +11,4 @@
 - make chat time format beautiful
 - correct chat bug with incorrect message display
 - add pagination to Users
+- consider saving all data in one storage for the whole app
