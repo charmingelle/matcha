@@ -621,6 +621,21 @@ app.post("/getMessages", requireLogin, (req, res) => {
   });
 });
 
+app.post("/getCheckedBy", requireLogin, (req, res) =>
+  db.any("SELECT login, visited from users").then(data => {
+    data = data.filter(record => record.visited.includes(req.session.login));
+    res.send(JSON.stringify(data.map(record => record.login)));
+  })
+);
+
+app.post("/getLikedBy", requireLogin, (req, res) =>
+  db
+    .any("SELECT liker FROM likes WHERE likee = ${likee}", {
+      likee: req.session.login
+    })
+    .then(data => res.send(JSON.stringify(data.map(record => record.liker))))
+);
+
 // Chat
 
 const io = require("socket.io")(server);

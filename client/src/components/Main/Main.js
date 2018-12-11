@@ -350,7 +350,11 @@ class ScrollableTabsButtonForce extends React.Component {
               path="/visited"
               render={() => (
                 <TabContainer>
-                  <Visited changeTab={this.changeTab} />
+                  <Visited
+                    socket={socket}
+                    sender={login}
+                    changeTab={this.changeTab}
+                  />
                 </TabContainer>
               )}
             />

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import { saveUserPhoto, setAvatar } from "./../../../api/api.js";
 
-const styles = theme => ({
+const styles = {
   root: {
     display: "flex",
     flexDirection: "column",
@@ -35,7 +35,7 @@ const styles = theme => ({
     display: "flex",
     justifyContent: "space-around"
   }
-});
+};
 
 class ProfilePhotos extends React.Component {
   constructor(props) {

@@ -1,23 +1,25 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import SimpleSelect from './../../components/SimpleSelect/SimpleSelect.js';
-import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTextFields.js';
-import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
-import ProfilePhotos from './ProfilePhotos/ProfilePhotos.js';
-import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
-import Button from '@material-ui/core/Button';
-import { saveUserProfile } from './../../api/api.js';
-import { isEmailValid } from './../../utils/utils.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import SimpleSelect from "./../../components/SimpleSelect/SimpleSelect.js";
+import OutlinedTextFields from "./../../components/OutlinedTextFields/OutlinedTextFields.js";
+import InterestsInput from "./../../components/InterestsInput/InterestsInput.js";
+import ProfilePhotos from "./ProfilePhotos/ProfilePhotos.js";
+import ChangeStatus from "./../ChangeStatus/ChangeStatus.js";
+import CheckedBy from "./../CheckedBy/CheckedBy.js";
+import LikedBy from "./../LikedBy/LikedBy.js";
+import Button from "@material-ui/core/Button";
+import { saveUserProfile } from "./../../api/api.js";
+import { isEmailValid } from "./../../utils/utils.js";
 
 const styles = theme => ({
   root: {
-    overflow: 'auto'
+    overflow: "auto"
   },
   profileDetails: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '10px'
+    display: "flex",
+    flexDirection: "column",
+    padding: "10px"
   }
 });
 
@@ -32,7 +34,7 @@ class Profile extends React.Component {
 
     if (!validStatus) {
       this.setState({
-        changeStatus: 'Please make sure that your email address is correct',
+        changeStatus: "Please make sure that your email address is correct",
         error: true
       });
     }
@@ -40,9 +42,9 @@ class Profile extends React.Component {
   };
 
   validateEmpty = value => {
-    if (value === '') {
+    if (value === "") {
       this.setState({
-        changeStatus: 'Please fill all the fields in',
+        changeStatus: "Please fill all the fields in",
         error: true
       });
       return false;
@@ -121,10 +123,9 @@ class Profile extends React.Component {
 
     return (
       <div className={classes.root}>
-        <ProfilePhotos
-          gallery={gallery}
-          avatarid={avatarid}
-        />
+        <CheckedBy />
+        <LikedBy />
+        <ProfilePhotos gallery={gallery} avatarid={avatarid} />
         <div className={classes.profileDetails}>
           {this.renderChangeStatus()}
           <OutlinedTextFields
@@ -156,14 +157,14 @@ class Profile extends React.Component {
           />
           <SimpleSelect
             title="Gender"
-            items={['male', 'female']}
+            items={["male", "female"]}
             name="gender"
             value={gender}
             onChange={this.onChange}
           />
           <SimpleSelect
             title="Preferences"
-            items={['heterosexual', 'homosexual', 'bisexual']}
+            items={["heterosexual", "homosexual", "bisexual"]}
             name="preferences"
             value={preferences}
             onChange={this.onChange}
