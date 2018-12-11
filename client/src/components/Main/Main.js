@@ -12,9 +12,10 @@ import ChatIcon from "@material-ui/icons/Chat";
 import CheckIcon from "@material-ui/icons/Check";
 import SignoutIcon from "@material-ui/icons/RemoveCircleOutline";
 import Typography from "@material-ui/core/Typography";
+import Users from "./../Users/Users.js";
+import Suggestions from "./../Suggestions/Suggestions.js";
 import Profile from "./../Profile/Profile.js";
 import User from "./../User/User.js";
-import Users from "./../Users/Users.js";
 import Signin from "./../Signin/Signin.js";
 import Visited from "./../Visited/Visited.js";
 import Chat from "./../Chat/Chat.js";
@@ -208,6 +209,12 @@ class ScrollableTabsButtonForce extends React.Component {
             >
               <Tab label="Users" icon={<ListIcon />} component={Link} to="/" />
               <Tab
+                label="Suggestions"
+                icon={<ListIcon />}
+                component={Link}
+                to="/suggestions"
+              />
+              <Tab
                 label="Profile"
                 icon={<PersonPinIcon />}
                 component={Link}
@@ -250,6 +257,12 @@ class ScrollableTabsButtonForce extends React.Component {
             >
               <Tab label="Users" icon={<ListIcon />} component={Link} to="/" />
               <Tab
+                label="Suggestions"
+                icon={<ListIcon />}
+                component={Link}
+                to="/suggestions"
+              />
+              <Tab
                 label="Profile"
                 icon={<PersonPinIcon />}
                 component={Link}
@@ -291,6 +304,15 @@ class ScrollableTabsButtonForce extends React.Component {
                     profileLocation={location}
                     changeTab={this.changeTab}
                   />
+                </TabContainer>
+              )}
+            />
+            <Route
+              exact
+              path="/suggestions"
+              render={() => (
+                <TabContainer>
+                  <Suggestions changeTab={this.changeTab} otherProp='otherProp' />
                 </TabContainer>
               )}
             />

@@ -174,3 +174,8 @@ export const getLikedBy = () =>
   fetch("/getLikedBy", {
     method: "POST"
   });
+
+export const getSuggestions = () =>
+  fetch("/getSuggestions", {
+    method: "POST"
+  });

@@ -636,6 +636,36 @@ app.post("/getLikedBy", requireLogin, (req, res) =>
     .then(data => res.send(JSON.stringify(data.map(record => record.liker))))
 );
 
+app.post("/getSuggestions", requireLogin, (req, res) => {
+  db.any("SELECT gender, preferences FROM users WHERE login = ${login}", {
+    login: req.session.login
+  }).then(data => {
+    let request,
+      params = {
+        login: req.session.login
+      };
+
+    if (
+      (data[0].gender === "male" && data[0].preferences === "heterosexual") ||
+      (data[0].gender === "female" && data[0].preferences === "homosexual")
+    ) {
+      request =
+        "SELECT * FROM users WHERE login <> ${login} AND gender = ${gender}";
+      params.gender = "female";
+    } else if (
+      (data[0].gender === "female" && data[0].preferences === "heterosexual") ||
+      (data[0].gender === "male" && data[0].preferences === "homosexual")
+    ) {
+      request =
+        "SELECT * FROM users WHERE login <> ${login} AND gender = ${gender}";
+      params.gender = "male";
+    } else {
+      request = "SELECT * FROM users WHERE login <> ${login}";
+    }
+    db.any(request, params).then(data => res.send(JSON.stringify(data)));
+  });
+});
+
 // Chat
 
 const io = require("socket.io")(server);
