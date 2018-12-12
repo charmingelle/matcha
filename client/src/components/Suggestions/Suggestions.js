@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import { getSuggestions } from "./../../api/api.js";
+import SortingPanel from "./../SortingPanel/SortingPanel.js";
 
 const styles = {
   root: {}
@@ -9,31 +10,17 @@ const styles = {
 
 class Suggestions extends React.Component {
   componentDidMount = () => {
-    console.log("this.props.profile", this.props.profile);
+    // console.log("this.props.profile", this.props.profile);
     this.props.changeTab(1);
     getSuggestions()
       .then(response => response.json())
       .then(data => this.setState({ users: data }));
   };
 
-  getDistance = (pos1, pos2) => {
-    let distance = Math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2);
-
-    // console.log('distance', distance);
-    return distance;
-  };
-
-  sortUsersByLocation = () => {
-    console.log("this.state.users", this.state.users);
-    let sortedUsers = this.state.users;
-
-    sortedUsers.sort(
-      (a, b) =>
-        this.getDistance(a.location, this.props.profile.location) -
-        this.getDistance(b.location, this.props.profile.location)
-    );
-    console.log("sortedUsers", sortedUsers);
-    sortedUsers.map(user => console.log(this.getDistance(user.location, this.props.profile.location)));
+  updateUsers = sortedUsers => {
+    this.setState({
+      users: sortedUsers
+    });
   };
 
   render() {
@@ -43,14 +30,23 @@ class Suggestions extends React.Component {
     const { classes } = this.props;
     const { users } = this.state;
 
-    this.sortUsersByLocation();
+    // this.sortUsersByAge(-1);
+    // this.sortUsersByLocation();
+    // this.sortUsersByCommonInterests();
+    // this.sortUsersByFame();
     return (
       <div className={classes.root}>
+        <SortingPanel
+          profile={this.props.profile}
+          users={users}
+          updateUsers={this.updateUsers}
+        />
         <ul>
           {users.map((user, index) => (
-            <li key={index}>{`${user.login}: (${user.location[0]}, ${
-              user.location[1]
-            })`}</li>
+            <li key={index}>{`${user.login}: age ${user.age}, location (${
+              user.location[0]
+            }, ${user.location[1]}), fame ${user.fame}, interests ${user.interests}
+            `}</li>
           ))}
         </ul>
       </div>
