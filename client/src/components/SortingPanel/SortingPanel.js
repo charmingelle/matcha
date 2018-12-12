@@ -10,7 +10,7 @@ class SortingPanel extends React.Component {
   componentDidMount = () => {
     this.setState({
       ageOrder: 0,
-      locationOrder: 0,
+      locationOrder: 1,
       fameOrder: 0,
       commonInterestsOrder: 0
     });

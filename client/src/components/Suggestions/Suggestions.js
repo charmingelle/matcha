@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import { getSuggestions } from "./../../api/api.js";
 import SortingPanel from "./../SortingPanel/SortingPanel.js";
+import FilterPanel from "./../FilterPanel/FilterPanel.js";
 
 const styles = {
   root: {}
@@ -10,7 +11,6 @@ const styles = {
 
 class Suggestions extends React.Component {
   componentDidMount = () => {
-    // console.log("this.props.profile", this.props.profile);
     this.props.changeTab(1);
     getSuggestions()
       .then(response => response.json())
@@ -30,10 +30,6 @@ class Suggestions extends React.Component {
     const { classes } = this.props;
     const { users } = this.state;
 
-    // this.sortUsersByAge(-1);
-    // this.sortUsersByLocation();
-    // this.sortUsersByCommonInterests();
-    // this.sortUsersByFame();
     return (
       <div className={classes.root}>
         <SortingPanel
@@ -41,11 +37,14 @@ class Suggestions extends React.Component {
           users={users}
           updateUsers={this.updateUsers}
         />
+        <FilterPanel />
         <ul>
           {users.map((user, index) => (
             <li key={index}>{`${user.login}: age ${user.age}, location (${
               user.location[0]
-            }, ${user.location[1]}), fame ${user.fame}, interests ${user.interests}
+            }, ${user.location[1]}), fame ${user.fame}, interests ${
+              user.interests
+            }
             `}</li>
           ))}
         </ul>

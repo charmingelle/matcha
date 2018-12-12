@@ -86,7 +86,7 @@ class Profile extends React.Component {
   };
 
   onAgeChange = event => {
-    if (event.target.value >= 18) {
+    if (event.target.value >= 18 && event.target.value <= 100) {
       this.setState({
         age: event.target.value
       });
