@@ -52,23 +52,7 @@ class FilterPanel extends React.Component {
     });
 
   filter = () => {
-    const {
-      startAge,
-      endAge,
-      distance,
-      fameRating,
-      amountOfCommonInterests
-    } = this.state;
-    let filteredUsers = this.props.users.filter(
-      user =>
-        user.age >= startAge &&
-        user.age <= endAge &&
-        user.distance <= distance &&
-        user.fame >= fameRating &&
-        user.amountOfCommonInterests >= amountOfCommonInterests
-    );
-
-    this.props.updateUsers(filteredUsers);
+    this.props.setFilterParams(this.state);
   };
 
   render = () => {

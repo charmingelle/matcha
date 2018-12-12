@@ -10,6 +10,18 @@ const styles = {
 };
 
 class Suggestions extends React.Component {
+  constructor(props) {
+    super(props);
+    this.users = null;
+    this.sortParam = "distance";
+    this.sortOrder = 1;
+    this.startAge = 18;
+    this.endAge = 100;
+    this.distance = 5;
+    this.fameRating = 0;
+    this.amountOfCommonInterests = 0;
+  }
+
   componentDidMount = () => {
     this.props.changeTab(1);
     getSuggestions()
@@ -24,16 +36,62 @@ class Suggestions extends React.Component {
             value => -1 !== this.props.profile.interests.indexOf(value)
           ).length;
         });
-        this.setState({ users: data, filteredUsers: data });
+        this.users = data;
+        this.setState({
+          filteredUsers: this.sort(this.filter(data))
+        });
       });
   };
 
   getDistance = (pos1, pos2) =>
     Math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2);
 
-  updateUsers = newUsers => {
+  sort = users => {
+    if (this.sortParam === "age") {
+      return users.sort((a, b) => this.sortOrder * (b.age - a.age));
+    }
+    if (this.sortParam === "distance") {
+      return users.sort((a, b) => this.sortOrder * (b.distance - a.distance));
+    }
+    if (this.sortParam === "fame") {
+      return users.sort((a, b) => this.sortOrder * (b.fame - a.fame));
+    }
+    if (this.sortParam === "amountOfCommonInterests") {
+      return users.sort(
+        (a, b) =>
+          this.sortOrder *
+          (b.amountOfCommonInterests - a.amountOfCommonInterests)
+      );
+    }
+  };
+
+  setSortParams = (param, order) => {
+    this.sortParam = param;
+    this.sortOrder = order;
     this.setState({
-      filteredUsers: newUsers
+      filteredUsers: this.sort(this.filter(this.users))
+    });
+  };
+
+  filter = users => {
+    return users.filter(
+      user =>
+        user.age >= this.startAge &&
+        user.age <= this.endAge &&
+        user.distance <= this.distance &&
+        user.fame >= this.fameRating &&
+        user.amountOfCommonInterests >= this.amountOfCommonInterests
+    );
+  };
+
+  setFilterParams = params => {
+    this.startAge = params.startAge;
+    this.endAge = params.endAge;
+    this.distance = params.distance;
+    this.fameRating = params.fameRating;
+    this.amountOfCommonInterests = params.amountOfCommonInterests;
+    this.setState({
+      filteredUsers: this.sort(this.filter(this.users))
     });
   };
 
@@ -42,27 +100,17 @@ class Suggestions extends React.Component {
       return <span>Loading...</span>;
     }
     const { classes } = this.props;
-    const { users, filteredUsers } = this.state;
+    const { filteredUsers } = this.state;
 
     return (
       <div className={classes.root}>
-        <SortingPanel
-          profile={this.props.profile}
-          users={filteredUsers}
-          updateUsers={this.updateUsers}
-        />
-        <FilterPanel
-          profile={this.props.profile}
-          users={users}
-          updateUsers={this.updateUsers}
-        />
+        <SortingPanel setSortParams={this.setSortParams} />
+        <FilterPanel setFilterParams={this.setFilterParams} />
         <ul>
           {filteredUsers.map((user, index) => (
-            <li key={index}>{`${user.login}: age ${user.age}, location (${
-              user.location[0]
-            }, ${user.location[1]}), fame ${user.fame}, interests ${
-              user.interests
-            }
+            <li key={index}>{`${user.login}: age ${user.age}, distance ${
+              user.distance
+            }, fame ${user.fame}, interests ${user.interests}
             `}</li>
           ))}
         </ul>

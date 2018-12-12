@@ -9,10 +9,10 @@ const styles = {
 class SortingPanel extends React.Component {
   componentDidMount = () => {
     this.setState({
-      ageOrder: 0,
-      locationOrder: 1,
-      fameOrder: 0,
-      commonInterestsOrder: 0
+      age: 0,
+      distance: 1,
+      fame: 0,
+      amountOfCommonInterests: 0
     });
   };
 
@@ -30,58 +30,17 @@ class SortingPanel extends React.Component {
     return order;
   };
 
-  sortByAge = () => {
-    const order = this.changeOrder("ageOrder");
-    let sortedUsers = this.props.users;
+  sortBy = param => {
+    const order = this.changeOrder(param);
 
-    this.setState({
-      locationOrder: 0,
-      fameOrder: 0,
-      commonInterestsOrder: 0
-    });
-    sortedUsers.sort((a, b) => order * (b.age - a.age));
-    this.props.updateUsers(sortedUsers);
-  };
-
-  sortByLocation = () => {
-    const order = this.changeOrder("locationOrder");
-    let sortedUsers = this.props.users;
-
-    this.setState({
-      ageOrder: 0,
-      fameOrder: 0,
-      commonInterestsOrder: 0
-    });
-    sortedUsers.sort((a, b) => order * (b.distance - a.distance));
-    this.props.updateUsers(sortedUsers);
-  };
-
-  sortByFame = () => {
-    const order = this.changeOrder("fameOrder");
-    let sortedUsers = this.props.users;
-
-    this.setState({
-      ageOrder: 0,
-      locationOrder: 0,
-      commonInterestsOrder: 0
-    });
-    sortedUsers.sort((a, b) => order * (b.fame - a.fame));
-    this.props.updateUsers(sortedUsers);
-  };
-
-  sortByCommonInterests = () => {
-    const order = this.changeOrder("commonInterestsOrder");
-    let sortedUsers = this.props.users;
-
-    this.setState({
-      ageOrder: 0,
-      locationOrder: 0,
-      fameOrder: 0
-    });
-    sortedUsers.sort(
-      (a, b) => order * (b.amountOfCommonInterests - a.amountOfCommonInterests)
+    Object.keys(this.setState).forEach(
+      key =>
+        key !== param &&
+        this.setState({
+          [key]: 0
+        })
     );
-    this.props.updateUsers(sortedUsers);
+    this.props.setSortParams(param, order);
   };
 
   render = () => {
@@ -89,36 +48,31 @@ class SortingPanel extends React.Component {
       return <span>Loading...</span>;
     }
     const { classes } = this.props;
-    const {
-      ageOrder,
-      locationOrder,
-      fameOrder,
-      commonInterestsOrder
-    } = this.state;
+    const { age, distance, fame, amountOfCommonInterests } = this.state;
     const arrowDown = <span>&#8595;</span>;
     const arrowUp = <span>&#8593;</span>;
 
     return (
       <div className={classes.root}>
-        <button onClick={this.sortByAge}>
+        <button onClick={this.sortBy.bind(this, "age")}>
           Age
-          {ageOrder === 1 && arrowDown}
-          {ageOrder === -1 && arrowUp}
+          {age === 1 && arrowDown}
+          {age === -1 && arrowUp}
         </button>
-        <button onClick={this.sortByLocation}>
+        <button onClick={this.sortBy.bind(this, "distance")}>
           Location
-          {locationOrder === 1 && arrowDown}
-          {locationOrder === -1 && arrowUp}
+          {distance === 1 && arrowDown}
+          {distance === -1 && arrowUp}
         </button>
-        <button onClick={this.sortByFame}>
+        <button onClick={this.sortBy.bind(this, "fame")}>
           Fame
-          {fameOrder === 1 && arrowDown}
-          {fameOrder === -1 && arrowUp}
+          {fame === 1 && arrowDown}
+          {fame === -1 && arrowUp}
         </button>
-        <button onClick={this.sortByCommonInterests}>
+        <button onClick={this.sortBy.bind(this, "amountOfCommonInterests")}>
           Common interests
-          {commonInterestsOrder === 1 && arrowDown}
-          {commonInterestsOrder === -1 && arrowUp}
+          {amountOfCommonInterests === 1 && arrowDown}
+          {amountOfCommonInterests === -1 && arrowUp}
         </button>
       </div>
     );
