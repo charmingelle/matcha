@@ -42,7 +42,8 @@ class FilterPanel extends React.Component {
       endAge: 100,
       distance: 5,
       fameRating: 0,
-      amountOfCommonInterests: 0
+      amountOfCommonInterests: 0,
+      selectedInterests: []
     });
   };
 
@@ -55,17 +56,32 @@ class FilterPanel extends React.Component {
     this.props.setFilterParams(this.state);
   };
 
+  optionChange = event => {
+    let newSelectedInterests = this.state.selectedInterests;
+    let index = newSelectedInterests.indexOf(event.target.value);
+
+    if (index === -1) {
+      newSelectedInterests.push(event.target.value);
+    } else {
+      newSelectedInterests.splice(index, 1);
+    }
+    this.setState({
+      selectedInterests: newSelectedInterests
+    });
+  };
+
   render = () => {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes } = this.props;
+    const { classes, interests } = this.props;
     const {
       startAge,
       endAge,
       distance,
       fameRating,
-      amountOfCommonInterests
+      amountOfCommonInterests,
+      selectedInterests
     } = this.state;
 
     return (
@@ -141,7 +157,20 @@ class FilterPanel extends React.Component {
             onChange={this.changeParam.bind(this, "amountOfCommonInterests")}
           />
         </div>
-        <div />
+        <div className={classes.interestsFilter}>
+          <select multiple>
+            {interests.map(interest => (
+              <option
+                selected={selectedInterests.indexOf(interest) !== -1}
+                onClick={this.optionChange}
+                key={interest}
+                value={interest}
+              >
+                {interest}
+              </option>
+            ))}
+          </select>
+        </div>
         <button onClick={this.filter}>Filter</button>
       </div>
     );

@@ -20,6 +20,7 @@ class Suggestions extends React.Component {
     this.distance = 5;
     this.fameRating = 0;
     this.amountOfCommonInterests = 0;
+    this.selectedInterests = [];
   }
 
   componentDidMount = () => {
@@ -80,7 +81,10 @@ class Suggestions extends React.Component {
         user.age <= this.endAge &&
         user.distance <= this.distance &&
         user.fame >= this.fameRating &&
-        user.amountOfCommonInterests >= this.amountOfCommonInterests
+        user.amountOfCommonInterests >= this.amountOfCommonInterests &&
+        this.selectedInterests.every(interest =>
+          user.interests.includes(interest)
+        )
     );
   };
 
@@ -90,6 +94,7 @@ class Suggestions extends React.Component {
     this.distance = params.distance;
     this.fameRating = params.fameRating;
     this.amountOfCommonInterests = params.amountOfCommonInterests;
+    this.selectedInterests = params.selectedInterests;
     this.setState({
       filteredUsers: this.sort(this.filter(this.users))
     });
@@ -105,7 +110,10 @@ class Suggestions extends React.Component {
     return (
       <div className={classes.root}>
         <SortingPanel setSortParams={this.setSortParams} />
-        <FilterPanel setFilterParams={this.setFilterParams} />
+        <FilterPanel
+          setFilterParams={this.setFilterParams}
+          interests={this.props.profile.allInterests}
+        />
         <ul>
           {filteredUsers.map((user, index) => (
             <li key={index}>{`${user.login}: age ${user.age}, distance ${
