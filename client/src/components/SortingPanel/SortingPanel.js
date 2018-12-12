@@ -43,10 +43,6 @@ class SortingPanel extends React.Component {
     this.props.updateUsers(sortedUsers);
   };
 
-  getDistance = (pos1, pos2) => {
-    return Math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2);
-  };
-
   sortByLocation = () => {
     const order = this.changeOrder("locationOrder");
     let sortedUsers = this.props.users;
@@ -56,12 +52,7 @@ class SortingPanel extends React.Component {
       fameOrder: 0,
       commonInterestsOrder: 0
     });
-    sortedUsers.sort(
-      (a, b) =>
-        order *
-        (this.getDistance(b.location, this.props.profile.location) -
-          this.getDistance(a.location, this.props.profile.location))
-    );
+    sortedUsers.sort((a, b) => order * (b.distance - a.distance));
     this.props.updateUsers(sortedUsers);
   };
 
@@ -81,21 +72,15 @@ class SortingPanel extends React.Component {
   sortByCommonInterests = () => {
     const order = this.changeOrder("commonInterestsOrder");
     let sortedUsers = this.props.users;
-    let usersInterests = sortedUsers.map(user => user.interests);
-    let myInterests = this.props.profile.interests;
-    let intersections = usersInterests.map(userInterests =>
-      userInterests.filter(value => -1 !== myInterests.indexOf(value))
-    );
 
     this.setState({
       ageOrder: 0,
       locationOrder: 0,
       fameOrder: 0
     });
-    sortedUsers.forEach(
-      (sortedUser, index) => (sortedUser.weight = intersections[index].length)
+    sortedUsers.sort(
+      (a, b) => order * (b.amountOfCommonInterests - a.amountOfCommonInterests)
     );
-    sortedUsers.sort((a, b) => order * (b.weight - a.weight));
     this.props.updateUsers(sortedUsers);
   };
 

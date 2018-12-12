@@ -14,12 +14,26 @@ class Suggestions extends React.Component {
     this.props.changeTab(1);
     getSuggestions()
       .then(response => response.json())
-      .then(data => this.setState({ users: data }));
+      .then(data => {
+        data.forEach(user => {
+          user.distance = this.getDistance(
+            this.props.profile.location,
+            user.location
+          );
+          user.amountOfCommonInterests = user.interests.filter(
+            value => -1 !== this.props.profile.interests.indexOf(value)
+          ).length;
+        });
+        this.setState({ users: data, filteredUsers: data });
+      });
   };
 
-  updateUsers = sortedUsers => {
+  getDistance = (pos1, pos2) =>
+    Math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2);
+
+  updateUsers = newUsers => {
     this.setState({
-      users: sortedUsers
+      filteredUsers: newUsers
     });
   };
 
@@ -28,18 +42,22 @@ class Suggestions extends React.Component {
       return <span>Loading...</span>;
     }
     const { classes } = this.props;
-    const { users } = this.state;
+    const { users, filteredUsers } = this.state;
 
     return (
       <div className={classes.root}>
         <SortingPanel
           profile={this.props.profile}
+          users={filteredUsers}
+          updateUsers={this.updateUsers}
+        />
+        <FilterPanel
+          profile={this.props.profile}
           users={users}
           updateUsers={this.updateUsers}
         />
-        <FilterPanel />
         <ul>
-          {users.map((user, index) => (
+          {filteredUsers.map((user, index) => (
             <li key={index}>{`${user.login}: age ${user.age}, location (${
               user.location[0]
             }, ${user.location[1]}), fame ${user.fame}, interests ${

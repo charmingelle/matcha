@@ -38,27 +38,38 @@ const styles = {
 class FilterPanel extends React.Component {
   componentDidMount = () => {
     this.setState({
-      // ageFilter: false,
-      // locationFilter: false,
-      // fameFilter: false,
-      // commonInterestsFilter: false,
       startAge: 18,
       endAge: 100,
-      distance: 0,
+      distance: 5,
       fameRating: 0,
       amountOfCommonInterests: 0
     });
   };
 
-  changeAmountOfCommonInterests = event =>
-    this.setState({
-      amountOfCommonInterests: event.target.value
-    });
-
   changeParam = (param, event) =>
     this.setState({
       [param]: event.target.value
     });
+
+  filter = () => {
+    const {
+      startAge,
+      endAge,
+      distance,
+      fameRating,
+      amountOfCommonInterests
+    } = this.state;
+    let filteredUsers = this.props.users.filter(
+      user =>
+        user.age >= startAge &&
+        user.age <= endAge &&
+        user.distance <= distance &&
+        user.fame >= fameRating &&
+        user.amountOfCommonInterests >= amountOfCommonInterests
+    );
+
+    this.props.updateUsers(filteredUsers);
+  };
 
   render = () => {
     if (!this.state) {
@@ -131,7 +142,7 @@ class FilterPanel extends React.Component {
             type="number"
             min="0"
             value={fameRating}
-            onChange={this.changeParam.bind(this, "fame")}
+            onChange={this.changeParam.bind(this, "fameRating")}
           />
         </div>
         <div className={classes.amountOfCommonInterestsFilter}>
@@ -147,7 +158,7 @@ class FilterPanel extends React.Component {
           />
         </div>
         <div />
-        <button>Filter</button>
+        <button onClick={this.filter}>Filter</button>
       </div>
     );
   };
