@@ -39,14 +39,11 @@ class Chat extends React.Component {
   constructor(props) {
     super(props);
     this.users = {};
-    // this.socket = socketIOClient('http://localhost:5000', {
-    //   query: `login=${this.props.sender}`
-    // });
     this.socket = this.props.socket;
   }
 
   componentDidMount = () => {
-    this.props.changeTab(3);
+    this.props.changeTab(2);
     getChatLogins()
       .then(response => response.json())
       .then(users => {

@@ -20,7 +20,7 @@ const styles = {
 
 class Visited extends React.Component {
   async componentDidMount() {
-    this.props.changeTab(4);
+    this.props.changeTab(3);
     const data = await getVisited();
 
     this.setState({

@@ -36,7 +36,7 @@ class Suggestions extends React.Component {
   }
 
   componentDidMount = () => {
-    this.props.changeTab(1);
+    this.props.changeTab(0);
     getSuggestions()
       .then(response => response.json())
       .then(data => {

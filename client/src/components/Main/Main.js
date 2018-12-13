@@ -12,7 +12,6 @@ import ChatIcon from "@material-ui/icons/Chat";
 import CheckIcon from "@material-ui/icons/Check";
 import SignoutIcon from "@material-ui/icons/RemoveCircleOutline";
 import Typography from "@material-ui/core/Typography";
-import Users from "./../Users/Users.js";
 import Suggestions from "./../Suggestions/Suggestions.js";
 import Profile from "./../Profile/Profile.js";
 import User from "./../User/User.js";
@@ -187,7 +186,7 @@ class ScrollableTabsButtonForce extends React.Component {
     const {
       tabid,
       profile,
-      profile: { visited, interests, location, login, canLike },
+      profile: { visited, login, canLike },
       notifications
     } = this.state;
 
@@ -207,12 +206,11 @@ class ScrollableTabsButtonForce extends React.Component {
               indicatorColor="primary"
               textColor="primary"
             >
-              <Tab label="Users" icon={<ListIcon />} component={Link} to="/" />
               <Tab
                 label="Suggestions"
                 icon={<ListIcon />}
                 component={Link}
-                to="/suggestions"
+                to="/"
               />
               <Tab
                 label="Profile"
@@ -255,12 +253,11 @@ class ScrollableTabsButtonForce extends React.Component {
               indicatorColor="primary"
               textColor="primary"
             >
-              <Tab label="Users" icon={<ListIcon />} component={Link} to="/" />
               <Tab
                 label="Suggestions"
                 icon={<ListIcon />}
                 component={Link}
-                to="/suggestions"
+                to="/"
               />
               <Tab
                 label="Profile"
@@ -293,23 +290,6 @@ class ScrollableTabsButtonForce extends React.Component {
             <Route
               exact
               path="/"
-              render={() => (
-                <TabContainer>
-                  <Users
-                    socket={socket}
-                    sender={login}
-                    visited={visited}
-                    updateVisited={this.updateVisited}
-                    interests={interests}
-                    profileLocation={location}
-                    changeTab={this.changeTab}
-                  />
-                </TabContainer>
-              )}
-            />
-            <Route
-              exact
-              path="/suggestions"
               render={() => (
                 <TabContainer>
                   <Suggestions
