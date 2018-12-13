@@ -12,6 +12,10 @@
 - correct chat bug with incorrect message display
 - add pagination to Users
 - consider saving all data in one storage for the whole app
+- test notifications and chat carefully
+- make sure that unnecessary information isn't passed to components
+- resolve the issue with locations
+- style everything
 
 When app is loaded GET:
     - profile (likedBy, checkedBy as well);
