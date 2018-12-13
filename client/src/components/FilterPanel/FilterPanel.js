@@ -2,7 +2,15 @@ import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 
-const styles = {
+import MenuItem from "@material-ui/core/MenuItem";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import ListItemText from "@material-ui/core/ListItemText";
+import Select from "@material-ui/core/Select";
+import Checkbox from "@material-ui/core/Checkbox";
+
+const styles = theme => ({
   root: {
     width: "100%",
     display: "flex",
@@ -32,6 +40,26 @@ const styles = {
   amountOfCommonInterestsFilter: {
     display: "flex",
     flexDirection: "column"
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+    minWidth: 120,
+    maxWidth: 300,
+    flexDirection: "row"
+  },
+  formControlSelect: {
+    width: "100%"
+  }
+});
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
   }
 };
 
@@ -56,18 +84,8 @@ class FilterPanel extends React.Component {
     this.props.setFilterParams(this.state);
   };
 
-  optionChange = event => {
-    let newSelectedInterests = this.state.selectedInterests;
-    let index = newSelectedInterests.indexOf(event.target.value);
-
-    if (index === -1) {
-      newSelectedInterests.push(event.target.value);
-    } else {
-      newSelectedInterests.splice(index, 1);
-    }
-    this.setState({
-      selectedInterests: newSelectedInterests
-    });
+  handleInterestsChange = event => {
+    this.setState({ selectedInterests: event.target.value });
   };
 
   render = () => {
@@ -157,20 +175,27 @@ class FilterPanel extends React.Component {
             onChange={this.changeParam.bind(this, "amountOfCommonInterests")}
           />
         </div>
-        <div className={classes.interestsFilter}>
-          <select multiple>
-            {interests.map(interest => (
-              <option
-                selected={selectedInterests.indexOf(interest) !== -1}
-                onClick={this.optionChange}
-                key={interest}
-                value={interest}
-              >
-                {interest}
-              </option>
+        <FormControl className={classes.formControl}>
+          <InputLabel shrink htmlFor="select-multiple-checkbox">
+            Interests
+          </InputLabel>
+          <Select
+            className={classes.formControlSelect}
+            multiple
+            value={selectedInterests}
+            onChange={this.handleInterestsChange}
+            input={<Input id="select-multiple-checkbox" />}
+            renderValue={selected => selected.join(", ")}
+            MenuProps={MenuProps}
+          >
+            {interests.map(name => (
+              <MenuItem key={name} value={name}>
+                <Checkbox checked={selectedInterests.indexOf(name) > -1} />
+                <ListItemText primary={name} />
+              </MenuItem>
             ))}
-          </select>
-        </div>
+          </Select>
+        </FormControl>
         <button onClick={this.filter}>Filter</button>
       </div>
     );
