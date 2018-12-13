@@ -122,8 +122,22 @@ class Profile extends React.Component {
 
     return (
       <div className={classes.root}>
-        <SmallUsers title='Liked by' getUserList={getLikedBy} />
-        <SmallUsers title='Checked by' getUserList={getCheckedBy} />
+        <SmallUsers
+          title="Liked by"
+          getUserList={getLikedBy}
+          visited={this.props.visited}
+          updateVisited={this.props.updateVisited}
+          socket={this.props.socket}
+          sender={this.props.sender}
+        />
+        <SmallUsers
+          title="Checked by"
+          getUserList={getCheckedBy}
+          visited={this.props.visited}
+          updateVisited={this.props.updateVisited}
+          socket={this.props.socket}
+          sender={this.props.sender}
+        />
         <ProfilePhotos gallery={gallery} avatarid={avatarid} />
         <div className={classes.profileDetails}>
           {this.renderChangeStatus()}

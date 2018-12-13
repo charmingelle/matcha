@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import LikeButton from "./LikeButton/LikeButton.js";
 import BlockButton from "./BlockButton/BlockButton.js";
-import { reportFake } from "./../../api/api.js";
+import { saveVisited, reportFake } from "./../../api/api.js";
 
 const styles = {
   root: {
@@ -114,12 +114,31 @@ class User extends React.Component {
   };
 
   showNextPhoto = () => {
+    this.addToVisited();
     this.setState({
       currentPhoto: this.state.currentPhoto + 1
     });
   };
 
+  addToVisited = () => {
+    if (!this.props.visited.includes(this.state.login)) {
+      let newVisited = this.props.visited;
+
+      newVisited.push(this.state.login);
+      saveVisited(newVisited).then(() => {
+        this.props.socket.emit("check", {
+          sender: this.props.sender,
+          receiver: this.state.login
+        });
+        this.props.updateVisited(newVisited);
+      });
+    }
+  };
+
   toggleFull = () => {
+    if (!this.state.full) {
+      this.addToVisited();
+    }
     this.setState({
       full: !this.state.full
     });

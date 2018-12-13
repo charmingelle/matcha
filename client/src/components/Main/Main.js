@@ -317,6 +317,8 @@ class ScrollableTabsButtonForce extends React.Component {
                     sender={login}
                     changeTab={this.changeTab}
                     profile={profile}
+                    visited={visited}
+                    updateVisited={this.updateVisited}
                   />
                 </TabContainer>
               )}
@@ -330,8 +332,12 @@ class ScrollableTabsButtonForce extends React.Component {
                     name="profile"
                     value={profile}
                     onChange={this.onProfileChange}
+                    socket={socket}
+                    sender={login}
                     editable={true}
                     changeTab={this.changeTab}
+                    visited={visited}
+                    updateVisited={this.updateVisited}
                   />
                 </TabContainer>
               )}
@@ -368,6 +374,8 @@ class ScrollableTabsButtonForce extends React.Component {
                     canLike={canLike}
                     photoFolder="photos/"
                     full={true}
+                    visited={visited}
+                    updateVisited={this.updateVisited}
                   />
                 </TabContainer>
               )}
@@ -381,6 +389,8 @@ class ScrollableTabsButtonForce extends React.Component {
                     socket={socket}
                     sender={login}
                     changeTab={this.changeTab}
+                    visited={visited}
+                    updateVisited={this.updateVisited}
                   />
                 </TabContainer>
               )}

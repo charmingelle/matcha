@@ -134,9 +134,11 @@ class Suggestions extends React.Component {
               <User
                 photoFolder="users/photos/"
                 user={user}
-                full={true}
+                full={false}
                 socket={this.props.socket}
                 sender={this.props.sender}
+                visited={this.props.visited}
+                updateVisited={this.props.updateVisited}
               />
             </li>
           ))}

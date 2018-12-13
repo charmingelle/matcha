@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import { getUsers, saveVisited } from "./../../api/api.js";
+import { getUsers } from "./../../api/api.js";
 import FilterPanel from "./FilterPanel/FilterPanel.js";
 import User from "./../User/User.js";
 
@@ -34,21 +34,6 @@ class Users extends React.Component {
     this.setState({ filteredUsers });
   };
 
-  addToVisited = login => {
-    if (!this.props.visited.includes(login)) {
-      let newVisited = this.props.visited;
-
-      newVisited.push(login);
-      saveVisited(newVisited).then(() => {
-        this.props.socket.emit("check", {
-          sender: this.props.sender,
-          receiver: login
-        });
-        this.props.updateVisited(newVisited);
-      });
-    }
-  };
-
   render = () => {
     if (!this.state) {
       return <span>Loading...</span>;
@@ -73,6 +58,8 @@ class Users extends React.Component {
                 full={false}
                 socket={this.props.socket}
                 sender={this.props.sender}
+                visited={this.props.visited}
+                updateVisited={this.props.updateVisited}
               />
             </li>
           ))}

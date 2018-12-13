@@ -4,7 +4,12 @@ import { withStyles } from "@material-ui/core/styles";
 import SmallUser from "./../SmallUser/SmallUser.js";
 
 const styles = {
-  root: {}
+  root: {},
+  list: {
+    display: "flex",
+    width: "100%",
+    listStyleType: "none"
+  }
 };
 
 class SmallUsers extends React.Component {
@@ -28,10 +33,16 @@ class SmallUsers extends React.Component {
     return (
       <div className={classes.root}>
         <h1>{title}</h1>
-        <ul>
+        <ul className={classes.list}>
           {users.map((user, index) => (
             <li key={index}>
-              <SmallUser user={user} />
+              <SmallUser
+                user={user}
+                visited={this.props.visited}
+                updateVisited={this.props.updateVisited}
+                socket={this.props.socket}
+                sender={this.props.sender}
+              />
             </li>
           ))}
         </ul>

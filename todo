@@ -13,5 +13,8 @@
 - add pagination to Users
 - consider saving all data in one storage for the whole app
 
-Users - all users
-Suggestions - suitable gender and orientation
+When app is loaded GET:
+    - profile (likedBy, checkedBy as well);
+    - suggestions;
+    - visited;
+    - chatList

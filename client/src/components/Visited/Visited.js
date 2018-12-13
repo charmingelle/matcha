@@ -45,6 +45,8 @@ class Visited extends React.Component {
                 full={false}
                 socket={this.props.socket}
                 sender={this.props.sender}
+                visited={this.props.visited}
+                updateVisited={this.props.updateVisited}
               />
             </li>
           ))}
