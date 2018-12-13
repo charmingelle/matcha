@@ -69,7 +69,8 @@ class FilterPanel extends React.Component {
       startAge: 18,
       endAge: 100,
       distance: 5,
-      fameRating: 0,
+      minFameRating: 0,
+      maxFameRating: "",
       amountOfCommonInterests: 0,
       selectedInterests: []
     });
@@ -97,7 +98,8 @@ class FilterPanel extends React.Component {
       startAge,
       endAge,
       distance,
-      fameRating,
+      minFameRating,
+      maxFameRating,
       amountOfCommonInterests,
       selectedInterests
     } = this.state;
@@ -154,13 +156,21 @@ class FilterPanel extends React.Component {
           />
         </div>
         <div className={classes.fameFilter}>
-          <label htmlFor="fame">Minimum fame rating</label>
+          <label htmlFor="minFame">Minimum fame rating</label>
           <input
-            name="fame"
+            name="minFame"
             type="number"
             min="0"
-            value={fameRating}
-            onChange={this.changeParam.bind(this, "fameRating")}
+            value={minFameRating}
+            onChange={this.changeParam.bind(this, "minFameRating")}
+          />
+          <label htmlFor="maxFame">Maximum fame rating</label>
+          <input
+            name="maxFame"
+            type="number"
+            min="0"
+            value={maxFameRating}
+            onChange={this.changeParam.bind(this, "maxFameRating")}
           />
         </div>
         <div className={classes.amountOfCommonInterestsFilter}>

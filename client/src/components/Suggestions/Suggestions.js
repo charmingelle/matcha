@@ -29,7 +29,8 @@ class Suggestions extends React.Component {
     this.startAge = 18;
     this.endAge = 100;
     this.distance = 5;
-    this.fameRating = 0;
+    this.minFameRating = 0;
+    this.maxFameRating = "";
     this.amountOfCommonInterests = 0;
     this.selectedInterests = [];
   }
@@ -85,25 +86,27 @@ class Suggestions extends React.Component {
     });
   };
 
-  filter = users => {
-    return users.filter(
+  filter = users =>
+    users.filter(
       user =>
         user.age >= this.startAge &&
         user.age <= this.endAge &&
         user.distance <= this.distance &&
-        user.fame >= this.fameRating &&
+        user.fame >= this.minFameRating &&
+        ((this.maxFameRating !== "" && user.fame <= this.maxFameRating) ||
+          this.maxFameRating === "") &&
         user.amountOfCommonInterests >= this.amountOfCommonInterests &&
         this.selectedInterests.every(interest =>
           user.interests.includes(interest)
         )
     );
-  };
 
   setFilterParams = params => {
     this.startAge = params.startAge;
     this.endAge = params.endAge;
     this.distance = params.distance;
-    this.fameRating = params.fameRating;
+    this.minFameRating = params.minFameRating;
+    this.maxFameRating = params.maxFameRating;
     this.amountOfCommonInterests = params.amountOfCommonInterests;
     this.selectedInterests = params.selectedInterests;
     this.setState({
@@ -126,8 +129,8 @@ class Suggestions extends React.Component {
           interests={this.props.profile.allInterests}
         />
         <ul className={classes.userList}>
-          {filteredUsers.map((user, index) => (
-            <li key={index}>
+          {filteredUsers.map(user => (
+            <li key={user.login}>
               <User
                 photoFolder="users/photos/"
                 user={user}
