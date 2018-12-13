@@ -70,7 +70,7 @@ class SortingPanel extends React.Component {
           {fame === -1 && arrowUp}
         </button>
         <button onClick={this.sortBy.bind(this, "amountOfCommonInterests")}>
-          Common interests
+          Amount of common interests
           {amountOfCommonInterests === 1 && arrowDown}
           {amountOfCommonInterests === -1 && arrowUp}
         </button>

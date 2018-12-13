@@ -154,7 +154,7 @@ class FilterPanel extends React.Component {
           />
         </div>
         <div className={classes.fameFilter}>
-          <label htmlFor="fame">Minimal fame rating</label>
+          <label htmlFor="fame">Minimum fame rating</label>
           <input
             name="fame"
             type="number"
@@ -165,7 +165,7 @@ class FilterPanel extends React.Component {
         </div>
         <div className={classes.amountOfCommonInterestsFilter}>
           <label htmlFor="amountOfCommonInterests">
-            Minimal amount of common interests
+            Minimum amount of common interests
           </label>
           <input
             name="amountOfCommonInterests"

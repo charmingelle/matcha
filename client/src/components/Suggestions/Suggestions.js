@@ -4,9 +4,20 @@ import { withStyles } from "@material-ui/core/styles";
 import { getSuggestions } from "./../../api/api.js";
 import SortingPanel from "./../SortingPanel/SortingPanel.js";
 import FilterPanel from "./../FilterPanel/FilterPanel.js";
+import User from "./../User/User.js";
 
 const styles = {
-  root: {}
+  root: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    overflow: "auto"
+  },
+  userList: {
+    margin: 0,
+    padding: 0,
+    listStyleType: "none"
+  }
 };
 
 class Suggestions extends React.Component {
@@ -114,12 +125,17 @@ class Suggestions extends React.Component {
           setFilterParams={this.setFilterParams}
           interests={this.props.profile.allInterests}
         />
-        <ul>
+        <ul className={classes.userList}>
           {filteredUsers.map((user, index) => (
-            <li key={index}>{`${user.login}: age ${user.age}, distance ${
-              user.distance
-            }, fame ${user.fame}, interests ${user.interests}
-            `}</li>
+            <li key={index}>
+              <User
+                photoFolder="users/photos/"
+                user={user}
+                full={true}
+                socket={this.props.socket}
+                sender={this.props.sender}
+              />
+            </li>
           ))}
         </ul>
       </div>
