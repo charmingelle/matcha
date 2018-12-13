@@ -6,10 +6,9 @@ import OutlinedTextFields from "./../../components/OutlinedTextFields/OutlinedTe
 import InterestsInput from "./../../components/InterestsInput/InterestsInput.js";
 import ProfilePhotos from "./ProfilePhotos/ProfilePhotos.js";
 import ChangeStatus from "./../ChangeStatus/ChangeStatus.js";
-import CheckedBy from "./../CheckedBy/CheckedBy.js";
-import LikedBy from "./../LikedBy/LikedBy.js";
+import SmallUsers from "./../SmallUsers/SmallUsers.js";
 import Button from "@material-ui/core/Button";
-import { saveUserProfile } from "./../../api/api.js";
+import { saveUserProfile, getLikedBy, getCheckedBy } from "./../../api/api.js";
 import { isEmailValid } from "./../../utils/utils.js";
 
 const styles = theme => ({
@@ -123,8 +122,8 @@ class Profile extends React.Component {
 
     return (
       <div className={classes.root}>
-        <CheckedBy />
-        <LikedBy />
+        <SmallUsers title='Liked by' getUserList={getLikedBy} />
+        <SmallUsers title='Checked by' getUserList={getCheckedBy} />
         <ProfilePhotos gallery={gallery} avatarid={avatarid} />
         <div className={classes.profileDetails}>
           {this.renderChangeStatus()}

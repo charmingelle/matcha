@@ -622,10 +622,14 @@ app.post("/getMessages", requireLogin, (req, res) => {
 });
 
 app.post("/getCheckedBy", requireLogin, (req, res) =>
-  db.any("SELECT login, visited from users").then(data => {
-    data = data.filter(record => record.visited.includes(req.session.login));
-    res.send(JSON.stringify(data.map(record => record.login)));
-  })
+  db
+    .any(
+      "SELECT login, firstname, lastname, gallery, avatarid, visited from users"
+    )
+    .then(data => {
+      data = data.filter(record => record.visited.includes(req.session.login));
+      res.send(JSON.stringify(data));
+    })
 );
 
 app.post("/getLikedBy", requireLogin, (req, res) =>
@@ -633,7 +637,19 @@ app.post("/getLikedBy", requireLogin, (req, res) =>
     .any("SELECT liker FROM likes WHERE likee = ${likee}", {
       likee: req.session.login
     })
-    .then(data => res.send(JSON.stringify(data.map(record => record.liker))))
+    .then(data => {
+      if (data.length !== 0) {
+        data = data.map(record => record.liker);
+        const query = format(
+          "SELECT login, firstname, lastname, gallery, avatarid FROM users WHERE login IN (%L)",
+          data
+        );
+
+        db.any(query).then(data => res.send(JSON.stringify(data)));
+      } else {
+        res.send(JSON.stringify([]));
+      }
+    })
 );
 
 app.post("/getSuggestions", requireLogin, (req, res) => {

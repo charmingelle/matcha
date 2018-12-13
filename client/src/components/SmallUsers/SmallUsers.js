@@ -1,15 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import { getLikedBy } from "./../../api/api.js";
+import SmallUser from "./../SmallUser/SmallUser.js";
 
 const styles = {
   root: {}
 };
 
-class LikedBy extends React.Component {
+class SmallUsers extends React.Component {
   componentDidMount = () =>
-    getLikedBy()
+    this.props
+      .getUserList()
       .then(response => response.json())
       .then(data =>
         this.setState({
@@ -21,15 +22,17 @@ class LikedBy extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes } = this.props;
+    const { classes, title } = this.props;
     const { users } = this.state;
 
     return (
       <div className={classes.root}>
-        <h1>Liked By</h1>
+        <h1>{title}</h1>
         <ul>
           {users.map((user, index) => (
-            <li key={index}>{user}</li>
+            <li key={index}>
+              <SmallUser user={user} />
+            </li>
           ))}
         </ul>
       </div>
@@ -37,8 +40,8 @@ class LikedBy extends React.Component {
   }
 }
 
-LikedBy.propTypes = {
+SmallUsers.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(LikedBy);
+export default withStyles(styles)(SmallUsers);
