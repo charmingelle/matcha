@@ -1,39 +1,45 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import { saveUserPhoto, setAvatar } from "./../../../api/api.js";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import { saveUserPhoto, setAvatar } from './../../../api/api.js';
 
 const styles = {
   root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   upload: {
-    marginTop: "15px"
+    marginTop: '15px',
+    color: 'rgba(0, 0, 0, 0.54)',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
   },
   hidden: {
-    display: "none"
+    display: 'none'
   },
   photoList: {
     margin: 0,
     padding: 0,
-    listStyleType: "none"
+    listStyleType: 'none'
   },
   photoContainer: {
-    minWidth: "614px",
-    maxWidth: "614px",
-    margin: "15px",
-    border: "1px solid rgba(0, 0, 0, 0.54)"
+    width: '614px',
+    margin: '15px',
+    backgroundColor: '#f5f5f5'
+    // border: '1px solid rgba(0, 0, 0, 0.23)'
   },
   photo: {
-    maxWidth: "100%",
-    maxHeight: "100%"
+    width: '100%'
   },
   photoActions: {
-    margin: "15px",
-    display: "flex",
-    justifyContent: "space-around"
+    padding: '8px',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  avatarNote: {
+    fontWeight: 500
   }
 };
 
@@ -48,7 +54,7 @@ class ProfilePhotos extends React.Component {
   }
 
   upload = id => {
-    const uploadEl = document.getElementById("file-upload");
+    const uploadEl = document.getElementById('file-upload');
 
     this.photoid = id;
     uploadEl.click();
@@ -62,13 +68,13 @@ class ProfilePhotos extends React.Component {
   uploadPhoto = event => {
     let newGallery = JSON.parse(JSON.stringify(this.state.gallery));
     const image = new Image();
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
 
     image.onload = () => {
       canvas.width = image.width;
       canvas.height = image.height;
       canvas
-        .getContext("2d")
+        .getContext('2d')
         .drawImage(image, 0, 0, canvas.width, canvas.height);
       if (this.photoid === null) {
         this.photoid = newGallery.length;
@@ -100,22 +106,30 @@ class ProfilePhotos extends React.Component {
         <ul className={classes.photoList}>
           {gallery.map((photo, index) => (
             <li className={classes.photoContainer} key={index}>
-              <img
-                className={classes.photo}
-                alt=""
-                src={`users/photos/${photo}`}
-              />
+              <div>
+                <img
+                  className={classes.photo}
+                  alt=""
+                  src={`users/photos/${photo}`}
+                />
+              </div>
               <div className={classes.photoActions}>
                 {avatarid === index ? (
-                  "Avatar"
+                  <span className={classes.avatarNote}>AVATAR</span>
                 ) : (
-                  <button onClick={this.makeAvatar.bind(this, index)}>
+                  <Button
+                    variant="outlined"
+                    onClick={this.makeAvatar.bind(this, index)}
+                  >
                     Put on avatar
-                  </button>
+                  </Button>
                 )}
-                <button onClick={this.upload.bind(this, index)}>
+                <Button
+                  variant="outlined"
+                  onClick={this.upload.bind(this, index)}
+                >
                   Replace a photo
-                </button>
+                </Button>
               </div>
             </li>
           ))}

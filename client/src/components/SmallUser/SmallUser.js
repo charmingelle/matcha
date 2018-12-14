@@ -1,35 +1,39 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
-import { saveVisited } from "./../../api/api.js";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import { Link } from 'react-router-dom';
+import { saveVisited } from './../../api/api.js';
 
 const styles = {
   link: {
-    color: "initial",
-    textDecoration: "none"
+    color: 'initial',
+    textDecoration: 'none'
   },
   root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    margin: "5px"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginRight: '5px'
   },
   avatar: {
-    height: "100px"
+    height: '100px'
+  },
+  name: {
+    // color: 'rgba(0, 0, 0, 0.54)',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
   }
 };
 
 class SmallUser extends React.Component {
   addToVisited = () => {
     console.log('this.props.visited', this.props.visited);
-    console.log('this.props.login', this.props.user.login);    
+    console.log('this.props.login', this.props.user.login);
     if (!this.props.visited.includes(this.props.user.login)) {
       let newVisited = this.props.visited;
 
       newVisited.push(this.props.user.login);
       saveVisited(newVisited).then(() => {
-        this.props.socket.emit("check", {
+        this.props.socket.emit('check', {
           sender: this.props.sender,
           receiver: this.props.login
         });
@@ -56,7 +60,7 @@ class SmallUser extends React.Component {
             alt=""
             src={`users/photos/${gallery[avatarid]}`}
           />
-          <span>{`${firstname} ${lastname}`}</span>
+          <span className={classes.name}>{`${firstname} ${lastname}`}</span>
         </div>
       </Link>
     );

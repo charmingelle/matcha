@@ -1,24 +1,27 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import SimpleSelect from "./../../components/SimpleSelect/SimpleSelect.js";
-import OutlinedTextFields from "./../../components/OutlinedTextFields/OutlinedTextFields.js";
-import InterestsInput from "./../../components/InterestsInput/InterestsInput.js";
-import ProfilePhotos from "./ProfilePhotos/ProfilePhotos.js";
-import ChangeStatus from "./../ChangeStatus/ChangeStatus.js";
-import SmallUsers from "./../SmallUsers/SmallUsers.js";
-import Button from "@material-ui/core/Button";
-import { saveUserProfile, getLikedBy, getCheckedBy } from "./../../api/api.js";
-import { isEmailValid } from "./../../utils/utils.js";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import SimpleSelect from './../../components/SimpleSelect/SimpleSelect.js';
+import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTextFields.js';
+import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
+import ProfilePhotos from './ProfilePhotos/ProfilePhotos.js';
+import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
+import SmallUsers from './../SmallUsers/SmallUsers.js';
+import Button from '@material-ui/core/Button';
+import { saveUserProfile, getLikedBy, getCheckedBy } from './../../api/api.js';
+import { isEmailValid } from './../../utils/utils.js';
 
 const styles = theme => ({
   root: {
-    overflow: "auto"
+    overflow: 'auto',
+    padding: '10px'
   },
   profileDetails: {
-    display: "flex",
-    flexDirection: "column",
-    padding: "10px"
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  saveChangesButton: {
+    padding: '8px'
   }
 });
 
@@ -33,7 +36,7 @@ class Profile extends React.Component {
 
     if (!validStatus) {
       this.setState({
-        changeStatus: "Please make sure that your email address is correct",
+        changeStatus: 'Please make sure that your email address is correct',
         error: true
       });
     }
@@ -41,9 +44,9 @@ class Profile extends React.Component {
   };
 
   validateEmpty = value => {
-    if (value === "") {
+    if (value === '') {
       this.setState({
-        changeStatus: "Please fill all the fields in",
+        changeStatus: 'Please fill all the fields in',
         error: true
       });
       return false;
@@ -124,6 +127,7 @@ class Profile extends React.Component {
       <div className={classes.root}>
         <SmallUsers
           title="Liked by"
+          icon="&#9829;"
           getUserList={getLikedBy}
           visited={this.props.visited}
           updateVisited={this.props.updateVisited}
@@ -132,13 +136,13 @@ class Profile extends React.Component {
         />
         <SmallUsers
           title="Checked by"
+          icon="&#10004;"
           getUserList={getCheckedBy}
           visited={this.props.visited}
           updateVisited={this.props.updateVisited}
           socket={this.props.socket}
           sender={this.props.sender}
         />
-        <ProfilePhotos gallery={gallery} avatarid={avatarid} />
         <div className={classes.profileDetails}>
           {this.renderChangeStatus()}
           <OutlinedTextFields
@@ -170,14 +174,14 @@ class Profile extends React.Component {
           />
           <SimpleSelect
             title="Gender"
-            items={["male", "female"]}
+            items={['male', 'female']}
             name="gender"
             value={gender}
             onChange={this.onChange}
           />
           <SimpleSelect
             title="Preferences"
-            items={["heterosexual", "homosexual", "bisexual"]}
+            items={['heterosexual', 'homosexual', 'bisexual']}
             name="preferences"
             value={preferences}
             onChange={this.onChange}
@@ -195,9 +199,13 @@ class Profile extends React.Component {
             all={this.state.allInterests}
             onChange={this.onChange}
           />
-          <Button variant="outlined" onClick={this.onSubmit}>
+          <Button
+            variant="outlined"
+            onClick={this.onSubmit}
+          >
             Save changes
           </Button>
+          <ProfilePhotos gallery={gallery} avatarid={avatarid} />
         </div>
       </div>
     );

@@ -1,14 +1,27 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import SmallUser from "./../SmallUser/SmallUser.js";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import SmallUser from './../SmallUser/SmallUser.js';
 
 const styles = {
-  root: {},
+  root: {
+    backgroundColor: '#f5f5f5'
+  },
+  icon: {
+    color: 'red'
+  },
+  title: {
+    margin: 0,
+    fontSize: '12px',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontWeight: 'normal'
+  },
   list: {
-    display: "flex",
-    width: "100%",
-    listStyleType: "none"
+    display: 'flex',
+    width: '100%',
+    margin: 0,
+    padding: 0,
+    listStyleType: 'none'
   }
 };
 
@@ -27,12 +40,14 @@ class SmallUsers extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes, title } = this.props;
+    const { classes, title, icon } = this.props;
     const { users } = this.state;
 
     return (
       <div className={classes.root}>
-        <h1>{title}</h1>
+        <h1 className={classes.title}>
+          <span className={classes.icon}>{icon}</span> {title}
+        </h1>
         <ul className={classes.list}>
           {users.map((user, index) => (
             <li key={index}>
