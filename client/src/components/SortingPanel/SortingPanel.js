@@ -1,56 +1,88 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import classnames from 'classnames';
+import IconButton from '@material-ui/core/IconButton';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-const styles = {
+const styles = theme => ({
   root: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%'
+    width: '100%',
+    backgroundColor: '#ffffff'
   },
-  sortingButton: {
-    margin: '10px',
-    height: '100%'
+  sortingBlock: {
+    marginLeft: 30,
+    marginRight: 30
+  },
+  span: {
+    color: 'rgba(0, 0, 0, 0.54)'
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest
+    }),
+    marginLeft: 'auto',
+    [theme.breakpoints.up('sm')]: {
+      marginRight: -8
+    }
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)'
+  },
+  selected: {
+    color: '#f50057'
   }
-};
+});
 
 class SortingPanel extends React.Component {
   componentDidMount = () => {
     this.setState({
-      age: 0,
-      distance: 1,
-      fame: 0,
-      amountOfCommonInterests: 0
+      age: false,
+      distance: true,
+      fame: false,
+      amountOfCommonInterests: false,
+      selected: 'distance'
     });
   };
 
-  changeOrder = orderName => {
-    let order;
-
-    if (this.state[orderName] === 0) {
-      order = 1;
-    } else {
-      order = -this.state[orderName];
+  getOrder = orderName => {
+    if (this.state[orderName] === false) {
+      return -1;
     }
-    this.setState({
-      [orderName]: order
-    });
-    return order;
+    return 1;
   };
 
   sortBy = param => {
-    const order = this.changeOrder(param);
+    this.props.setSortParams(param, this.getOrder(param));
+    this.setState({ [param]: !this.state[param], selected: param });
+  };
 
-    Object.keys(this.setState).forEach(
-      key =>
-        key !== param &&
-        this.setState({
-          [key]: 0
-        })
+  renderSortButton = param => {
+    const { classes } = this.props;
+    const { selected } = this.state;
+
+    return (
+      <IconButton
+        className={classnames(
+          classes.expand,
+          {
+            [classes.expandOpen]: this.state[param]
+          },
+          {
+            [classes.selected]: selected === param
+          }
+        )}
+        onClick={this.sortBy.bind(this, param)}
+        aria-expanded={this.state[param]}
+        aria-label="Sort"
+      >
+        <ExpandMoreIcon />
+      </IconButton>
     );
-    this.props.setSortParams(param, order);
   };
 
   render = () => {
@@ -58,48 +90,25 @@ class SortingPanel extends React.Component {
       return <span>Loading...</span>;
     }
     const { classes } = this.props;
-    const { age, distance, fame, amountOfCommonInterests } = this.state;
-    const arrowDown = <span>&#8595;</span>;
-    const arrowUp = <span>&#8593;</span>;
 
     return (
       <div className={classes.root}>
-        <Button
-          className={classes.sortingButton}
-          variant="outlined"
-          onClick={this.sortBy.bind(this, 'age')}
-        >
-          Age
-          {age === 1 && arrowDown}
-          {age === -1 && arrowUp}
-        </Button>
-        <Button
-          className={classes.sortingButton}
-          variant="outlined"
-          onClick={this.sortBy.bind(this, 'distance')}
-        >
-          Location
-          {distance === 1 && arrowDown}
-          {distance === -1 && arrowUp}
-        </Button>
-        <Button
-          className={classes.sortingButton}
-          variant="outlined"
-          onClick={this.sortBy.bind(this, 'fame')}
-        >
-          Fame
-          {fame === 1 && arrowDown}
-          {fame === -1 && arrowUp}
-        </Button>
-        <Button
-          className={classes.sortingButton}
-          variant="outlined"
-          onClick={this.sortBy.bind(this, 'amountOfCommonInterests')}
-        >
-          Amount of common interests
-          {amountOfCommonInterests === 1 && arrowDown}
-          {amountOfCommonInterests === -1 && arrowUp}
-        </Button>
+        <div className={classes.sortingBlock}>
+          <span className={classes.span}>Sort by age</span>
+          {this.renderSortButton('age')}
+        </div>
+        <div className={classes.sortingBlock}>
+          <span className={classes.span}>distance</span>
+          {this.renderSortButton('distance')}
+        </div>
+        <div className={classes.sortingBlock}>
+          <span className={classes.span}>fame</span>
+          {this.renderSortButton('fame')}
+        </div>
+        <div className={classes.sortingBlock}>
+          <span className={classes.span}>amount of common interests</span>
+          {this.renderSortButton('amountOfCommonInterests')}
+        </div>
       </div>
     );
   };

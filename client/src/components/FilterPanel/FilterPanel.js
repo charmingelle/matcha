@@ -15,7 +15,8 @@ const styles = theme => ({
     width: '100%',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'inherit'
+    alignItems: 'inherit',
+    backgroundColor: '#ffffff'
   },
   ageFilter: {
     display: 'flex',
@@ -66,8 +67,7 @@ const styles = theme => ({
     flexBasis: 0,
     margin: theme.spacing.unit
   },
-  formControlSelect: {
-  },
+  formControlSelect: {},
   filterButton: {
     margin: '8px 0 8px 8px',
     minWidth: '50px',
@@ -271,7 +271,8 @@ class FilterPanel extends React.Component {
         </FormControl>
         <Button
           className={classes.filterButton}
-          variant="outlined"
+          variant="contained"
+          color="secondary"
           onClick={this.filter}
         >
           Filter
