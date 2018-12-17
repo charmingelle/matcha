@@ -28,7 +28,7 @@ import { saveVisited, reportFake } from './../../api/api.js';
 const styles = theme => ({
   card: {
     margin: 50,
-    width: 400
+    width: 500
   },
   media: {
     height: 0,

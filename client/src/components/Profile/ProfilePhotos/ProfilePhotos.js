@@ -2,6 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardActions from '@material-ui/core/CardActions';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+import EditIcon from '@material-ui/icons/Edit';
 import { saveUserPhoto, setAvatar } from './../../../api/api.js';
 
 const styles = {
@@ -14,6 +20,9 @@ const styles = {
     marginTop: '15px',
     color: 'rgba(0, 0, 0, 0.54)',
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
+  },
+  rightIcon: {
+    marginLeft: 10
   },
   hidden: {
     display: 'none'
@@ -38,9 +47,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column'
   },
-  // profileButtons: {
-  //   marginTop: '1px'
-  // },
   avatarNote: {
     lineHeight: '38.8px',
     textAlign: 'center',
@@ -49,6 +55,14 @@ const styles = {
   },
   customFileUpload: {
     marginTop: '50px'
+  },
+  card: {
+    margin: 50,
+    width: 500
+  },
+  media: {
+    height: 0,
+    paddingTop: '56.25%'
   }
 };
 
@@ -105,13 +119,6 @@ class ProfilePhotos extends React.Component {
 
     return (
       <div className={classes.root}>
-        {/* <input
-          className={gallery.length < 5 ? classes.upload : classes.hidden}
-          id="file-upload"
-          accept=".jpg, .jpeg, .png"
-          type="file"
-          onChange={this.uploadPhoto}
-        /> */}
         <Button
           className={
             gallery.length < 5 ? classes.customFileUpload : classes.hidden
@@ -119,7 +126,8 @@ class ProfilePhotos extends React.Component {
           variant="contained"
           color="secondary"
         >
-          <label htmlFor="file-upload">UPLOAD A PHOTO</label>
+          <label htmlFor="file-upload">UPLOAD NEW PHOTO</label>
+          <CloudUploadIcon className={classes.rightIcon} />
         </Button>
         <input
           className={classes.hidden}
@@ -130,37 +138,37 @@ class ProfilePhotos extends React.Component {
         />
         <ul className={classes.photoList}>
           {gallery.map((photo, index) => (
-            <li className={classes.photoContainer} key={index}>
-              <div className={classes.imgContainer}>
-                <img
-                  className={classes.photo}
-                  alt=""
-                  src={`users/photos/${photo}`}
-                />
-              </div>
-              <div className={classes.photoActions}>
+            <Card className={classes.card} key={index}>
+              <CardMedia
+                className={classes.media}
+                image={`users/photos/${photo}`}
+              />
+              <CardActions>
+                <Button
+                  size="small"
+                  color="default"
+                  onClick={this.upload.bind(this, index)}
+                >
+                  Replace
+                  <EditIcon className={classes.rightIcon} color="secondary" />
+                </Button>
                 {avatarid === index ? (
                   <span className={classes.avatarNote}>AVATAR</span>
                 ) : (
                   <Button
-                    className={classes.profileButtons}
-                    variant="outlined"
-                    color="secondary"
+                    size="small"
+                    color="default"
                     onClick={this.makeAvatar.bind(this, index)}
                   >
-                    On avatar
+                    Put on avatar
+                    <PhotoCameraIcon
+                      className={classes.rightIcon}
+                      color="secondary"
+                    />
                   </Button>
                 )}
-                <Button
-                  className={classes.profileButtons}
-                  variant="contained"
-                  color="secondary"
-                  onClick={this.upload.bind(this, index)}
-                >
-                  Replace
-                </Button>
-              </div>
-            </li>
+              </CardActions>
+            </Card>
           ))}
         </ul>
       </div>

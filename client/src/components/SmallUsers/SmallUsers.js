@@ -4,7 +4,9 @@ import { withStyles } from '@material-ui/core/styles';
 import SmallUser from './../SmallUser/SmallUser.js';
 
 const styles = {
-  root: {},
+  root: {
+    backgroundColor: '#ffffff'
+  },
   icon: {
     color: '#f50057'
   },

@@ -18,7 +18,9 @@ const styles = theme => ({
   },
   profileDetails: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    padding: 8,
+    backgroundColor: '#ffffff'
   },
   saveChangesButton: {
     padding: '8px'
@@ -86,10 +88,10 @@ class Profile extends React.Component {
     this.setState(target);
   };
 
-  onAgeChange = event => {
-    if (event.target.value >= 18 && event.target.value <= 100) {
+  onAgeChange = age => {
+    if (age >= 18 && age <= 100) {
       this.setState({
-        age: event.target.value
+        age
       });
     }
   };
@@ -116,6 +118,7 @@ class Profile extends React.Component {
       gender,
       preferences,
       bio,
+      age,
       interests,
       gallery,
       avatarid
@@ -166,7 +169,7 @@ class Profile extends React.Component {
           <OutlinedTextFields
             label="Age"
             name="age"
-            value={this.state.age}
+            value={age}
             onChange={this.onAgeChange}
             type="number"
             variant="outlined"
@@ -198,15 +201,11 @@ class Profile extends React.Component {
             all={this.state.allInterests}
             onChange={this.onChange}
           />
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={this.onSubmit}
-          >
+          <Button variant="contained" color="secondary" onClick={this.onSubmit}>
             Save changes
           </Button>
-          <ProfilePhotos gallery={gallery} avatarid={avatarid} />
         </div>
+        <ProfilePhotos gallery={gallery} avatarid={avatarid} />
       </div>
     );
   }
