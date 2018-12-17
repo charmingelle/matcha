@@ -1,26 +1,26 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import User from "./../User/User.js";
-import { getVisited } from "./../../api/api.js";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import User from './../User/User.js';
+import { getVisited } from './../../api/api.js';
 
 const styles = {
   root: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-    overflow: "auto"
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'auto',
+    backgroundColor: '#eeeeee'
   },
   userList: {
     margin: 0,
     padding: 0,
-    listStyleType: "none"
+    listStyleType: 'none'
   }
 };
 
 class Visited extends React.Component {
   async componentDidMount() {
-    this.props.changeTab(3);
     const data = await getVisited();
 
     this.setState({

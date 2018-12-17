@@ -1,7 +1,20 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import { getLikeStatus, changeLikeStatus } from './../../../api/api.js';
 
-export default class LikeButton extends React.Component {
+const styles = {
+  unset: {
+    color: 'unset'
+  },
+  red: {
+    color: '#f50057'
+  }
+};
+
+class LikeButton extends React.Component {
   componentDidMount = () =>
     getLikeStatus(this.props.login)
       .then(response => response.json())
@@ -36,10 +49,20 @@ export default class LikeButton extends React.Component {
     if (!this.state) {
       return <div />;
     }
+    const { classes } = this.props;
+
     return (
-      <button onClick={this.changeLikeStatus}>
-        {this.state.canLike ? 'Like' : 'Displike'}
-      </button>
+      <IconButton aria-label="Like" onClick={this.changeLikeStatus}>
+        <FavoriteIcon
+          className={this.state.canLike ? classes.unset : classes.red}
+        />
+      </IconButton>
     );
   };
 }
+
+LikeButton.propTypes = {
+  classes: PropTypes.object.isRequired
+};
+
+export default withStyles(styles)(LikeButton);

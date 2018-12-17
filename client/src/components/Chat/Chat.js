@@ -28,7 +28,7 @@ const styles = theme => ({
     width: '5px',
     height: '5px',
     borderRadius: '100%',
-    backgroundColor: 'green'
+    backgroundColor: '#f50057'
   },
   selectedUser: {
     backgroundColor: 'rgba(0, 0, 0, 0.08)'
@@ -43,7 +43,7 @@ class Chat extends React.Component {
   }
 
   componentDidMount = () => {
-    this.props.changeTab(2);
+    // this.props.changeTab(2);
     getChatLogins()
       .then(response => response.json())
       .then(users => {

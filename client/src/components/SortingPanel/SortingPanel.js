@@ -1,9 +1,19 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 
 const styles = {
-  root: {}
+  root: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%'
+  },
+  sortingButton: {
+    margin: '10px',
+    height: '100%'
+  }
 };
 
 class SortingPanel extends React.Component {
@@ -54,26 +64,42 @@ class SortingPanel extends React.Component {
 
     return (
       <div className={classes.root}>
-        <button onClick={this.sortBy.bind(this, "age")}>
+        <Button
+          className={classes.sortingButton}
+          variant="outlined"
+          onClick={this.sortBy.bind(this, 'age')}
+        >
           Age
           {age === 1 && arrowDown}
           {age === -1 && arrowUp}
-        </button>
-        <button onClick={this.sortBy.bind(this, "distance")}>
+        </Button>
+        <Button
+          className={classes.sortingButton}
+          variant="outlined"
+          onClick={this.sortBy.bind(this, 'distance')}
+        >
           Location
           {distance === 1 && arrowDown}
           {distance === -1 && arrowUp}
-        </button>
-        <button onClick={this.sortBy.bind(this, "fame")}>
+        </Button>
+        <Button
+          className={classes.sortingButton}
+          variant="outlined"
+          onClick={this.sortBy.bind(this, 'fame')}
+        >
           Fame
           {fame === 1 && arrowDown}
           {fame === -1 && arrowUp}
-        </button>
-        <button onClick={this.sortBy.bind(this, "amountOfCommonInterests")}>
+        </Button>
+        <Button
+          className={classes.sortingButton}
+          variant="outlined"
+          onClick={this.sortBy.bind(this, 'amountOfCommonInterests')}
+        >
           Amount of common interests
           {amountOfCommonInterests === 1 && arrowDown}
           {amountOfCommonInterests === -1 && arrowUp}
-        </button>
+        </Button>
       </div>
     );
   };

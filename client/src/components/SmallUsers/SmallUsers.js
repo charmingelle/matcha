@@ -4,22 +4,22 @@ import { withStyles } from '@material-ui/core/styles';
 import SmallUser from './../SmallUser/SmallUser.js';
 
 const styles = {
-  root: {
-    backgroundColor: '#f5f5f5'
-  },
+  root: {},
   icon: {
-    color: 'red'
+    color: '#f50057'
   },
   title: {
     margin: 0,
-    fontSize: '12px',
+    fontSize: 12,
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    fontWeight: 'normal'
+    fontWeight: 'normal',
+    color: 'rgba(0, 0, 0, 0.54)'
   },
   list: {
     display: 'flex',
     width: '100%',
-    margin: 0,
+    marginTop: 10,
+    marginBottom: 10,
     padding: 0,
     listStyleType: 'none'
   }

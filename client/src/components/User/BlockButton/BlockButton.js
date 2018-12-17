@@ -23,9 +23,9 @@ export default class BlockButton extends React.Component {
       return <div />;
     }
     return (
-      <button onClick={this.changeBlockStatus}>
+      <div variant="outlined" onClick={this.changeBlockStatus}>
         {this.state.canBlock ? <span>Block</span> : <span>Unblock</span>}
-      </button>
+      </div>
     );
   };
 }

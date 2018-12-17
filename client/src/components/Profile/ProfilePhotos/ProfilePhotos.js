@@ -24,22 +24,31 @@ const styles = {
     listStyleType: 'none'
   },
   photoContainer: {
-    width: '614px',
-    margin: '15px',
-    backgroundColor: '#f5f5f5'
-    // border: '1px solid rgba(0, 0, 0, 0.23)'
+    margin: '50px',
+    width: '614px'
+  },
+  imgContainer: {
+    position: 'relative',
+    top: '6px'
   },
   photo: {
     width: '100%'
   },
   photoActions: {
-    padding: '8px',
     display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center'
+    flexDirection: 'column'
   },
+  // profileButtons: {
+  //   marginTop: '1px'
+  // },
   avatarNote: {
-    fontWeight: 500
+    lineHeight: '38.8px',
+    textAlign: 'center',
+    fontWeight: 500,
+    color: '#f50057'
+  },
+  customFileUpload: {
+    marginTop: '50px'
   }
 };
 
@@ -96,8 +105,24 @@ class ProfilePhotos extends React.Component {
 
     return (
       <div className={classes.root}>
-        <input
+        {/* <input
           className={gallery.length < 5 ? classes.upload : classes.hidden}
+          id="file-upload"
+          accept=".jpg, .jpeg, .png"
+          type="file"
+          onChange={this.uploadPhoto}
+        /> */}
+        <Button
+          className={
+            gallery.length < 5 ? classes.customFileUpload : classes.hidden
+          }
+          variant="contained"
+          color="secondary"
+        >
+          <label htmlFor="file-upload">UPLOAD A PHOTO</label>
+        </Button>
+        <input
+          className={classes.hidden}
           id="file-upload"
           accept=".jpg, .jpeg, .png"
           type="file"
@@ -106,7 +131,7 @@ class ProfilePhotos extends React.Component {
         <ul className={classes.photoList}>
           {gallery.map((photo, index) => (
             <li className={classes.photoContainer} key={index}>
-              <div>
+              <div className={classes.imgContainer}>
                 <img
                   className={classes.photo}
                   alt=""
@@ -118,17 +143,21 @@ class ProfilePhotos extends React.Component {
                   <span className={classes.avatarNote}>AVATAR</span>
                 ) : (
                   <Button
+                    className={classes.profileButtons}
                     variant="outlined"
+                    color="secondary"
                     onClick={this.makeAvatar.bind(this, index)}
                   >
-                    Put on avatar
+                    On avatar
                   </Button>
                 )}
                 <Button
-                  variant="outlined"
+                  className={classes.profileButtons}
+                  variant="contained"
+                  color="secondary"
                   onClick={this.upload.bind(this, index)}
                 >
-                  Replace a photo
+                  Replace
                 </Button>
               </div>
             </li>

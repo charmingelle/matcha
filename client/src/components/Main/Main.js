@@ -1,30 +1,41 @@
-import React from "react";
-import { BrowserRouter, Route, Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import socketIOClient from "socket.io-client";
-import { withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import ListIcon from "@material-ui/icons/List";
-import PersonPinIcon from "@material-ui/icons/PersonPin";
-import ChatIcon from "@material-ui/icons/Chat";
-import CheckIcon from "@material-ui/icons/Check";
-import SignoutIcon from "@material-ui/icons/RemoveCircleOutline";
-import Typography from "@material-ui/core/Typography";
-import Suggestions from "./../Suggestions/Suggestions.js";
-import Profile from "./../Profile/Profile.js";
-import User from "./../User/User.js";
-import Signin from "./../Signin/Signin.js";
-import Visited from "./../Visited/Visited.js";
-import Chat from "./../Chat/Chat.js";
-import { getUserProfile, saveLocation, signout } from "./../../api/api.js";
-import Notifications from "./../Notifications/Notifications.js";
+import React from 'react';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import socketIOClient from 'socket.io-client';
+import { withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import ChatIcon from '@material-ui/icons/Chat';
+import CheckIcon from '@material-ui/icons/Check';
+
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+
+import PeopleIcon from '@material-ui/icons/People';
+import PersonIcon from '@material-ui/icons/Person';
+
+import Toolbar from '@material-ui/core/Toolbar';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+
+import Typography from '@material-ui/core/Typography';
+import Suggestions from './../Suggestions/Suggestions.js';
+import Profile from './../Profile/Profile.js';
+import User from './../User/User.js';
+import Signin from './../Signin/Signin.js';
+import Visited from './../Visited/Visited.js';
+import Chat from './../Chat/Chat.js';
+import { getUserProfile, saveLocation, signout } from './../../api/api.js';
+import Notifications from './../Notifications/Notifications.js';
 
 function TabContainer(props) {
   return (
     <Typography
-      style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+      style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
       component="div"
     >
       {props.children}
@@ -38,31 +49,49 @@ TabContainer.propTypes = {
 
 const styles = theme => ({
   root: {
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-    height: "100vh",
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    minWidth: '568px',
+    height: '100vh',
     backgroundColor: theme.palette.background.paper
+  },
+  appBar: {
+    backgroundColor: '#f50057'
+  },
+  appMenu: {
+    position: 'fixed',
+    top: 64,
+    zIndex: 1000
   },
   appContent: {
     flexGrow: 1,
-    display: "flex",
-    flexDirection: "column"
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  grow: {
+    flexGrow: 1
+  },
+  menuButton: {
+    marginLeft: -12,
+    marginRight: 20
   }
 });
 
 let socket = null;
 
-class ScrollableTabsButtonForce extends React.Component {
+class Main extends React.Component {
   state = {
     tabid: 0,
     profile: null,
-    notifications: []
+    notifications: [],
+    showMenu: false,
+    tabName: 'Suggestions'
   };
 
   ipLookUp = userid => {
-    fetch("http://ip-api.com/json", {
-      method: "POST"
+    fetch('http://ip-api.com/json', {
+      method: 'POST'
     })
       .then(response => response.json())
       .then(data => saveLocation([data.lat, data.lon]))
@@ -87,19 +116,19 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 
   addSocketEventListeners = () => {
-    socket.on("like", data =>
+    socket.on('like', data =>
       this.addNotification(`${data.sender} has just liked you`)
     );
-    socket.on("check", data =>
+    socket.on('check', data =>
       this.addNotification(`${data.sender} has just checked your profile`)
     );
-    socket.on("chat", data =>
+    socket.on('chat', data =>
       this.addNotification(`${data.sender} has sent you a message`)
     );
-    socket.on("likeBack", data =>
+    socket.on('likeBack', data =>
       this.addNotification(`${data.sender} has just liked you back!`)
     );
-    socket.on("unlike", data =>
+    socket.on('unlike', data =>
       this.addNotification(
         `Unfortunately ${data.sender} has disconnected from you`
       )
@@ -110,7 +139,7 @@ class ScrollableTabsButtonForce extends React.Component {
     getUserProfile().then(res => {
       if (res.status === 200) {
         res.json().then(data => {
-          socket = socketIOClient("http://localhost:5000", {
+          socket = socketIOClient('http://localhost:5000', {
             query: `login=${data.user.login}`
           });
           this.addSocketEventListeners();
@@ -133,13 +162,13 @@ class ScrollableTabsButtonForce extends React.Component {
               changeStatus: null,
               error: false,
               canLike:
-                data.user.gallery.filter(image => image !== "").length > 0
+                data.user.gallery.filter(image => image !== '').length > 0
             }
           });
           // this.getLocation(data.user.id);
         });
       } else {
-        this.setState({ profile: "signin" });
+        this.setState({ profile: 'signin' });
       }
     });
   }
@@ -149,13 +178,8 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 
   signout = () => {
-    signout().then(() => this.setState({ profile: "signin" }));
+    signout().then(() => this.setState({ profile: 'signin' }));
   };
-
-  changeTab = tabid =>
-    this.setState({
-      tabid
-    });
 
   updateVisited = visited => {
     let newProfile = this.state.profile;
@@ -175,19 +199,31 @@ class ScrollableTabsButtonForce extends React.Component {
     });
   };
 
+  showMenu = () =>
+    this.setState({
+      showMenu: !this.state.showMenu
+    });
+
+  changeTabName = tabName =>
+    this.setState({
+      tabName,
+      showMenu: false
+    });
+
   render = () => {
     if (this.state.profile === null) {
       return <span>Loading...</span>;
     }
-    if (this.state.profile === "signin") {
+    if (this.state.profile === 'signin') {
       return <Signin />;
     }
     const { classes } = this.props;
     const {
-      tabid,
       profile,
       profile: { visited, login, canLike },
-      notifications
+      notifications,
+      tabName,
+      showMenu
     } = this.state;
 
     return (
@@ -197,95 +233,93 @@ class ScrollableTabsButtonForce extends React.Component {
             messages={notifications}
             closeNotification={this.closeNotification}
           />
-          <AppBar position="fixed" color="default">
-            <Tabs
-              className={classes.tabs}
-              value={tabid}
-              scrollable
-              scrollButtons="on"
-              indicatorColor="primary"
-              textColor="primary"
-            >
-              <Tab
-                label="Suggestions"
-                icon={<ListIcon />}
-                component={Link}
-                to="/"
-              />
-              <Tab
-                label="Profile"
-                icon={<PersonPinIcon />}
-                component={Link}
-                to="/profile"
-              />
-              <Tab
-                label="Chat"
-                icon={<ChatIcon />}
-                component={Link}
-                to="/chat"
-              />
-              <Tab
-                label="Visited"
-                icon={<CheckIcon />}
-                component={Link}
-                to="/visited"
-              />
-              <Tab
-                label="Sign Out"
-                icon={<SignoutIcon />}
-                onClick={this.signout}
-                component={Link}
-                to="/"
-              />
-            </Tabs>
+
+          <AppBar position="static" className={classes.appBar}>
+            <Toolbar>
+              <IconButton
+                className={classes.menuButton}
+                color="inherit"
+                aria-label="Menu"
+                onClick={this.showMenu}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" color="inherit" className={classes.grow}>
+                {tabName}
+              </Typography>
+              <Button color="inherit" onClick={this.signout}>
+                Log out
+              </Button>
+            </Toolbar>
           </AppBar>
-          <AppBar
-            position="relative"
-            color="default"
-            style={{ zIndex: "initial" }}
-          >
-            <Tabs
-              className={classes.tabs}
-              value={tabid}
-              onChange={this.handleChange}
-              scrollable
-              scrollButtons="on"
-              indicatorColor="primary"
-              textColor="primary"
-            >
-              <Tab
-                label="Suggestions"
-                icon={<ListIcon />}
-                component={Link}
-                to="/"
-              />
-              <Tab
-                label="Profile"
-                icon={<PersonPinIcon />}
-                component={Link}
-                to="/profile"
-              />
-              <Tab
-                label="Chat"
-                icon={<ChatIcon />}
-                component={Link}
-                to="/chat"
-              />
-              <Tab
-                label="Visited"
-                icon={<CheckIcon />}
-                component={Link}
-                to="/visited"
-              />
-              <Tab
-                label="Sign Out"
-                icon={<SignoutIcon />}
-                onClick={this.signout}
-                component={Link}
-                to="/"
-              />
-            </Tabs>
-          </AppBar>
+
+          {showMenu && (
+            <Paper className={classes.appMenu}>
+              <MenuList>
+                <MenuItem
+                  className={classes.menuItem}
+                  component={Link}
+                  to="/"
+                  onClick={this.changeTabName.bind(this, 'Suggestions')}
+                >
+                  <ListItemIcon className={classes.icon}>
+                    <PeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    classes={{ primary: classes.primary }}
+                    inset
+                    primary="Suggestions"
+                  />
+                </MenuItem>
+                <MenuItem
+                  className={classes.menuItem}
+                  component={Link}
+                  to="/profile"
+                  onClick={this.changeTabName.bind(this, 'Profile')}
+                >
+                  <ListItemIcon className={classes.icon}>
+                    <PersonIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    classes={{ primary: classes.primary }}
+                    inset
+                    primary="Profile"
+                  />
+                </MenuItem>
+                <MenuItem
+                  className={classes.menuItem}
+                  component={Link}
+                  to="/chat"
+                  onClick={this.changeTabName.bind(this, 'Chat')}
+                >
+                  <ListItemIcon className={classes.icon}>
+                    <ChatIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    classes={{ primary: classes.primary }}
+                    inset
+                    primary="Chat"
+                  />
+                </MenuItem>
+                <MenuItem
+                  className={classes.menuItem}
+                  component={Link}
+                  to="/visited"
+                  onClick={this.changeTabName.bind(this, 'Visited')}
+                >
+                  <ListItemIcon className={classes.icon}>
+                    <CheckIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    classes={{ primary: classes.primary }}
+                    inset
+                    primary="Visited"
+                  />
+                </MenuItem>
+              </MenuList>
+            </Paper>
+          )}
+
           <div className={classes.appContent}>
             <Route
               exact
@@ -295,7 +329,6 @@ class ScrollableTabsButtonForce extends React.Component {
                   <Suggestions
                     socket={socket}
                     sender={login}
-                    changeTab={this.changeTab}
                     profile={profile}
                     visited={visited}
                     updateVisited={this.updateVisited}
@@ -315,7 +348,6 @@ class ScrollableTabsButtonForce extends React.Component {
                     socket={socket}
                     sender={login}
                     editable={true}
-                    changeTab={this.changeTab}
                     visited={visited}
                     updateVisited={this.updateVisited}
                   />
@@ -327,11 +359,7 @@ class ScrollableTabsButtonForce extends React.Component {
               path="/chat"
               render={() => (
                 <TabContainer>
-                  <Chat
-                    socket={socket}
-                    sender={login}
-                    changeTab={this.changeTab}
-                  />
+                  <Chat socket={socket} sender={login} />
                 </TabContainer>
               )}
             />
@@ -340,12 +368,6 @@ class ScrollableTabsButtonForce extends React.Component {
               path="/users/:login"
               render={({ match }) => (
                 <TabContainer>
-                  {/* <User
-                    socket={socket}
-                    sender={login}
-                    login={match.params.login}
-                    canLike={canLike}
-                  /> */}
                   <User
                     user={profile}
                     socket={socket}
@@ -368,7 +390,6 @@ class ScrollableTabsButtonForce extends React.Component {
                   <Visited
                     socket={socket}
                     sender={login}
-                    changeTab={this.changeTab}
                     visited={visited}
                     updateVisited={this.updateVisited}
                   />
@@ -382,8 +403,8 @@ class ScrollableTabsButtonForce extends React.Component {
   };
 }
 
-ScrollableTabsButtonForce.propTypes = {
+Main.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(ScrollableTabsButtonForce);
+export default withStyles(styles)(Main);

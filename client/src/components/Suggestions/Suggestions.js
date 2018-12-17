@@ -11,7 +11,8 @@ const styles = {
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-around",
-    overflow: "auto"
+    overflow: "auto",
+    padding: '10px'
   },
   userList: {
     margin: 0,
@@ -36,7 +37,7 @@ class Suggestions extends React.Component {
   }
 
   componentDidMount = () => {
-    this.props.changeTab(0);
+    // this.props.changeTab(0);
     getSuggestions()
       .then(response => response.json())
       .then(data => {

@@ -1,103 +1,79 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import LikeButton from "./LikeButton/LikeButton.js";
-import BlockButton from "./BlockButton/BlockButton.js";
-import { saveVisited, reportFake } from "./../../api/api.js";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import classnames from 'classnames';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Collapse from '@material-ui/core/Collapse';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import LeftIcon from '@material-ui/icons/ChevronLeft';
+import RightIcon from '@material-ui/icons/ChevronRight';
+import LikeButton from './LikeButton/LikeButton.js';
+import BlockButton from './BlockButton/BlockButton.js';
+import { saveVisited, reportFake } from './../../api/api.js';
 
-const styles = {
-  root: {
-    display: "flex",
-    justifyContent: "center"
+const styles = theme => ({
+  card: {
+    margin: 50,
+    width: 400
   },
-  container: {
-    width: "614px",
-    margin: "40px",
-    border: "1px solid rgba(0, 0, 0, 0.54)"
-  },
-  info: {
-    display: "flex",
-    padding: "15px"
-  },
-  name: {
-    marginRight: "10px"
-  },
-  timeContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  online: {
-    width: "5px",
-    height: "5px",
-    borderRadius: "100%",
-    backgroundColor: "green"
-  },
-  photoContainer: {
-    position: "relative",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  left: {
-    position: "absolute",
-    left: 0,
-    top: "50%",
-    transform: "translate(0, -50%)"
-  },
-  right: {
-    position: "absolute",
-    right: 0,
-    top: "50%",
-    transform: "translate(0, -50%)"
-  },
-  photo: {
-    maxWidth: "100%",
-    maxHeight: "100%"
+  media: {
+    height: 0,
+    paddingTop: '56.25%' // 16:9
   },
   actions: {
-    display: "flex",
-    justifyContent: "space-between"
+    display: 'flex'
   },
-  goodActions: {
-    display: "flex",
-    alignItems: "center",
-    padding: "15px"
+  expand: {
+    transform: 'rotate(0deg)',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest
+    }),
+    marginLeft: 'auto',
+    [theme.breakpoints.up('sm')]: {
+      marginRight: -8
+    }
   },
-  badActions: {
-    display: "flex",
-    alignItems: "center",
-    padding: "15px"
+  expandOpen: {
+    transform: 'rotate(180deg)'
   },
-  fake: {
-    marginRight: "5px"
+  leftRightArea: {
+    position: 'relative',
+    height: 30
   },
-  fame: {
-    marginLeft: "5px"
-  },
-  showMore: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    margin: "15px"
-  },
-  details: {
-    margin: "15px"
+  right: {
+    position: 'absolute',
+    right: 0
   },
   bold: {
-    fontWeight: "bold"
+    fontWeight: 500
   }
-};
+});
 
 class User extends React.Component {
   componentDidMount = () => {
     this.setState(this.props.user);
     this.setState({
       currentPhoto: 0,
-      full: this.props.full
+      full: this.props.full,
+      expanded: false,
+      isMenuOpen: false
     });
 
-    let newGallery = this.props.user.gallery.filter(photo => photo !== "");
+    let newGallery = this.props.user.gallery.filter(photo => photo !== '');
     let temp = newGallery[0];
 
     newGallery[0] = newGallery[this.props.user.avatarid];
@@ -126,7 +102,7 @@ class User extends React.Component {
 
       newVisited.push(this.state.login);
       saveVisited(newVisited).then(() => {
-        this.props.socket.emit("check", {
+        this.props.socket.emit('check', {
           sender: this.props.sender,
           receiver: this.state.login
         });
@@ -144,6 +120,10 @@ class User extends React.Component {
     });
   };
 
+  toggleMenu = () => {
+    this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
+  };
+
   changeFame = step => {
     this.setState({
       fame: this.state.fame + step
@@ -156,6 +136,16 @@ class User extends React.Component {
         fake: true
       })
     );
+
+  handleExpandClick = () =>
+    this.setState(state => ({ expanded: !state.expanded }));
+
+  handleMenuClose = event => {
+    if (this.anchorEl.contains(event.target)) {
+      return;
+    }
+    this.setState({ isMenuOpen: false });
+  };
 
   render = () => {
     if (!this.state) {
@@ -170,109 +160,147 @@ class User extends React.Component {
       time,
       currentPhoto,
       gallery,
+      avatarid,
       fame,
-      full,
       age,
       gender,
       preferences,
       bio,
       interests,
-      fake
+      fake,
+      isMenuOpen
     } = this.state;
 
     return (
-      <div className={classes.root}>
-        <div className={classes.container}>
-          <div className={classes.info}>
-            <div className={classes.name}>
-              {firstname} {lastname}
+      <Card className={classes.card}>
+        <CardHeader
+          avatar={
+            <Avatar
+              aria-label="Recipe"
+              className={classes.avatar}
+              alt={`${firstname} ${lastname}`}
+              src={`${photoFolder}/${gallery[avatarid]}`}
+            />
+          }
+          action={
+            <div>
+              <IconButton
+                buttonRef={node => {
+                  this.anchorEl = node;
+                }}
+                onClick={this.toggleMenu}
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Popper
+                open={isMenuOpen}
+                anchorEl={this.anchorEl}
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    id="menu-list-grow"
+                    style={{
+                      transformOrigin:
+                        placement === 'bottom' ? 'center top' : 'center bottom'
+                    }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={this.handleMenuClose}>
+                        <MenuList>
+                          <MenuItem>
+                            <BlockButton login={login} />
+                          </MenuItem>
+                          {!fake && (
+                            <MenuItem>
+                              <div onClick={this.reportFake}>Report Fake</div>
+                            </MenuItem>
+                          )}
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
             </div>
-            <div className={classes.timeContainer}>
-              {online ? (
-                <div className={classes.online} />
-              ) : (
-                <div>
-                  Last seen on {new Date(parseInt(time)).toLocaleString()}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className={classes.photoContainer}>
-            {currentPhoto > 0 && (
-              <button className={classes.left} onClick={this.showPreviousPhoto}>
-                Left
-              </button>
-            )}
-            {
-              <img
-                className={classes.photo}
-                alt="face"
-                src={`${photoFolder}${gallery[currentPhoto]}`}
-              />
-            }
-            {currentPhoto < gallery.length - 1 && (
-              <button className={classes.right} onClick={this.showNextPhoto}>
-                Right
-              </button>
-            )}
-          </div>
-          <div className={classes.actions}>
-            <div className={classes.goodActions}>
-              <LikeButton
-                changeFame={this.changeFame}
-                socket={this.props.socket}
-                sender={this.props.sender}
-                login={login}
-              />
-              <div className={classes.fame}>{fame > 0 && fame}</div>
-            </div>
-            <div className={classes.badActions}>
-              {fake ? (
-                <div className={classes.fake}>Fake</div>
-              ) : (
-                <button className={classes.fake} onClick={this.reportFake}>
-                  Report Fake
-                </button>
-              )}
-              <BlockButton className={classes.blockButton} login={login} />
-            </div>
-          </div>
-          <div className={classes.showMore}>
-            <button onClick={this.toggleFull}>
-              {full ? "Show less" : "Show more"}
-            </button>
-          </div>
-          {full && (
-            <div className={classes.details}>
-              <div>
-                <span className={classes.bold}>Age: </span>
-                {age}
-              </div>
-              <div>
-                <span className={classes.bold}>Gender: </span>
-                {gender}
-              </div>
-              <div>
-                <span className={classes.bold}>Sexual preferences: </span>
-                {preferences}
-              </div>
-              {bio && (
-                <div>
-                  <span className={classes.bold}>Biography: </span>
-                  {bio}
-                </div>
-              )}
-              {interests.length > 0 && (
-                <div>
-                  <span className={classes.bold}>Interests: </span>
-                  {interests.join(", ")}
-                </div>
-              )}
-              <div />
-            </div>
+          }
+          title={`${firstname} ${lastname}`}
+          subheader={
+            online
+              ? 'Online'
+              : `Last seen on ${new Date(parseInt(time)).toLocaleString()}`
+          }
+        />
+        <CardMedia
+          className={classes.media}
+          image={`users/photos/${gallery[currentPhoto]}`}
+        />
+        <div className={classes.leftRightArea}>
+          {currentPhoto > 0 && (
+            <IconButton onClick={this.showPreviousPhoto}>
+              <LeftIcon />
+            </IconButton>
+          )}
+          {currentPhoto < gallery.length - 1 && (
+            <IconButton className={classes.right} onClick={this.showNextPhoto}>
+              <RightIcon />
+            </IconButton>
           )}
         </div>
-      </div>
+        <CardContent>
+          <Typography component="p">
+            <span className={classes.bold}>Age: </span>
+            {age}
+          </Typography>
+          <Typography component="p">
+            <span className={classes.bold}>Gender: </span>
+            {gender}
+          </Typography>
+          <Typography component="p">
+            <span className={classes.bold}>Sexual preferences: </span>
+            {preferences}
+          </Typography>
+        </CardContent>
+        <CardActions className={classes.actions} disableActionSpacing>
+          <LikeButton
+            changeFame={this.changeFame}
+            socket={this.props.socket}
+            sender={this.props.sender}
+            login={login}
+          />
+          <div>{fame}</div>
+          {(interests.length > 0 || bio) && (
+            <IconButton
+              className={classnames(classes.expand, {
+                [classes.expandOpen]: this.state.expanded
+              })}
+              onClick={this.handleExpandClick}
+              aria-expanded={this.state.expanded}
+              aria-label="Show more"
+            >
+              <ExpandMoreIcon />
+            </IconButton>
+          )}
+        </CardActions>
+        <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+          <CardContent>
+            {interests.length > 0 && (
+              <Typography component="p">
+                <span className={classes.bold}>Interests: </span>
+                {interests.join(', ')}
+              </Typography>
+            )}
+            {bio && (
+              <Typography component="p">
+                <span className={classes.bold}>Biography: </span>
+                {bio}
+              </Typography>
+            )}
+          </CardContent>
+        </Collapse>
+      </Card>
     );
   };
 }

@@ -27,7 +27,7 @@ const styles = theme => ({
 
 class Profile extends React.Component {
   componentDidMount() {
-    this.props.changeTab(1);
+    // this.props.changeTab(1);
     this.setState(this.props.value);
   }
 
@@ -200,7 +200,8 @@ class Profile extends React.Component {
             onChange={this.onChange}
           />
           <Button
-            variant="outlined"
+            variant="contained"
+            color="secondary"
             onClick={this.onSubmit}
           >
             Save changes

@@ -1,54 +1,106 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-
-import MenuItem from "@material-ui/core/MenuItem";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import ListItemText from "@material-ui/core/ListItemText";
-import Select from "@material-ui/core/Select";
-import Checkbox from "@material-ui/core/Checkbox";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import ListItemText from '@material-ui/core/ListItemText';
+import Select from '@material-ui/core/Select';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = theme => ({
   root: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between"
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'inherit'
   },
   ageFilter: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    margin: '8px 8px 8px 0'
   },
-  startAgeLabelBlock: {},
   startAgeInputBlock: {
-    display: "flex"
+    display: 'flex'
   },
-  endAgeLabelBlock: {},
   endAgeInputBlock: {
-    display: "flex"
+    display: 'flex'
   },
   distanceFilter: {
-    display: "flex",
-    flexDirection: "column"
+    minWidth: '50px',
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    margin: '8px'
   },
   fameFilter: {
-    display: "flex",
-    flexDirection: "column"
+    minWidth: '50px',
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    margin: '8px'
   },
   amountOfCommonInterestsFilter: {
-    display: "flex",
-    flexDirection: "column"
+    minWidth: '50px',
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    margin: '8px'
   },
   formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120,
-    maxWidth: 300,
-    flexDirection: "row"
+    minWidth: '50px',
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    margin: theme.spacing.unit
   },
   formControlSelect: {
-    width: "100%"
+  },
+  filterButton: {
+    margin: '8px 0 8px 8px',
+    minWidth: '50px',
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    padding: '8px'
+  },
+  slider: {
+    minWidth: '50px'
+  },
+  labelAll: {
+    fontSize: '12px',
+    color: 'rgba(0, 0, 0, 0.54)'
+  },
+  inputAll: {
+    minWidth: '50px',
+    paddingTop: '6px',
+    paddingBottom: '7px',
+    border: 'none',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
+    outline: 'none',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontSize: '16px',
+    '&:hover': {
+      borderBottom: '2px solid rgba(0, 0, 0, 0.87)'
+    }
+  },
+  spanAll: {
+    color: 'rgba(0, 0, 0, 0.54)'
+  },
+  spanSpecial: {
+    color: 'rgba(0, 0, 0, 0.87)'
   }
 });
 
@@ -70,7 +122,7 @@ class FilterPanel extends React.Component {
       endAge: 100,
       distance: 5,
       minFameRating: 0,
-      maxFameRating: "",
+      maxFameRating: '',
       amountOfCommonInterests: 0,
       selectedInterests: []
     });
@@ -107,82 +159,93 @@ class FilterPanel extends React.Component {
     return (
       <div className={classes.root}>
         <div className={classes.ageFilter}>
-          <div className={classes.startAgeLabelBlock}>
-            <label className={classes.startAgeLabel} htmlFor="startAge">
-              Start Age {startAge}
+          <div>
+            <label className={classes.labelAll} htmlFor="startAge">
+              Start Age <span className={classes.spanSpecial}>{startAge}</span>
             </label>
           </div>
           <div className={classes.startAgeInputBlock}>
-            <span>18</span>
+            <span className={classes.spanAll}>18</span>
             <input
+              className={classes.slider}
               type="range"
               name="startAge"
               min="18"
               max="100"
               step="1"
               value={startAge}
-              onChange={this.changeParam.bind(this, "startAge")}
+              onChange={this.changeParam.bind(this, 'startAge')}
             />
-            <span>100</span>
+            <span className={classes.spanAll}>100</span>
           </div>
-          <div className={classes.endAgeLabelBlock}>
-            <label className={classes.endAgeLabel} htmlFor="endAge">
-              End Age {endAge}
+          <div>
+            <label className={classes.labelAll} htmlFor="endAge">
+              End Age <span className={classes.spanSpecial}>{endAge}</span>
             </label>
           </div>
           <div className={classes.endAgeInputBlock}>
-            <span>18</span>
+            <span className={classes.spanAll}>18</span>
             <input
+              className={classes.slider}
               type="range"
               name="endAge"
               min="18"
               max="100"
               step="1"
               value={endAge}
-              onChange={this.changeParam.bind(this, "endAge")}
+              onChange={this.changeParam.bind(this, 'endAge')}
             />
-            <span>100</span>
+            <span className={classes.spanAll}>100</span>
           </div>
         </div>
-        <div />
         <div className={classes.distanceFilter}>
-          <label htmlFor="distance">Maximum distance to person (km)</label>
+          <label className={classes.labelAll} htmlFor="distance">
+            Maximum distance (km)
+          </label>
           <input
+            className={classes.inputAll}
             name="distance"
             type="number"
             min="0"
             value={distance}
-            onChange={this.changeParam.bind(this, "distance")}
+            onChange={this.changeParam.bind(this, 'distance')}
           />
         </div>
         <div className={classes.fameFilter}>
-          <label htmlFor="minFame">Minimum fame rating</label>
+          <label className={classes.labelAll} htmlFor="minFame">
+            Min fame
+          </label>
           <input
+            className={classes.inputAll}
             name="minFame"
             type="number"
             min="0"
             value={minFameRating}
-            onChange={this.changeParam.bind(this, "minFameRating")}
+            onChange={this.changeParam.bind(this, 'minFameRating')}
           />
-          <label htmlFor="maxFame">Maximum fame rating</label>
+          <label className={classes.labelAll} htmlFor="maxFame">
+            Max fame
+          </label>
           <input
+            className={classes.inputAll}
             name="maxFame"
             type="number"
             min="0"
             value={maxFameRating}
-            onChange={this.changeParam.bind(this, "maxFameRating")}
+            onChange={this.changeParam.bind(this, 'maxFameRating')}
           />
         </div>
         <div className={classes.amountOfCommonInterestsFilter}>
-          <label htmlFor="amountOfCommonInterests">
+          <label className={classes.labelAll} htmlFor="amountOfCommonInterests">
             Minimum amount of common interests
           </label>
           <input
+            className={classes.inputAll}
             name="amountOfCommonInterests"
             type="number"
             min="0"
             value={amountOfCommonInterests}
-            onChange={this.changeParam.bind(this, "amountOfCommonInterests")}
+            onChange={this.changeParam.bind(this, 'amountOfCommonInterests')}
           />
         </div>
         <FormControl className={classes.formControl}>
@@ -195,7 +258,7 @@ class FilterPanel extends React.Component {
             value={selectedInterests}
             onChange={this.handleInterestsChange}
             input={<Input id="select-multiple-checkbox" />}
-            renderValue={selected => selected.join(", ")}
+            renderValue={selected => selected.join(', ')}
             MenuProps={MenuProps}
           >
             {interests.map(name => (
@@ -206,7 +269,13 @@ class FilterPanel extends React.Component {
             ))}
           </Select>
         </FormControl>
-        <button onClick={this.filter}>Filter</button>
+        <Button
+          className={classes.filterButton}
+          variant="outlined"
+          onClick={this.filter}
+        >
+          Filter
+        </Button>
       </div>
     );
   };
