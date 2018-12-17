@@ -2,35 +2,34 @@ import React from 'react';
 import { BrowserRouter, Route, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import socketIOClient from 'socket.io-client';
+
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
-import ChatIcon from '@material-ui/icons/Chat';
-import CheckIcon from '@material-ui/icons/Check';
-
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-
-import PeopleIcon from '@material-ui/icons/People';
-import PersonIcon from '@material-ui/icons/Person';
-
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+
+import ChatIcon from '@material-ui/icons/Chat';
+import CheckIcon from '@material-ui/icons/Check';
+import PeopleIcon from '@material-ui/icons/People';
+import PersonIcon from '@material-ui/icons/Person';
 import MenuIcon from '@material-ui/icons/Menu';
 
-import Typography from '@material-ui/core/Typography';
 import Suggestions from './../Suggestions/Suggestions.js';
 import Profile from './../Profile/Profile.js';
 import User from './../User/User.js';
 import Signin from './../Signin/Signin.js';
 import Visited from './../Visited/Visited.js';
 import Chat from './../Chat/Chat.js';
-import { getUserProfile, saveLocation, signout } from './../../api/api.js';
 import Notifications from './../Notifications/Notifications.js';
+import { getUserProfile, saveLocation, signout } from './../../api/api.js';
 
 function TabContainer(props) {
   return (
@@ -62,8 +61,19 @@ const styles = theme => ({
   },
   appMenu: {
     position: 'fixed',
-    top: 64,
-    zIndex: 1000
+    width: 200,
+    height: '100%',
+    zIndex: 2000,
+    transform: 'translate(0px, 0px)',
+    transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms'
+  },
+  appMenuHidden: {
+    position: 'fixed',
+    width: 200,
+    height: '100%',
+    zIndex: 2000,
+    transform: 'translate(-200px, 0px)',
+    transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms'
   },
   appContent: {
     flexGrow: 1,
@@ -211,6 +221,13 @@ class Main extends React.Component {
       showMenu: false
     });
 
+  handleMenuClose = event => {
+    if (this.anchorEl.contains(event.target)) {
+      return;
+    }
+    this.setState({ showMenu: false });
+  };
+
   render = () => {
     if (this.state.profile === null) {
       return <span>Loading...</span>;
@@ -241,6 +258,9 @@ class Main extends React.Component {
                 className={classes.menuButton}
                 color="inherit"
                 aria-label="Menu"
+                buttonRef={node => {
+                  this.anchorEl = node;
+                }}
                 onClick={this.showMenu}
               >
                 <MenuIcon />
@@ -254,8 +274,10 @@ class Main extends React.Component {
             </Toolbar>
           </AppBar>
 
-          {showMenu && (
-            <Paper className={classes.appMenu}>
+          <ClickAwayListener onClickAway={this.handleMenuClose}>
+            <Paper
+              className={showMenu ? classes.appMenu : classes.appMenuHidden}
+            >
               <MenuList>
                 <MenuItem
                   className={classes.menuItem}
@@ -319,7 +341,7 @@ class Main extends React.Component {
                 </MenuItem>
               </MenuList>
             </Paper>
-          )}
+          </ClickAwayListener>
 
           <div className={classes.appContent}>
             <Route
