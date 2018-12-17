@@ -6,6 +6,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
+import Avatar from '@material-ui/core/Avatar';
 import Room from './Room/Room.js';
 import { getChatLogins } from './../../api/api.js';
 
@@ -24,14 +25,19 @@ const styles = theme => ({
     padding: 'unset',
     borderRight: '1px solid rgba(0, 0, 0, 0.08)'
   },
-  onlineDot: {
-    width: '5px',
-    height: '5px',
-    borderRadius: '100%',
-    backgroundColor: '#f50057'
+  user: {
+    padding: 5
   },
   selectedUser: {
+    padding: 5,
     backgroundColor: 'rgba(0, 0, 0, 0.08)'
+  },
+  onlineDot: {
+    marginRight: 5,
+    width: 5,
+    height: 5,
+    borderRadius: '100%',
+    backgroundColor: '#f50057'
   }
 });
 
@@ -43,7 +49,6 @@ class Chat extends React.Component {
   }
 
   componentDidMount = () => {
-    // this.props.changeTab(2);
     getChatLogins()
       .then(response => response.json())
       .then(users => {
@@ -52,7 +57,8 @@ class Chat extends React.Component {
             (this.users[user.login] = {
               online: user.online,
               log: [],
-              message: ''
+              message: '',
+              avatar: user.gallery[user.avatarid]
             })
         );
         this.setState({
@@ -84,11 +90,19 @@ class Chat extends React.Component {
               <Link className={classes.link} key={index} to={`/chat/${user}`}>
                 <ListItem
                   button
-                  className={user === selectedUser ? classes.selectedUser : ''}
+                  className={
+                    user === selectedUser ? classes.selectedUser : classes.user
+                  }
                   onClick={() => this.setState({ selectedUser: user })}
                 >
+                  <Avatar
+                    alt={user}
+                    src={`users/photos/${this.users[user].avatar}`}
+                  />
                   <ListItemText primary={user} />
-                  {this.users[user].online && <div className={classes.onlineDot} />}
+                  {this.users[user].online && (
+                    <div className={classes.onlineDot} />
+                  )}
                 </ListItem>
                 <Divider light />
               </Link>

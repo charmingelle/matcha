@@ -17,22 +17,58 @@ const styles = theme => ({
     overflow: 'auto',
     borderBottom: '1px solid #e9e9e9'
   },
-  outputString: {
-    marginRight: '5px'
+  outputPs: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
-  outputP: {
-    padding: '14px 0px',
-    margin: '0 14px',
-    color: '#555'
+  outputPOther: {
+    position: 'relative',
+    marginRight: '10%',
+    marginTop: 5,
+    width: '80%',
+    padding: 10,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    borderRadius: 4,
+    backgroundColor: '#ffffff',
+    '&:last-child': {
+      marginBottom: 5
+    }
+  },
+  outputPMine: {
+    position: 'relative',
+    marginLeft: '10%',
+    marginTop: 5,
+    width: '80%',
+    padding: 10,
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: 4,
+    backgroundColor: 'rgba(245, 0, 87, 0.1)',
+    '&:last-child': {
+      marginBottom: 5
+    }
+  },
+  messageText: {
+    margin: 0
+  },
+  messageTime: {
+    textAlign: 'end',
+    fontSize: 12,
+    color: 'rgba(0, 0, 0, 0.54)'
   },
   typingP: {
-    color: '#aaa',
-    padding: '14px 0px',
-    margin: '0 14px'
+    width: '80%',
+    padding: 10,
+    borderRadius: 4,
+    backgroundColor: '#ffffff'
   },
   message: {
     width: '100%',
-    padding: '14px'
+    padding: '14px',
+    backgroundColor: '#ffffff'
   },
   send: {
     padding: '18px 0',
@@ -161,6 +197,7 @@ class Room extends React.Component {
   };
 
   changeHandler = event => {
+    console.log('event.target.value', event.target.value);
     this.socket.emit('typing', {
       sender: this.props.sender,
       receiver: this.state.receiver
@@ -202,24 +239,26 @@ class Room extends React.Component {
     return (
       <div className={classes.marioChat}>
         <div className={classes.chatWindow} onScroll={this.scrollHandler}>
-          <div>
-            {typing && (
-              <p className={classes.typingP}>
-                <em>{typing} is typing a message...</em>
-              </p>
-            )}
-          </div>
-          <div>
+          {typing && (
+            <p className={classes.typingP}>
+              <em>{typing} is typing a message...</em>
+            </p>
+          )}
+          <div className={classes.outputPs}>
             {log.map((record, index) => (
-              <p className={classes.outputP} key={index}>
-                <span>{`${new Date(
+              <div
+                className={
+                  record.sender === this.state.sender
+                    ? classes.outputPMine
+                    : classes.outputPOther
+                }
+                key={index}
+              >
+                <p className={classes.messageText}>{record.message}</p>
+                <span className={classes.messageTime}>{`${new Date(
                   parseInt(record.time)
                 ).toLocaleString()} `}</span>
-                <strong className={classes.outputString}>
-                  {record.sender}:
-                </strong>
-                {record.message}
-              </p>
+              </div>
             ))}
           </div>
         </div>
@@ -232,7 +271,12 @@ class Room extends React.Component {
           onKeyPress={this.keyPressHandler}
           disableUnderline={true}
         />
-        <Button className={classes.send} onClick={this.send} variant="outlined">
+        <Button
+          className={classes.send}
+          onClick={this.send}
+          variant="contained"
+          color="secondary"
+        >
           Send
         </Button>
       </div>

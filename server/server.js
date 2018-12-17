@@ -540,7 +540,7 @@ app.post("/getChatLogins", requireLogin, (req, res) => {
           data = data.map(record => record.liker);
 
           const query = format(
-            "SELECT login, online FROM users WHERE login IN (%L)",
+            "SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)",
             data
           );
           db.any(query).then(data => res.send(JSON.stringify(data)));
