@@ -14,93 +14,76 @@ const styles = theme => ({
   root: {
     width: '100%',
     display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'inherit',
-    backgroundColor: '#ffffff'
+    flexDirection: 'column',
+    padding: 8,
+    backgroundColor: '#ffffff',
+    transform: 'translate(0px, 0px)',
+    transition: 'transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms'
+  },
+  hidden: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: 8,
+    backgroundColor: '#ffffff',
+    transform: 'translate(0, -430px)',
+    transition: 'transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms'
   },
   ageFilter: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    margin: '8px 8px 8px 0'
+    marginBottom: 8
   },
-  startAgeInputBlock: {
-    display: 'flex'
+  ageInputBlock: {
+    display: 'flex',
+    alignItems: 'center',
+    width: 300,
+    height: 40
   },
-  endAgeInputBlock: {
-    display: 'flex'
-  },
-  distanceFilter: {
-    minWidth: '50px',
+  filter: {
     display: 'flex',
     flexDirection: 'column',
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    margin: '8px'
-  },
-  fameFilter: {
-    minWidth: '50px',
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    margin: '8px'
-  },
-  amountOfCommonInterestsFilter: {
-    minWidth: '50px',
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    margin: '8px'
+    marginBottom: 8
   },
   formControl: {
-    minWidth: '50px',
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    margin: theme.spacing.unit
-  },
-  formControlSelect: {},
-  filterButton: {
-    margin: '8px 0 8px 8px',
-    minWidth: '50px',
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    padding: '8px'
+    marginBottom: 8
   },
   slider: {
-    minWidth: '50px'
+    WebkitAppearance: 'none',
+    width: '100%',
+    background: 'transparent',
+    '&:focus': {
+      outline: 'none'
+    },
+    '&::-webkit-slider-thumb': {
+      WebkitAppearance: 'none',
+      height: '36px',
+      width: '16px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      cursor: 'pointer',
+      marginTop: '-14px',
+      boxShadow:
+        '1px 1px 1px rgba(0, 0, 0, 0.7), 0px 0px 1px rgba(0, 0, 0, 0.7)'
+    },
+    '&::-webkit-slider-runnable-track': {
+      width: '100%',
+      height: '8.4px',
+      cursor: 'pointer',
+      background: '#f50057',
+      borderRadius: '4px'
+    }
   },
   labelAll: {
     fontSize: '12px',
     color: 'rgba(0, 0, 0, 0.54)'
   },
-  inputAll: {
-    minWidth: '50px',
-    paddingTop: '6px',
-    paddingBottom: '7px',
-    border: 'none',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
-    outline: 'none',
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    fontSize: '16px',
-    '&:hover': {
-      borderBottom: '2px solid rgba(0, 0, 0, 0.87)'
-    }
-  },
   spanAll: {
     color: 'rgba(0, 0, 0, 0.54)'
   },
   spanSpecial: {
-    color: 'rgba(0, 0, 0, 0.87)'
+    color: '#f50057'
   }
 });
 
@@ -124,17 +107,27 @@ class FilterPanel extends React.Component {
       minFameRating: 0,
       maxFameRating: '',
       amountOfCommonInterests: 0,
-      selectedInterests: []
+      selectedInterests: [],
+      expanded: false
     });
   };
 
-  changeParam = (param, event) =>
-    this.setState({
-      [param]: event.target.value
-    });
+  changeParam = (param, min, max, event) => {
+    if (event.target.value >= min && (!max || event.target.value <= max)) {
+      this.setState({
+        [param]: event.target.value
+      });
+    }
+  };
 
   filter = () => {
-    this.props.setFilterParams(this.state);
+    if (this.state.expanded) {
+      this.props.setFilterParams(this.state);
+    }
+    this.setState({
+      expanded: !this.state.expanded
+    });
+    this.props.move();
   };
 
   handleInterestsChange = event => {
@@ -153,18 +146,19 @@ class FilterPanel extends React.Component {
       minFameRating,
       maxFameRating,
       amountOfCommonInterests,
-      selectedInterests
+      selectedInterests,
+      expanded
     } = this.state;
 
     return (
-      <div className={classes.root}>
+      <div className={expanded ? classes.root : classes.hidden}>
         <div className={classes.ageFilter}>
           <div>
             <label className={classes.labelAll} htmlFor="startAge">
               Start Age <span className={classes.spanSpecial}>{startAge}</span>
             </label>
           </div>
-          <div className={classes.startAgeInputBlock}>
+          <div className={classes.ageInputBlock}>
             <span className={classes.spanAll}>18</span>
             <input
               className={classes.slider}
@@ -174,7 +168,7 @@ class FilterPanel extends React.Component {
               max="100"
               step="1"
               value={startAge}
-              onChange={this.changeParam.bind(this, 'startAge')}
+              onChange={this.changeParam.bind(this, 'startAge', 18, 100)}
             />
             <span className={classes.spanAll}>100</span>
           </div>
@@ -183,7 +177,7 @@ class FilterPanel extends React.Component {
               End Age <span className={classes.spanSpecial}>{endAge}</span>
             </label>
           </div>
-          <div className={classes.endAgeInputBlock}>
+          <div className={classes.ageInputBlock}>
             <span className={classes.spanAll}>18</span>
             <input
               className={classes.slider}
@@ -193,59 +187,58 @@ class FilterPanel extends React.Component {
               max="100"
               step="1"
               value={endAge}
-              onChange={this.changeParam.bind(this, 'endAge')}
+              onChange={this.changeParam.bind(this, 'endAge', 18, 100)}
             />
             <span className={classes.spanAll}>100</span>
           </div>
         </div>
-        <div className={classes.distanceFilter}>
+        <div className={classes.filter}>
           <label className={classes.labelAll} htmlFor="distance">
             Maximum distance (km)
           </label>
-          <input
-            className={classes.inputAll}
+          <Input
             name="distance"
             type="number"
-            min="0"
             value={distance}
-            onChange={this.changeParam.bind(this, 'distance')}
+            onChange={this.changeParam.bind(this, 'distance', 0, null)}
           />
         </div>
-        <div className={classes.fameFilter}>
+        <div className={classes.filter}>
           <label className={classes.labelAll} htmlFor="minFame">
-            Min fame
+            Minimum fame
           </label>
-          <input
-            className={classes.inputAll}
+          <Input
             name="minFame"
             type="number"
-            min="0"
             value={minFameRating}
-            onChange={this.changeParam.bind(this, 'minFameRating')}
-          />
-          <label className={classes.labelAll} htmlFor="maxFame">
-            Max fame
-          </label>
-          <input
-            className={classes.inputAll}
-            name="maxFame"
-            type="number"
-            min="0"
-            value={maxFameRating}
-            onChange={this.changeParam.bind(this, 'maxFameRating')}
+            onChange={this.changeParam.bind(this, 'minFameRating', 0, null)}
           />
         </div>
-        <div className={classes.amountOfCommonInterestsFilter}>
-          <label className={classes.labelAll} htmlFor="amountOfCommonInterests">
-            Minimum amount of common interests
+        <div className={classes.filter}>
+          <label className={classes.labelAll} htmlFor="maxFame">
+            Maximum fame
           </label>
-          <input
-            className={classes.inputAll}
+          <Input
+            name="maxFame"
+            type="number"
+            value={maxFameRating}
+            onChange={this.changeParam.bind(this, 'maxFameRating', 0, null)}
+          />
+        </div>
+        <div className={classes.filter}>
+          <label className={classes.labelAll} htmlFor="amountOfCommonInterests">
+            Common interests amount
+          </label>
+          <Input
             name="amountOfCommonInterests"
             type="number"
-            min="0"
             value={amountOfCommonInterests}
-            onChange={this.changeParam.bind(this, 'amountOfCommonInterests')}
+            onChange={this.changeParam.bind(
+              this,
+              'amountOfCommonInterests',
+              0,
+              null
+            )}
           />
         </div>
         <FormControl className={classes.formControl}>
@@ -253,7 +246,6 @@ class FilterPanel extends React.Component {
             Interests
           </InputLabel>
           <Select
-            className={classes.formControlSelect}
             multiple
             value={selectedInterests}
             onChange={this.handleInterestsChange}
@@ -269,12 +261,7 @@ class FilterPanel extends React.Component {
             ))}
           </Select>
         </FormControl>
-        <Button
-          className={classes.filterButton}
-          variant="contained"
-          color="secondary"
-          onClick={this.filter}
-        >
+        <Button variant="contained" color="secondary" onClick={this.filter}>
           Filter
         </Button>
       </div>

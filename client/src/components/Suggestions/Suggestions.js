@@ -12,13 +12,21 @@ const styles = {
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'auto',
-    padding: '10px',
-    backgroundColor: '#eeeeee'
+    padding: '10px'
   },
   userList: {
     margin: 0,
     padding: 0,
-    listStyleType: 'none'
+    listStyleType: 'none',
+    transform: 'translate(0px, 0px)',
+    transition: 'transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms'
+  },
+  moved: {
+    margin: 0,
+    padding: 0,
+    listStyleType: 'none',
+    transform: 'translate(0, -430px)',
+    transition: 'transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms'
   }
 };
 
@@ -52,7 +60,8 @@ class Suggestions extends React.Component {
         });
         this.users = data;
         this.setState({
-          filteredUsers: this.sort(this.filter(data))
+          filteredUsers: this.sort(this.filter(data)),
+          moved: false
         });
       });
   };
@@ -115,21 +124,30 @@ class Suggestions extends React.Component {
     });
   };
 
+  move = () =>
+    this.setState({
+      moved: !this.state.moved
+    });
+
   render() {
     if (!this.state) {
       return <span>Loading...</span>;
     }
     const { classes } = this.props;
-    const { filteredUsers } = this.state;
+    const { filteredUsers, moved } = this.state;
 
     return (
       <div className={classes.root}>
         <FilterPanel
           setFilterParams={this.setFilterParams}
           interests={this.props.profile.allInterests}
+          move={this.move}
         />
-        <SortingPanel setSortParams={this.setSortParams} />
-        <ul className={classes.userList}>
+        <SortingPanel
+          setSortParams={this.setSortParams}
+          moved={moved}
+        />
+        <ul className={moved ? classes.userList : classes.moved}>
           {filteredUsers.map(user => (
             <li key={user.login}>
               <User

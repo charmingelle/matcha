@@ -54,7 +54,8 @@ const styles = theme => ({
     width: '100%',
     minWidth: '568px',
     height: '100vh',
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: '#eeeeee'
+    // backgroundColor: theme.palette.background.paper
   },
   appBar: {
     backgroundColor: '#f50057'

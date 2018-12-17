@@ -8,14 +8,23 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const styles = theme => ({
   root: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
     width: '100%',
-    backgroundColor: '#ffffff'
+    padding: 3,
+    backgroundColor: '#ffffff',
+    transform: 'translate(0px, 0px)',
+    transition: 'transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms'
   },
-  sortingBlock: {
-    marginLeft: 30,
-    marginRight: 30
+  moved: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '100%',
+    padding: 3,
+    backgroundColor: '#ffffff',
+    transform: 'translate(0, -430px)',
+    transition: 'transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms'
   },
   span: {
     color: 'rgba(0, 0, 0, 0.54)'
@@ -89,24 +98,24 @@ class SortingPanel extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes } = this.props;
+    const { classes, moved } = this.props;
 
     return (
-      <div className={classes.root}>
-        <div className={classes.sortingBlock}>
+      <div className={moved ? classes.root: classes.moved}>
+        <div>
           <span className={classes.span}>Sort by age</span>
           {this.renderSortButton('age')}
         </div>
-        <div className={classes.sortingBlock}>
+        <div>
           <span className={classes.span}>distance</span>
           {this.renderSortButton('distance')}
         </div>
-        <div className={classes.sortingBlock}>
+        <div>
           <span className={classes.span}>fame</span>
           {this.renderSortButton('fame')}
         </div>
-        <div className={classes.sortingBlock}>
-          <span className={classes.span}>amount of common interests</span>
+        <div>
+          <span className={classes.span}>common interests amount</span>
           {this.renderSortButton('amountOfCommonInterests')}
         </div>
       </div>
