@@ -140,9 +140,11 @@ class Main extends React.Component {
     socket.on("check", data =>
       this.addNotification(`${data.sender} has just checked your profile`)
     );
-    socket.on("chat", data =>
-      this.addNotification(`${data.sender} has sent you a message`)
-    );
+    socket.on("chat", data => {
+      if (data.sender !== this.state.profile.login) {
+        this.addNotification(`${data.sender} has sent you a message`);
+      }
+    });
     socket.on("likeBack", data =>
       this.addNotification(`${data.sender} has just liked you back!`)
     );
