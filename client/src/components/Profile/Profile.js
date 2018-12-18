@@ -201,7 +201,7 @@ class Profile extends React.Component {
             all={this.state.allInterests}
             onChange={this.onChange}
           />
-          <Button variant="contained" color="secondary" onClick={this.onSubmit}>
+          <Button variant="contained" color="primary" onClick={this.onSubmit}>
             Save changes
           </Button>
         </div>

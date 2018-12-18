@@ -10,7 +10,7 @@ const styles = {
     color: 'unset'
   },
   red: {
-    color: '#f50057'
+    color: '#3f51b5'
   }
 };
 

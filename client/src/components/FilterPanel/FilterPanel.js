@@ -71,7 +71,7 @@ const styles = theme => ({
       width: '100%',
       height: '8.4px',
       cursor: 'pointer',
-      background: '#f50057',
+      background: '#3f51b5',
       borderRadius: '4px'
     }
   },
@@ -83,7 +83,7 @@ const styles = theme => ({
     color: 'rgba(0, 0, 0, 0.54)'
   },
   spanSpecial: {
-    color: '#f50057'
+    color: '#3f51b5'
   }
 });
 
@@ -261,7 +261,7 @@ class FilterPanel extends React.Component {
             ))}
           </Select>
         </FormControl>
-        <Button variant="contained" color="secondary" onClick={this.filter}>
+        <Button variant="contained" color="primary" onClick={this.filter}>
           Filter
         </Button>
       </div>

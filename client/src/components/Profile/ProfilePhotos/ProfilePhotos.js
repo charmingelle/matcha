@@ -51,7 +51,7 @@ const styles = {
     lineHeight: '38.8px',
     textAlign: 'center',
     fontWeight: 500,
-    color: '#f50057'
+    color: '#3f51b5'
   },
   customFileUpload: {
     marginTop: '50px'
@@ -124,7 +124,7 @@ class ProfilePhotos extends React.Component {
             gallery.length < 5 ? classes.customFileUpload : classes.hidden
           }
           variant="contained"
-          color="secondary"
+          color="primary"
         >
           <label htmlFor="file-upload">UPLOAD NEW PHOTO</label>
           <CloudUploadIcon className={classes.rightIcon} />
@@ -150,7 +150,7 @@ class ProfilePhotos extends React.Component {
                   onClick={this.upload.bind(this, index)}
                 >
                   Replace
-                  <EditIcon className={classes.rightIcon} color="secondary" />
+                  <EditIcon className={classes.rightIcon} color="primary" />
                 </Button>
                 {avatarid === index ? (
                   <span className={classes.avatarNote}>AVATAR</span>
@@ -163,7 +163,7 @@ class ProfilePhotos extends React.Component {
                     Put on avatar
                     <PhotoCameraIcon
                       className={classes.rightIcon}
-                      color="secondary"
+                      color="primary"
                     />
                   </Button>
                 )}

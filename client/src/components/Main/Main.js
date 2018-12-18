@@ -1,40 +1,46 @@
-import React from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import socketIOClient from 'socket.io-client';
+import React from "react";
+import { BrowserRouter, Route, Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import socketIOClient from "socket.io-client";
 
-import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { withStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import MenuList from "@material-ui/core/MenuList";
+import MenuItem from "@material-ui/core/MenuItem";
+import Paper from "@material-ui/core/Paper";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Toolbar from "@material-ui/core/Toolbar";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import Typography from "@material-ui/core/Typography";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
-import ChatIcon from '@material-ui/icons/Chat';
-import CheckIcon from '@material-ui/icons/Check';
-import PeopleIcon from '@material-ui/icons/People';
-import PersonIcon from '@material-ui/icons/Person';
-import MenuIcon from '@material-ui/icons/Menu';
+import ChatIcon from "@material-ui/icons/Chat";
+import CheckIcon from "@material-ui/icons/Check";
+import PeopleIcon from "@material-ui/icons/People";
+import PersonIcon from "@material-ui/icons/Person";
+import MenuIcon from "@material-ui/icons/Menu";
 
-import Suggestions from './../Suggestions/Suggestions.js';
-import Profile from './../Profile/Profile.js';
-import User from './../User/User.js';
-import Signin from './../Signin/Signin.js';
-import Visited from './../Visited/Visited.js';
-import Chat from './../Chat/Chat.js';
-import Notifications from './../Notifications/Notifications.js';
-import { getUserProfile, saveLocation, signout } from './../../api/api.js';
+import Suggestions from "./../Suggestions/Suggestions.js";
+import Profile from "./../Profile/Profile.js";
+import User from "./../User/User.js";
+import Signin from "./../Signin/Signin.js";
+import Visited from "./../Visited/Visited.js";
+import Chat from "./../Chat/Chat.js";
+import Notifications from "./../Notifications/Notifications.js";
+import {
+  getUserProfile,
+  saveLocation,
+  signout,
+  getChatUsers,
+  getSuggestions
+} from "./../../api/api.js";
 
 function TabContainer(props) {
   return (
     <Typography
-      style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+      style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
       component="div"
     >
       {props.children}
@@ -48,37 +54,36 @@ TabContainer.propTypes = {
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    minWidth: '568px',
-    height: '100vh',
-    backgroundColor: '#eeeeee'
-    // backgroundColor: theme.palette.background.paper
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    minWidth: "568px",
+    height: "100vh",
+    backgroundColor: "#eeeeee"
   },
   appBar: {
-    backgroundColor: '#f50057'
+    backgroundColor: "#3f51b5"
   },
   appMenu: {
-    position: 'fixed',
+    position: "fixed",
     width: 200,
-    height: '100%',
+    height: "100%",
     zIndex: 2000,
-    transform: 'translate(0px, 0px)',
-    transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms'
+    transform: "translate(0px, 0px)",
+    transition: "transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms"
   },
   appMenuHidden: {
-    position: 'fixed',
+    position: "fixed",
     width: 200,
-    height: '100%',
+    height: "100%",
     zIndex: 2000,
-    transform: 'translate(-200px, 0px)',
-    transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms'
+    transform: "translate(-200px, 0px)",
+    transition: "transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms"
   },
   appContent: {
     flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column'
+    display: "flex",
+    flexDirection: "column"
   },
   grow: {
     flexGrow: 1
@@ -97,12 +102,14 @@ class Main extends React.Component {
     profile: null,
     notifications: [],
     showMenu: false,
-    tabName: 'Suggestions'
+    tabName: "Suggestions",
+    chatUsers: null,
+    suggestions: null
   };
 
   ipLookUp = userid => {
-    fetch('http://ip-api.com/json', {
-      method: 'POST'
+    fetch("http://ip-api.com/json", {
+      method: "POST"
     })
       .then(response => response.json())
       .then(data => saveLocation([data.lat, data.lon]))
@@ -127,19 +134,19 @@ class Main extends React.Component {
   };
 
   addSocketEventListeners = () => {
-    socket.on('like', data =>
+    socket.on("like", data =>
       this.addNotification(`${data.sender} has just liked you`)
     );
-    socket.on('check', data =>
+    socket.on("check", data =>
       this.addNotification(`${data.sender} has just checked your profile`)
     );
-    socket.on('chat', data =>
+    socket.on("chat", data =>
       this.addNotification(`${data.sender} has sent you a message`)
     );
-    socket.on('likeBack', data =>
+    socket.on("likeBack", data =>
       this.addNotification(`${data.sender} has just liked you back!`)
     );
-    socket.on('unlike', data =>
+    socket.on("unlike", data =>
       this.addNotification(
         `Unfortunately ${data.sender} has disconnected from you`
       )
@@ -147,10 +154,10 @@ class Main extends React.Component {
   };
 
   componentDidMount() {
-    getUserProfile().then(res => {
-      if (res.status === 200) {
-        res.json().then(data => {
-          socket = socketIOClient('http://localhost:5000', {
+    Promise.all([
+      getUserProfile().then(
+        data => {
+          socket = socketIOClient("http://localhost:5000", {
             query: `login=${data.user.login}`
           });
           this.addSocketEventListeners();
@@ -173,15 +180,28 @@ class Main extends React.Component {
               changeStatus: null,
               error: false,
               canLike:
-                data.user.gallery.filter(image => image !== '').length > 0
+                data.user.gallery.filter(image => image !== "").length > 0
             }
           });
           // this.getLocation(data.user.id);
-        });
-      } else {
-        this.setState({ profile: 'signin' });
-      }
-    });
+        },
+        () => this.setState({ profile: "signin" })
+      ),
+      getChatUsers().then(
+        chatUsers =>
+          this.setState({
+            chatUsers
+          }),
+        error => console.error(error)
+      ),
+      getSuggestions().then(
+        suggestions =>
+          this.setState({
+            suggestions
+          }),
+        error => console.error(error)
+      )
+    ]);
   }
 
   onProfileChange = target => {
@@ -189,7 +209,7 @@ class Main extends React.Component {
   };
 
   signout = () => {
-    signout().then(() => this.setState({ profile: 'signin' }));
+    signout().then(() => this.setState({ profile: "signin" }));
   };
 
   updateVisited = visited => {
@@ -229,10 +249,14 @@ class Main extends React.Component {
   };
 
   render = () => {
-    if (this.state.profile === null) {
+    if (
+      !this.state.profile ||
+      !this.state.chatUsers ||
+      !this.state.suggestions
+    ) {
       return <span>Loading...</span>;
     }
-    if (this.state.profile === 'signin') {
+    if (this.state.profile === "signin") {
       return <Signin />;
     }
     const { classes } = this.props;
@@ -241,7 +265,9 @@ class Main extends React.Component {
       profile: { visited, login, canLike },
       notifications,
       tabName,
-      showMenu
+      showMenu,
+      chatUsers,
+      suggestions
     } = this.state;
 
     return (
@@ -283,7 +309,7 @@ class Main extends React.Component {
                   className={classes.menuItem}
                   component={Link}
                   to="/"
-                  onClick={this.changeTabName.bind(this, 'Suggestions')}
+                  onClick={this.changeTabName.bind(this, "Suggestions")}
                 >
                   <ListItemIcon className={classes.icon}>
                     <PeopleIcon />
@@ -298,7 +324,7 @@ class Main extends React.Component {
                   className={classes.menuItem}
                   component={Link}
                   to="/profile"
-                  onClick={this.changeTabName.bind(this, 'Profile')}
+                  onClick={this.changeTabName.bind(this, "Profile")}
                 >
                   <ListItemIcon className={classes.icon}>
                     <PersonIcon />
@@ -312,8 +338,8 @@ class Main extends React.Component {
                 <MenuItem
                   className={classes.menuItem}
                   component={Link}
-                  to="/chat"
-                  onClick={this.changeTabName.bind(this, 'Chat')}
+                  to={`/chat/${chatUsers[0].login}`}
+                  onClick={this.changeTabName.bind(this, "Chat")}
                 >
                   <ListItemIcon className={classes.icon}>
                     <ChatIcon />
@@ -328,7 +354,7 @@ class Main extends React.Component {
                   className={classes.menuItem}
                   component={Link}
                   to="/visited"
-                  onClick={this.changeTabName.bind(this, 'Visited')}
+                  onClick={this.changeTabName.bind(this, "Visited")}
                 >
                   <ListItemIcon className={classes.icon}>
                     <CheckIcon />
@@ -355,6 +381,7 @@ class Main extends React.Component {
                     profile={profile}
                     visited={visited}
                     updateVisited={this.updateVisited}
+                    suggestions={suggestions}
                   />
                 </TabContainer>
               )}
@@ -377,7 +404,7 @@ class Main extends React.Component {
                 </TabContainer>
               )}
             />
-            <Route
+            {/* <Route
               exact
               path="/chat"
               render={() => (
@@ -385,25 +412,60 @@ class Main extends React.Component {
                   <Chat socket={socket} sender={login} />
                 </TabContainer>
               )}
+            /> */}
+            <Route
+              exact
+              path="/chat/:receiver"
+              render={({ match }) => {
+                if (
+                  chatUsers
+                    .map(chatLogin => chatLogin.login)
+                    .includes(match.params.receiver)
+                ) {
+                  return (
+                    <TabContainer>
+                      <Chat
+                        socket={socket}
+                        sender={login}
+                        receiver={match.params.receiver}
+                        chatUsers={chatUsers}
+                      />
+                    </TabContainer>
+                  );
+                }
+                return <span>Chat user not found</span>;
+              }}
             />
             <Route
               exact
               path="/users/:login"
-              render={({ match }) => (
-                <TabContainer>
-                  <User
-                    user={profile}
-                    socket={socket}
-                    sender={login}
-                    login={match.params.login}
-                    canLike={canLike}
-                    photoFolder="photos/"
-                    full={true}
-                    visited={visited}
-                    updateVisited={this.updateVisited}
-                  />
-                </TabContainer>
-              )}
+              render={({ match }) => {
+                let index = -1;
+
+                for (let i = 0; i < suggestions.length; i++) {
+                  if (match.params.login === suggestions[i].login) {
+                    index = i;
+                    break;
+                  }
+                }
+                if (index !== -1) {
+                  return (
+                    <TabContainer>
+                      <User
+                        user={suggestions[index]}
+                        socket={socket}
+                        sender={login}
+                        canLike={canLike}
+                        photoFolder="photos/"
+                        full={true}
+                        visited={visited}
+                        updateVisited={this.updateVisited}
+                      />
+                    </TabContainer>
+                  );
+                }
+                return <span>User not found</span>;
+              }}
             />
             <Route
               exact

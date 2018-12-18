@@ -43,7 +43,7 @@ const styles = theme => ({
     transform: 'rotate(180deg)'
   },
   selected: {
-    color: '#f50057'
+    color: '#3f51b5'
   }
 });
 

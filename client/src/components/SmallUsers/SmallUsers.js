@@ -8,7 +8,7 @@ const styles = {
     backgroundColor: '#ffffff'
   },
   icon: {
-    color: '#f50057'
+    color: '#3f51b5'
   },
   title: {
     margin: 0,

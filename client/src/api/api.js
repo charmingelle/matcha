@@ -1,6 +1,11 @@
 export const getUserProfile = () =>
   fetch("/getUserProfile", {
     method: "POST"
+  }).then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error("Error");
   });
 
 export const getUserProfileByLogin = login =>
@@ -127,9 +132,14 @@ export const saveVisited = visited =>
     body: JSON.stringify({ visited })
   });
 
-export const getChatLogins = () =>
-  fetch("/getChatLogins", {
+export const getChatUsers = () =>
+  fetch("/getChatUsers", {
     method: "POST"
+  }).then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error("Error");
   });
 
 export const saveOnline = () =>
@@ -178,4 +188,9 @@ export const getLikedBy = () =>
 export const getSuggestions = () =>
   fetch("/getSuggestions", {
     method: "POST"
+  }).then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error("Error");
   });

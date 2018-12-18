@@ -85,7 +85,7 @@ class Room extends React.Component {
       sender: this.props.sender,
       receiver: this.props.receiver,
       message: this.props.message,
-      log: [],
+      log: this.props.log,
       typing: '',
       isLoading: false,
       lastloadedid: null,
@@ -197,7 +197,6 @@ class Room extends React.Component {
   };
 
   changeHandler = event => {
-    console.log('event.target.value', event.target.value);
     this.socket.emit('typing', {
       sender: this.props.sender,
       receiver: this.state.receiver
@@ -275,7 +274,7 @@ class Room extends React.Component {
           className={classes.send}
           onClick={this.send}
           variant="contained"
-          color="secondary"
+          color="primary"
         >
           Send
         </Button>

@@ -10,7 +10,7 @@ const styles = {
     color: 'initial',
     textDecoration: 'none',
     '&:hover': {
-      color: '#f50057'
+      color: '#3f51b5'
     }
   },
   root: {
