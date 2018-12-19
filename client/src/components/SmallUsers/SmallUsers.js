@@ -45,26 +45,29 @@ class SmallUsers extends React.Component {
     const { classes, title, icon } = this.props;
     const { users } = this.state;
 
-    return (
-      <div className={classes.root}>
-        <h1 className={classes.title}>
-          <span className={classes.icon}>{icon}</span> {title}
-        </h1>
-        <ul className={classes.list}>
-          {users.map((user, index) => (
-            <li key={index}>
-              <SmallUser
-                user={user}
-                visited={this.props.visited}
-                updateVisited={this.props.updateVisited}
-                socket={this.props.socket}
-                sender={this.props.sender}
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
+    if (users.length > 0) {
+      return (
+        <div className={classes.root}>
+          <h1 className={classes.title}>
+            <span className={classes.icon}>{icon}</span> {title}
+          </h1>
+          <ul className={classes.list}>
+            {users.map((user, index) => (
+              <li key={index}>
+                <SmallUser
+                  user={user}
+                  visited={this.props.visited}
+                  updateVisited={this.props.updateVisited}
+                  socket={this.props.socket}
+                  sender={this.props.sender}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+    return <div />;
   }
 }
 

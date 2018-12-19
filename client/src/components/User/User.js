@@ -28,7 +28,8 @@ import { saveVisited, reportFake } from './../../api/api.js';
 const styles = theme => ({
   card: {
     margin: 50,
-    width: 500
+    width: 500,
+    height: '100%'
   },
   media: {
     height: 0,
@@ -68,8 +69,7 @@ class User extends React.Component {
     this.setState(this.props.user);
     this.setState({
       currentPhoto: 0,
-      full: this.props.full,
-      expanded: false,
+      expanded: this.props.full,
       isMenuOpen: false
     });
 
@@ -109,15 +109,6 @@ class User extends React.Component {
         this.props.updateVisited(newVisited);
       });
     }
-  };
-
-  toggleFull = () => {
-    if (!this.state.full) {
-      this.addToVisited();
-    }
-    this.setState({
-      full: !this.state.full
-    });
   };
 
   toggleMenu = () => {
@@ -235,7 +226,7 @@ class User extends React.Component {
         />
         <CardMedia
           className={classes.media}
-          image={`users/photos/${gallery[currentPhoto]}`}
+          image={`${photoFolder}/${gallery[currentPhoto]}`}
         />
         <div className={classes.leftRightArea}>
           {currentPhoto > 0 && (

@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const port = 5000;
 const pgp = require("pg-promise")(/*options*/);
-const db = pgp("postgres://grevenko:postgres@localhost:5432/matcha");
-// const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
+// const db = pgp("postgres://grevenko:postgres@localhost:5432/matcha");
+const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const format = require("pg-format");
 const bodyParser = require("body-parser");
 const crypto = require("crypto");
@@ -665,6 +665,7 @@ app.post("/getSuggestions", requireLogin, (req, res) => {
       (data[0].gender === "male" && data[0].preferences === "heterosexual") ||
       (data[0].gender === "female" && data[0].preferences === "homosexual")
     ) {
+      console.log('here!!!');
       request =
         "SELECT * FROM users WHERE login <> ${login} AND gender = ${gender}";
       params.gender = "female";
@@ -678,7 +679,7 @@ app.post("/getSuggestions", requireLogin, (req, res) => {
     } else {
       request = "SELECT * FROM users WHERE login <> ${login}";
     }
-    db.any(request, params).then(data => res.send(JSON.stringify(data)));
+    db.any(request, params).then(data => {console.log('data', data); res.send(JSON.stringify(data));} );
   });
 });
 

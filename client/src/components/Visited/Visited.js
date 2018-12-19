@@ -9,8 +9,7 @@ const styles = {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    overflow: 'auto',
-    backgroundColor: '#eeeeee'
+    overflow: 'auto'
   },
   userList: {
     margin: 0,
