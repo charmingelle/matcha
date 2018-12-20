@@ -142,6 +142,26 @@ export const getChatUsers = () =>
     throw new Error("Error");
   });
 
+export const getChatMessages = () =>
+  fetch("/getChatMessages", {
+    method: "POST"
+  }).then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error("Error");
+  });
+
+export const getChatData = () =>
+  fetch("/getChatData", {
+    method: "POST"
+  }).then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error("Error");
+  });
+
 export const saveOnline = () =>
   fetch("/saveOnline", {
     method: "POST"

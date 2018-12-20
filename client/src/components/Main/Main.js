@@ -1,46 +1,46 @@
-import React from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import socketIOClient from 'socket.io-client';
+import React from "react";
+import { Route, Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import socketIOClient from "socket.io-client";
 
-import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { withStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import MenuList from "@material-ui/core/MenuList";
+import MenuItem from "@material-ui/core/MenuItem";
+import Paper from "@material-ui/core/Paper";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Toolbar from "@material-ui/core/Toolbar";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import Typography from "@material-ui/core/Typography";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
-import ChatIcon from '@material-ui/icons/Chat';
-import CheckIcon from '@material-ui/icons/Check';
-import PeopleIcon from '@material-ui/icons/People';
-import PersonIcon from '@material-ui/icons/Person';
-import MenuIcon from '@material-ui/icons/Menu';
+import ChatIcon from "@material-ui/icons/Chat";
+import CheckIcon from "@material-ui/icons/Check";
+import PeopleIcon from "@material-ui/icons/People";
+import PersonIcon from "@material-ui/icons/Person";
+import MenuIcon from "@material-ui/icons/Menu";
 
-import Suggestions from './../Suggestions/Suggestions.js';
-import Profile from './../Profile/Profile.js';
-import User from './../User/User.js';
-import Signin from './../Signin/Signin.js';
-import Visited from './../Visited/Visited.js';
-import Chat from './../Chat/Chat.js';
-import Notifications from './../Notifications/Notifications.js';
+import Suggestions from "./../Suggestions/Suggestions.js";
+import Profile from "./../Profile/Profile.js";
+import User from "./../User/User.js";
+import Signin from "./../Signin/Signin.js";
+import Visited from "./../Visited/Visited.js";
+import Chat from "./../Chat/Chat.js";
+import Notifications from "./../Notifications/Notifications.js";
 import {
   getUserProfile,
   saveLocation,
   signout,
-  getChatUsers,
+  getChatData,
   getSuggestions
-} from './../../api/api.js';
+} from "./../../api/api.js";
 
 function TabContainer(props) {
   return (
     <Typography
-      style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+      style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
       component="div"
     >
       {props.children}
@@ -54,36 +54,36 @@ TabContainer.propTypes = {
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    minWidth: '568px',
-    height: '100vh',
-    backgroundColor: '#eeeeee'
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    minWidth: "568px",
+    height: "100vh",
+    backgroundColor: "#eeeeee"
   },
   appBar: {
-    backgroundColor: '#3f51b5'
+    backgroundColor: "#3f51b5"
   },
   appMenu: {
-    position: 'fixed',
+    position: "fixed",
     width: 200,
-    height: '100%',
+    height: "100%",
     zIndex: 2000,
-    transform: 'translate(0px, 0px)',
-    transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms'
+    transform: "translate(0px, 0px)",
+    transition: "transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms"
   },
   appMenuHidden: {
-    position: 'fixed',
+    position: "fixed",
     width: 200,
-    height: '100%',
+    height: "100%",
     zIndex: 2000,
-    transform: 'translate(-200px, 0px)',
-    transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms'
+    transform: "translate(-200px, 0px)",
+    transition: "transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms"
   },
   appContent: {
     flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column'
+    display: "flex",
+    flexDirection: "column"
   },
   grow: {
     flexGrow: 1
@@ -93,28 +93,32 @@ const styles = theme => ({
     marginRight: 20
   },
   singleUserContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    overflow: 'auto'
+    display: "flex",
+    justifyContent: "center",
+    overflow: "auto"
   }
 });
 
 let socket = null;
 
 class Main extends React.Component {
-  state = {
-    tabid: 0,
-    profile: null,
-    notifications: [],
-    showMenu: false,
-    tabName: 'Suggestions',
-    chatUsers: null,
-    suggestions: null
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      tabid: 0,
+      profile: null,
+      notifications: [],
+      showMenu: false,
+      tabName: "Suggestions",
+      chatData: null,
+      suggestions: null
+    };
+    this.drafts = {};
+  }
 
   ipLookUp = userid => {
-    fetch('http://ip-api.com/json', {
-      method: 'POST'
+    fetch("http://ip-api.com/json", {
+      method: "POST"
     })
       .then(response => response.json())
       .then(data => saveLocation([data.lat, data.lon]))
@@ -139,21 +143,21 @@ class Main extends React.Component {
   };
 
   addSocketEventListeners = () => {
-    socket.on('like', data =>
+    socket.on("like", data =>
       this.addNotification(`${data.sender} has just liked you`)
     );
-    socket.on('check', data =>
+    socket.on("check", data =>
       this.addNotification(`${data.sender} has just checked your profile`)
     );
-    socket.on('chat', data => {
+    socket.on("chat", data => {
       if (data.sender !== this.state.profile.login) {
         this.addNotification(`${data.sender} has sent you a message`);
       }
     });
-    socket.on('likeBack', data =>
+    socket.on("likeBack", data =>
       this.addNotification(`${data.sender} has just liked you back!`)
     );
-    socket.on('unlike', data =>
+    socket.on("unlike", data =>
       this.addNotification(
         `Unfortunately ${data.sender} has disconnected from you`
       )
@@ -161,10 +165,11 @@ class Main extends React.Component {
   };
 
   componentDidMount() {
+    // console.log("MAIN COMPONENT DID MOUNT !!!!!!!!!!!!!!!!!!!!!!!!!!!");
     Promise.all([
       getUserProfile().then(
         data => {
-          socket = socketIOClient('http://localhost:5000', {
+          socket = socketIOClient("http://localhost:5000", {
             query: `login=${data.user.login}`
           });
           this.addSocketEventListeners();
@@ -187,29 +192,56 @@ class Main extends React.Component {
               changeStatus: null,
               error: false,
               canLike:
-                data.user.gallery.filter(image => image !== '').length > 0
+                data.user.gallery.filter(image => image !== "").length > 0
             }
           });
           // this.getLocation(data.user.id);
         },
-        () => this.setState({ profile: 'signin' })
+        () => this.setState({ profile: "signin" })
       ),
-      getChatUsers().then(
-        chatUsers => {
-          // console.log('chatUsers', chatUsers);
-          this.setState({
-            chatUsers
-          });
+      getChatData().then(
+        chatData => {
+          // console.log("FROM SERVER: chatData ", chatData);
+          Object.keys(chatData).forEach(login => (this.drafts[login] = ""));
+          this.setState({ chatData });
         },
-        error => console.error(error)
+        error => console.log(error)
       ),
+      // getChatUsers().then(
+      //   chatUsers => {
+      //     let chatData = {};
+
+      //     chatUsers.forEach(
+      //       user =>
+      //         (chatData[user] = {
+      //           log: [],
+      //           draft: ""
+      //         })
+      //     );
+      //     this.setState({
+      //       chatData
+      //     });
+      //   },
+      //   error => console.error(error)
+      // ),
+      // getChatMessages().then(
+      //   chatMessages => {
+      //     let newChatData = this.state.chatData;
+
+      //     Object.keys(chatMessages).forEach(receiver => {
+      //       if (newChatData.hasOwnProperty(receiver)) {
+      //         newChatData[receiver].log = chatMessages[receiver];
+      //       }
+      //     });
+      //     this.setState({ chatData: newChatData });
+      //   },
+      //   error => console.error(error)
+      // ),
       getSuggestions().then(
-        suggestions => {
-          // console.log('suggestions', suggestions);
+        suggestions =>
           this.setState({
             suggestions
-          });
-        },
+          }),
         error => console.error(error)
       )
     ]);
@@ -220,7 +252,7 @@ class Main extends React.Component {
   };
 
   signout = () => {
-    signout().then(() => this.setState({ profile: 'signin' }));
+    signout().then(() => this.setState({ profile: "signin" }));
   };
 
   updateVisited = visited => {
@@ -259,15 +291,30 @@ class Main extends React.Component {
     this.setState({ showMenu: false });
   };
 
+  updateLog = (receiver, log) => {
+    let newChatData = this.state.chatData;
+
+    newChatData[receiver].log = log;
+    this.setState({
+      chatData: newChatData
+    });
+  };
+
+  updateDraft = (receiver, draft) => {
+    this.drafts[receiver] = draft;
+    console.log('this.drafts from main', this.drafts);
+  };
+
   render = () => {
+    // console.log("main render");
     if (
       !this.state.profile ||
-      !this.state.chatUsers ||
+      !this.state.chatData ||
       !this.state.suggestions
     ) {
       return <span>Loading...</span>;
     }
-    if (this.state.profile === 'signin') {
+    if (this.state.profile === "signin") {
       return <Signin />;
     }
     const { classes } = this.props;
@@ -277,221 +324,219 @@ class Main extends React.Component {
       notifications,
       tabName,
       showMenu,
-      chatUsers,
+      chatData,
       suggestions
     } = this.state;
 
+    // console.log("FROM MAIN: chatData ", chatData);
     return (
-      <BrowserRouter>
-        <div className={classes.root}>
-          <Notifications
-            messages={notifications}
-            closeNotification={this.closeNotification}
-          />
+      <div className={classes.root}>
+        <Notifications
+          messages={notifications}
+          closeNotification={this.closeNotification}
+        />
 
-          <AppBar position="static" className={classes.appBar}>
-            <Toolbar>
-              <IconButton
-                className={classes.menuButton}
-                color="inherit"
-                aria-label="Menu"
-                buttonRef={node => {
-                  this.anchorEl = node;
-                }}
-                onClick={this.showMenu}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" color="inherit" className={classes.grow}>
-                {tabName}
-              </Typography>
-              <Button color="inherit" onClick={this.signout}>
-                Log out
-              </Button>
-            </Toolbar>
-          </AppBar>
-
-          <ClickAwayListener onClickAway={this.handleMenuClose}>
-            <Paper
-              className={showMenu ? classes.appMenu : classes.appMenuHidden}
+        <AppBar position="static" className={classes.appBar}>
+          <Toolbar>
+            <IconButton
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="Menu"
+              buttonRef={node => {
+                this.anchorEl = node;
+              }}
+              onClick={this.showMenu}
             >
-              <MenuList>
-                <MenuItem
-                  className={classes.menuItem}
-                  component={Link}
-                  to="/"
-                  onClick={this.changeTabName.bind(this, 'Suggestions')}
-                >
-                  <ListItemIcon className={classes.icon}>
-                    <PeopleIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    classes={{ primary: classes.primary }}
-                    inset
-                    primary="Suggestions"
-                  />
-                </MenuItem>
-                <MenuItem
-                  className={classes.menuItem}
-                  component={Link}
-                  to="/profile"
-                  onClick={this.changeTabName.bind(this, 'Profile')}
-                >
-                  <ListItemIcon className={classes.icon}>
-                    <PersonIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    classes={{ primary: classes.primary }}
-                    inset
-                    primary="Profile"
-                  />
-                </MenuItem>
-                {chatUsers.length > 0 && (
-                  <MenuItem
-                    className={classes.menuItem}
-                    component={Link}
-                    to={`/chat/${chatUsers[0].login}`}
-                    onClick={this.changeTabName.bind(this, 'Chat')}
-                  >
-                    <ListItemIcon className={classes.icon}>
-                      <ChatIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      classes={{ primary: classes.primary }}
-                      inset
-                      primary="Chat"
-                    />
-                  </MenuItem>
-                )}
-                <MenuItem
-                  className={classes.menuItem}
-                  component={Link}
-                  to="/visited"
-                  onClick={this.changeTabName.bind(this, 'Visited')}
-                >
-                  <ListItemIcon className={classes.icon}>
-                    <CheckIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    classes={{ primary: classes.primary }}
-                    inset
-                    primary="Visited"
-                  />
-                </MenuItem>
-              </MenuList>
-            </Paper>
-          </ClickAwayListener>
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" color="inherit" className={classes.grow}>
+              {tabName}
+            </Typography>
+            <Button color="inherit" onClick={this.signout}>
+              Log out
+            </Button>
+          </Toolbar>
+        </AppBar>
 
-          <div className={classes.appContent}>
-            <Route
-              exact
-              path="/"
-              render={() => (
-                <TabContainer>
-                  <Suggestions
-                    socket={socket}
-                    sender={login}
-                    profile={profile}
-                    visited={visited}
-                    updateVisited={this.updateVisited}
-                    suggestions={suggestions}
+        <ClickAwayListener onClickAway={this.handleMenuClose}>
+          <Paper className={showMenu ? classes.appMenu : classes.appMenuHidden}>
+            <MenuList>
+              <MenuItem
+                className={classes.menuItem}
+                component={Link}
+                to="/"
+                onClick={this.changeTabName.bind(this, "Suggestions")}
+              >
+                <ListItemIcon className={classes.icon}>
+                  <PeopleIcon />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.primary }}
+                  inset
+                  primary="Suggestions"
+                />
+              </MenuItem>
+              <MenuItem
+                className={classes.menuItem}
+                component={Link}
+                to="/profile"
+                onClick={this.changeTabName.bind(this, "Profile")}
+              >
+                <ListItemIcon className={classes.icon}>
+                  <PersonIcon />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.primary }}
+                  inset
+                  primary="Profile"
+                />
+              </MenuItem>
+              {Object.keys(chatData).length > 0 && (
+                <MenuItem
+                  className={classes.menuItem}
+                  component={Link}
+                  to={`/chat/${Object.keys(chatData)[0]}`}
+                  onClick={this.changeTabName.bind(this, "Chat")}
+                >
+                  <ListItemIcon className={classes.icon}>
+                    <ChatIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    classes={{ primary: classes.primary }}
+                    inset
+                    primary="Chat"
                   />
-                </TabContainer>
+                </MenuItem>
               )}
-            />
-            <Route
-              exact
-              path="/profile"
-              render={() => (
-                <TabContainer>
-                  <Profile
-                    name="profile"
-                    value={profile}
-                    onChange={this.onProfileChange}
-                    socket={socket}
-                    sender={login}
-                    editable={true}
-                    visited={visited}
-                    updateVisited={this.updateVisited}
-                  />
-                </TabContainer>
-              )}
-            />
-            {chatUsers.length > 0 && (
-              <Route
-                exact
-                path="/chat/:receiver"
-                render={({ match }) => {
-                  if (
-                    chatUsers
-                      .map(chatLogin => chatLogin.login)
-                      .includes(match.params.receiver)
-                  ) {
-                    return (
-                      <TabContainer>
-                        <Chat
-                          socket={socket}
-                          sender={login}
-                          receiver={match.params.receiver}
-                          chatUsers={chatUsers}
-                        />
-                      </TabContainer>
-                    );
-                  }
-                  return <span>Chat user not found</span>;
-                }}
-              />
+              <MenuItem
+                className={classes.menuItem}
+                component={Link}
+                to="/visited"
+                onClick={this.changeTabName.bind(this, "Visited")}
+              >
+                <ListItemIcon className={classes.icon}>
+                  <CheckIcon />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.primary }}
+                  inset
+                  primary="Visited"
+                />
+              </MenuItem>
+            </MenuList>
+          </Paper>
+        </ClickAwayListener>
+
+        <div className={classes.appContent}>
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <TabContainer>
+                <Suggestions
+                  socket={socket}
+                  sender={login}
+                  profile={profile}
+                  visited={visited}
+                  updateVisited={this.updateVisited}
+                  suggestions={suggestions}
+                />
+              </TabContainer>
             )}
+          />
+          <Route
+            exact
+            path="/profile"
+            render={() => (
+              <TabContainer>
+                <Profile
+                  name="profile"
+                  value={profile}
+                  onChange={this.onProfileChange}
+                  socket={socket}
+                  sender={login}
+                  editable={true}
+                  visited={visited}
+                  updateVisited={this.updateVisited}
+                />
+              </TabContainer>
+            )}
+          />
+          {Object.keys(chatData).length > 0 && (
             <Route
               exact
-              path="/users/:login"
+              path="/chat/:receiver"
               render={({ match }) => {
-                let index = -1;
-
-                for (let i = 0; i < suggestions.length; i++) {
-                  if (match.params.login === suggestions[i].login) {
-                    index = i;
-                    break;
-                  }
-                }
-                if (index !== -1) {
+                // console.log("match", match);
+                console.log('this.drafts from root', this.drafts);
+                if (Object.keys(chatData).includes(match.params.receiver)) {
                   return (
                     <TabContainer>
-                      <div className={classes.singleUserContainer}>
-                        <User
-                          user={suggestions[index]}
-                          socket={socket}
-                          sender={login}
-                          canLike={canLike}
-                          photoFolder="photos/"
-                          full={true}
-                          visited={visited}
-                          updateVisited={this.updateVisited}
-                        />
-                      </div>
+                      <Chat
+                        socket={socket}
+                        sender={login}
+                        receiver={match.params.receiver}
+                        chatData={chatData}
+                        drafts={this.drafts}
+                        updateLog={this.updateLog}
+                        updateDraft={this.updateDraft}
+                      />
                     </TabContainer>
                   );
                 }
-                return <span>User not found</span>;
+                return <span>Chat user not found</span>;
               }}
             />
-            <Route
-              exact
-              path="/visited"
-              render={() => (
-                <TabContainer>
-                  <Visited
-                    socket={socket}
-                    sender={login}
-                    visited={visited}
-                    updateVisited={this.updateVisited}
-                  />
-                </TabContainer>
-              )}
-            />
-          </div>
+          )}
+          <Route
+            exact
+            path="/users/:login"
+            render={({ match }) => {
+              let index = -1;
+
+              for (let i = 0; i < suggestions.length; i++) {
+                if (match.params.login === suggestions[i].login) {
+                  index = i;
+                  break;
+                }
+              }
+              if (index !== -1) {
+                return (
+                  <TabContainer>
+                    <div className={classes.singleUserContainer}>
+                      <User
+                        user={suggestions[index]}
+                        socket={socket}
+                        sender={login}
+                        canLike={canLike}
+                        photoFolder="photos/"
+                        full={true}
+                        visited={visited}
+                        updateVisited={this.updateVisited}
+                      />
+                    </div>
+                  </TabContainer>
+                );
+              }
+              return <span>User not found</span>;
+            }}
+          />
+          <Route
+            exact
+            path="/visited"
+            render={() => (
+              <TabContainer>
+                <Visited
+                  socket={socket}
+                  sender={login}
+                  visited={visited}
+                  updateVisited={this.updateVisited}
+                />
+              </TabContainer>
+            )}
+          />
         </div>
-      </BrowserRouter>
+      </div>
     );
   };
 }

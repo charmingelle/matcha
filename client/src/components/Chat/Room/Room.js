@@ -1,53 +1,53 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import Button from '@material-ui/core/Button';
-import { getMessages } from './../../../api/api.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import Input from "@material-ui/core/Input";
+import Button from "@material-ui/core/Button";
+// import { getMessages } from "./../../../api/api.js";
 
 const styles = theme => ({
   marioChat: {
     flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    width: '80%'
+    display: "flex",
+    flexDirection: "column",
+    width: "80%"
   },
   chatWindow: {
     flexGrow: 1,
-    overflow: 'auto',
-    borderBottom: '1px solid #e9e9e9'
+    overflow: "auto",
+    borderBottom: "1px solid #e9e9e9"
   },
   outputPs: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
   },
   outputPOther: {
-    position: 'relative',
-    marginRight: '10%',
+    position: "relative",
+    marginRight: "10%",
     marginTop: 5,
-    width: '80%',
+    width: "80%",
     padding: 10,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
     borderRadius: 4,
-    backgroundColor: '#ffffff',
-    '&:last-child': {
+    backgroundColor: "#ffffff",
+    "&:last-child": {
       marginBottom: 5
     }
   },
   outputPMine: {
-    position: 'relative',
-    marginLeft: '10%',
+    position: "relative",
+    marginLeft: "10%",
     marginTop: 5,
-    width: '80%',
+    width: "80%",
     padding: 10,
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     borderRadius: 4,
-    backgroundColor: 'rgba(245, 0, 87, 0.1)',
-    '&:last-child': {
+    backgroundColor: "rgba(245, 0, 87, 0.1)",
+    "&:last-child": {
       marginBottom: 5
     }
   },
@@ -55,156 +55,161 @@ const styles = theme => ({
     margin: 0
   },
   messageTime: {
-    textAlign: 'end',
+    textAlign: "end",
     fontSize: 12,
-    color: 'rgba(0, 0, 0, 0.54)'
+    color: "rgba(0, 0, 0, 0.54)"
   },
   typingP: {
-    width: '80%',
+    width: "80%",
     padding: 10,
     borderRadius: 4,
-    backgroundColor: '#ffffff'
+    backgroundColor: "#ffffff"
   },
   message: {
-    width: '100%',
-    padding: '14px',
-    backgroundColor: '#ffffff'
+    width: "100%",
+    padding: "14px",
+    backgroundColor: "#ffffff"
   },
   send: {
-    padding: '18px 0',
-    width: '100%',
-    border: 'none',
-    outline: '1px solid #e9e9e9'
+    padding: "18px 0",
+    width: "100%",
+    border: "none",
+    outline: "1px solid #e9e9e9"
   }
 });
 
 class Room extends React.Component {
   constructor(props) {
     super(props);
+    // console.log("this.props.draft === ''", this.props.draft === "");
     this.state = {
-      sender: this.props.sender,
-      receiver: this.props.receiver,
-      message: this.props.message,
-      log: this.props.log,
-      typing: '',
+      message: this.props.draft,
+      typing: "",
       isLoading: false,
       lastloadedid: null,
       moreData: true
     };
-    this.socket = this.props.socket;
   }
 
   addSocketEventListeners = () => {
-    this.socket.on('chat', data => {
-      let newLog = this.state.log;
+    this.props.socket.on("chat", data => {
+      let newLog = this.props.log;
 
       newLog.unshift(data);
       this.setState({
-        log: newLog,
-        typing: ''
+        typing: ""
       });
+      this.props.updateLog(this.props.receiver, newLog);
       if (this.state.lastloadedid === null) {
         this.setState({
           lastloadedid: data.id
         });
       }
     });
-    this.socket.on('typing', data => {
-      if (this.state.receiver === data.sender) {
+    this.props.socket.on("typing", data => {
+      if (this.props.receiver === data.sender) {
         this.setState({
           typing: data.sender
         });
       }
     });
-    this.socket.on('stoppedTyping', data => {
-      if (this.state.receiver === data.sender) {
+    this.props.socket.on("stoppedTyping", data => {
+      if (this.props.receiver === data.sender) {
         this.setState({
-          typing: ''
+          typing: ""
         });
       }
     });
   };
 
   componentDidMount = () => {
+    // console.log("room componentDidMount");
+    // this.setState({
+    //   message: this.props.draft
+    // });
     this.addSocketEventListeners();
-    if (this.props.log.length !== 0) {
-      this.setState({
-        log: this.props.log,
-        lastloadedid: this.props.log[this.props.log.length - 1].id
-      });
-    } else {
-      getMessages(
-        this.state.sender,
-        this.state.receiver,
-        this.state.lastloadedid
-      )
-        .then(response => response.json())
-        .then(log => {
-          if (log.length !== 0) {
-            this.setState({ lastloadedid: log[log.length - 1].id });
-          }
-          this.setState({ log });
-        });
-    }
+    // if (this.props.log.length !== 0) {
+    //   this.setState({
+    //     lastloadedid: this.props.log[this.props.log.length - 1].id
+    //   });
+    // } else {
+    //   getMessages(
+    //     this.props.sender,
+    //     this.props.receiver,
+    //     this.state.lastloadedid
+    //   )
+    //     .then(response => response.json())
+    //     .then(log => {
+    //       if (log.length !== 0) {
+    //         this.setState({ lastloadedid: log[log.length - 1].id });
+    //       }
+    //       this.setState({ log });
+    //     });
+    // }
+  };
+
+  componentWillReceiveProps = () => {
+    this.props.updateDraft(this.props.receiver, this.state.message);
   };
 
   componentWillUnmount = () => {
-    this.props.updateMessage(this.state.receiver, this.state.message);
-    this.props.updateLog(this.state.receiver, this.state.log);
-    this.socket.off('chat');
-    this.socket.off('typing');
-    this.socket.off('stoppedTyping');
+    // console.log('componentWillUnmount is called');
+    this.props.socket.off("chat");
+    this.props.socket.off("typing");
+    this.props.socket.off("stoppedTyping");
   };
 
-  isScrolledToBottom = target => {
-    return target.scrollTop >= target.scrollHeight - target.offsetHeight;
-  };
+  // isScrolledToBottom = target => {
+  //   return target.scrollTop >= target.scrollHeight - target.offsetHeight;
+  // };
 
-  scrollHandler = event => {
-    if (this.isScrolledToBottom(event.target)) {
-      if (!this.state.isLoading && this.state.moreData) {
-        this.setState({
-          isLoading: true
-        });
-        getMessages(
-          this.state.sender,
-          this.state.receiver,
-          this.state.lastloadedid
-        )
-          .then(response => response.json())
-          .then(log => {
-            if (log.length === 0) {
-              this.setState({
-                moreData: false
-              });
-            } else {
-              let newLog = this.state.log;
+  // scrollHandler = event => {
+  //   if (this.isScrolledToBottom(event.target)) {
+  //     if (!this.state.isLoading && this.state.moreData) {
+  //       this.setState({
+  //         isLoading: true
+  //       });
+  //       getMessages(
+  //         this.props.sender,
+  //         this.props.receiver,
+  //         this.state.lastloadedid
+  //       )
+  //         .then(response => response.json())
+  //         .then(log => {
+  //           if (log.length === 0) {
+  //             this.setState({
+  //               moreData: false
+  //             });
+  //           } else {
+  //             let newLog = this.state.log;
 
-              newLog.push(...log);
-              this.setState({
-                log: newLog,
-                lastloadedid: newLog[newLog.length - 1].id
-              });
-            }
-          })
-          .then(() =>
-            this.setState({
-              isLoading: false
-            })
-          );
-      }
-    }
-  };
+  //             newLog.push(...log);
+  //             this.setState({
+  //               log: newLog,
+  //               lastloadedid: newLog[newLog.length - 1].id
+  //             });
+  //           }
+  //         })
+  //         .then(() =>
+  //           this.setState({
+  //             isLoading: false
+  //           })
+  //         );
+  //     }
+  //   }
+  // };
 
   changeHandler = event => {
-    this.socket.emit('typing', {
+    // console.log('changeHandler is called', event.target.value);
+    // console.log('this.state.message', this.state.message);
+    this.props.socket.emit("typing", {
       sender: this.props.sender,
-      receiver: this.state.receiver
+      receiver: this.props.receiver
     });
-    if (event.target.value === '') {
-      this.socket.emit('stoppedTyping', {
+    if (event.target.value === "") {
+      this.props.socket.emit("stoppedTyping", {
         sender: this.props.sender,
-        receiver: this.state.receiver
+        receiver: this.props.receiver
       });
     }
     this.setState({
@@ -213,31 +218,36 @@ class Room extends React.Component {
   };
 
   keyPressHandler = event => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       this.send();
     }
   };
 
   send = () => {
-    if (this.state.message !== '') {
-      this.socket.emit('chat', {
+    if (this.state.message !== "") {
+      this.props.socket.emit("chat", {
         sender: this.props.sender,
-        receiver: this.state.receiver,
+        receiver: this.props.receiver,
         message: this.state.message
       });
       this.setState({
-        message: ''
+        message: ""
       });
     }
   };
 
   render = () => {
-    const { message, log, typing } = this.state;
-    const { classes } = this.props;
+    // console.log('room render');
+    const { message, typing } = this.state;
+    const { classes, log } = this.props;
 
+    // console.log("mesage from render", message);
     return (
       <div className={classes.marioChat}>
-        <div className={classes.chatWindow} onScroll={this.scrollHandler}>
+        <div
+          className={classes.chatWindow}
+          // onScroll={this.scrollHandler}
+        >
           {typing && (
             <p className={classes.typingP}>
               <em>{typing} is typing a message...</em>
@@ -247,7 +257,7 @@ class Room extends React.Component {
             {log.map((record, index) => (
               <div
                 className={
-                  record.sender === this.state.sender
+                  record.sender === this.props.sender
                     ? classes.outputPMine
                     : classes.outputPOther
                 }

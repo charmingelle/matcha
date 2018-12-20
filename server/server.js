@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const port = 5000;
 const pgp = require("pg-promise")(/*options*/);
-// const db = pgp("postgres://grevenko:postgres@localhost:5432/matcha");
-const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
+const db = pgp("postgres://grevenko:postgres@localhost:5432/matcha");
+// const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
 const format = require("pg-format");
 const bodyParser = require("body-parser");
 const crypto = require("crypto");
@@ -554,6 +554,92 @@ app.post("/getChatUsers", requireLogin, (req, res) => {
   });
 });
 
+app.post("/getChatMessages", requireLogin, (req, res) => {
+  db.any("SELECT * FROM messages WHERE sender = ${me} OR receiver = ${me}", {
+    me: req.session.login
+  }).then(chatMessages => {
+    let chatMessagesObject = {};
+
+    chatMessages.forEach(message => {
+      if (message.sender === req.session.login) {
+        chatMessagesObject.hasOwnProperty(message.receiver)
+          ? chatMessagesObject[message.receiver].push(message)
+          : (chatMessagesObject[message.receiver] = [message]);
+      } else {
+        chatMessagesObject.hasOwnProperty(message.sender)
+          ? chatMessagesObject[message.sender].push(message)
+          : (chatMessagesObject[message.sender] = [message]);
+      }
+    });
+    res.send(JSON.stringify(chatMessagesObject));
+  });
+});
+
+app.post("/getChatData", requireLogin, (req, res) => {
+  db.any("SELECT likee FROM likes WHERE liker = ${login}", {
+    login: req.session.login
+  }).then(data => {
+    if (data.length > 0) {
+      data = data.map(record => record.likee);
+
+      const query = format(
+        "SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L",
+        data,
+        req.session.login
+      );
+
+      db.any(query).then(data => {
+        if (data.length > 0) {
+          data = data.map(record => record.liker);
+
+          const query = format(
+            "SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)",
+            data
+          );
+          db.any(query).then(data => {
+            let chatData = {};
+
+            data.forEach(
+              record =>
+                (chatData[record.login] = {
+                  online: record.online,
+                  gallery: record.gallery,
+                  avatarid: record.avatarid,
+                  log: []
+                })
+            );
+            data = data.map(record => record.login);
+
+            const query = format(
+              "SELECT * FROM messages WHERE (sender IN (%L) AND receiver = '%s') OR (sender = '%s' AND receiver IN (%L))",
+              data,
+              req.session.login,
+              req.session.login,
+              data
+            );
+
+            db.any(query).then(data => {
+              data.forEach(record => {
+                if (record.sender === req.session.login) {
+                  chatData[record.receiver].log.push(record);
+                } else {
+                  chatData[record.sender].log.push(record);
+                }
+              });
+              console.log('chatData', chatData);
+              res.send(JSON.stringify(chatData));
+            });
+          });
+        } else {
+          res.send(JSON.stringify([]));
+        }
+      });
+    } else {
+      res.send(JSON.stringify([]));
+    }
+  });
+});
+
 app.post("/saveOnline", requireLogin, (req, res) =>
   db.any("UPDATE users SET online = true WHERE login = ${login}", {
     login: req.session.login
@@ -665,7 +751,6 @@ app.post("/getSuggestions", requireLogin, (req, res) => {
       (data[0].gender === "male" && data[0].preferences === "heterosexual") ||
       (data[0].gender === "female" && data[0].preferences === "homosexual")
     ) {
-      console.log('here!!!');
       request =
         "SELECT * FROM users WHERE login <> ${login} AND gender = ${gender}";
       params.gender = "female";
@@ -679,7 +764,7 @@ app.post("/getSuggestions", requireLogin, (req, res) => {
     } else {
       request = "SELECT * FROM users WHERE login <> ${login}";
     }
-    db.any(request, params).then(data => {console.log('data', data); res.send(JSON.stringify(data));} );
+    db.any(request, params).then(data => res.send(JSON.stringify(data)));
   });
 });
 
