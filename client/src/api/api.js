@@ -130,27 +130,33 @@ export const saveVisited = visited =>
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ visited })
+  }).then(res => {
+    if (!res.ok) {
+      throw Error(res.code);
+    }
+
+    return res.json();
   });
 
-export const getChatUsers = () =>
-  fetch("/getChatUsers", {
-    method: "POST"
-  }).then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    throw new Error("Error");
-  });
+// export const getChatUsers = () =>
+//   fetch("/getChatUsers", {
+//     method: "POST"
+//   }).then(res => {
+//     if (res.ok) {
+//       return res.json();
+//     }
+//     throw new Error("Error");
+//   });
 
-export const getChatMessages = () =>
-  fetch("/getChatMessages", {
-    method: "POST"
-  }).then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    throw new Error("Error");
-  });
+// export const getChatMessages = () =>
+//   fetch("/getChatMessages", {
+//     method: "POST"
+//   }).then(res => {
+//     if (res.ok) {
+//       return res.json();
+//     }
+//     throw new Error("Error");
+//   });
 
 export const getChatData = () =>
   fetch("/getChatData", {

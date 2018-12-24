@@ -34,7 +34,9 @@ import {
   saveLocation,
   signout,
   getChatData,
-  getSuggestions
+  getSuggestions,
+  getVisited,
+  saveVisited
 } from "./../../api/api.js";
 
 function TabContainer(props) {
@@ -186,7 +188,7 @@ class Main extends React.Component {
               gallery: data.user.gallery,
               avatarid: data.user.avatarid,
               location: data.user.location,
-              visited: data.user.visited,
+              // visited: data.user.visited,
               allInterests: data.allInterests,
               changeStatus: null,
               error: false,
@@ -202,41 +204,18 @@ class Main extends React.Component {
         chatData => this.setState({ chatData }),
         error => console.log(error)
       ),
-      // getChatUsers().then(
-      //   chatUsers => {
-      //     let chatData = {};
-
-      //     chatUsers.forEach(
-      //       user =>
-      //         (chatData[user] = {
-      //           log: [],
-      //           draft: ""
-      //         })
-      //     );
-      //     this.setState({
-      //       chatData
-      //     });
-      //   },
-      //   error => console.error(error)
-      // ),
-      // getChatMessages().then(
-      //   chatMessages => {
-      //     let newChatData = this.state.chatData;
-
-      //     Object.keys(chatMessages).forEach(receiver => {
-      //       if (newChatData.hasOwnProperty(receiver)) {
-      //         newChatData[receiver].log = chatMessages[receiver];
-      //       }
-      //     });
-      //     this.setState({ chatData: newChatData });
-      //   },
-      //   error => console.error(error)
-      // ),
       getSuggestions().then(
         suggestions =>
           this.setState({
             suggestions
           }),
+        error => console.error(error)
+      ),
+      getVisited().then(
+        visited => {
+          console.log("visited", visited);
+          this.setState({ visited });
+        },
         error => console.error(error)
       )
     ]);
@@ -250,13 +229,18 @@ class Main extends React.Component {
     signout().then(() => this.setState({ profile: "signin" }));
   };
 
-  updateVisited = visited => {
-    let newProfile = this.state.profile;
-
-    newProfile.visited = visited;
-    this.setState({
-      profile: newProfile
-    });
+  updateVisited = visitedLogin => {
+    if (!this.state.visited.map(profile => profile.login).includes(visitedLogin)) {
+      saveVisited(visitedLogin).then(visited => {
+        socket.emit("check", {
+          sender: this.state.profile.login,
+          receiver: visitedLogin
+        });
+        this.setState({
+          visited
+        });
+      });
+    }
   };
 
   closeNotification = index => {
@@ -300,7 +284,8 @@ class Main extends React.Component {
     if (
       !this.state.profile ||
       !this.state.chatData ||
-      !this.state.suggestions
+      !this.state.suggestions ||
+      !this.state.visited
     ) {
       return <span>Loading...</span>;
     }
@@ -310,12 +295,13 @@ class Main extends React.Component {
     const { classes } = this.props;
     const {
       profile,
-      profile: { visited, login, canLike },
+      profile: { login, canLike },
       notifications,
       tabName,
       showMenu,
       chatData,
-      suggestions
+      suggestions,
+      visited
     } = this.state;
 
     // console.log("FROM MAIN: chatData ", chatData);
@@ -443,8 +429,6 @@ class Main extends React.Component {
                   name="profile"
                   value={profile}
                   onChange={this.onProfileChange}
-                  socket={socket}
-                  sender={login}
                   editable={true}
                   visited={visited}
                   updateVisited={this.updateVisited}

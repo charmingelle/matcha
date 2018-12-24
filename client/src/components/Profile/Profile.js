@@ -133,8 +133,6 @@ class Profile extends React.Component {
           getUserList={getLikedBy}
           visited={this.props.visited}
           updateVisited={this.props.updateVisited}
-          socket={this.props.socket}
-          sender={this.props.sender}
         />
         <SmallUsers
           title="Checked by"
@@ -142,8 +140,6 @@ class Profile extends React.Component {
           getUserList={getCheckedBy}
           visited={this.props.visited}
           updateVisited={this.props.updateVisited}
-          socket={this.props.socket}
-          sender={this.props.sender}
         />
         <div className={classes.profileDetails}>
           {this.renderChangeStatus()}

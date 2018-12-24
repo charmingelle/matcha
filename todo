@@ -17,7 +17,6 @@
 - resolve the issue with locations
 - style everything
 
-- fix chat bug with rooms
 - make sure that all data is received by highers component, after being saved on the server is transferred back to the highest needed component
 
 When app is loaded GET:

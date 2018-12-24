@@ -58,8 +58,6 @@ class SmallUsers extends React.Component {
                   user={user}
                   visited={this.props.visited}
                   updateVisited={this.props.updateVisited}
-                  socket={this.props.socket}
-                  sender={this.props.sender}
                 />
               </li>
             ))}

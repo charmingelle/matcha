@@ -497,29 +497,37 @@ app.post("/changeLikeStatus", requireLogin, (req, res) => {
   }
 });
 
+const sendVisitedToClient = (req, res) => {
+  db.any("SELECT visited FROM users WHERE login = ${login}", {
+    login: req.session.login
+  }).then(data => {
+    if (data[0].visited.length > 0) {
+      db.any("SELECT * FROM users WHERE login IN ($1:csv)", [
+        data[0].visited
+      ]).then(data => res.send(JSON.stringify(data)));
+    } else {
+      res.send(JSON.stringify([]));
+    }
+  });
+};
+
 app.post("/getVisited", requireLogin, (req, res) =>
+  sendVisitedToClient(req, res)
+);
+
+app.post("/saveVisited", requireLogin, (req, res) =>
   db
     .any("SELECT visited FROM users WHERE login = ${login}", {
       login: req.session.login
     })
     .then(data => {
-      if (data[0].visited.length > 0) {
-        db.any("SELECT * FROM users WHERE login IN ($1:csv)", [
-          data[0].visited
-        ]).then(data => res.send(JSON.stringify(data)));
-      } else {
-        res.send(JSON.stringify([]));
-      }
+      // console.log('data[0]', data[0]);
+      data[0].visited.push(req.body.visited);
+      db.any("UPDATE users SET visited = ${visited} WHERE login = ${login}", {
+        visited: data[0].visited,
+        login: req.session.login
+      }).then(() => sendVisitedToClient(req, res));
     })
-);
-
-app.post("/saveVisited", requireLogin, (req, res) =>
-  db
-    .any("UPDATE users SET visited = ${visited} WHERE login = ${login}", {
-      visited: req.body.visited,
-      login: req.session.login
-    })
-    .then(() => res.send())
 );
 
 app.post("/getChatUsers", requireLogin, (req, res) => {
@@ -626,7 +634,6 @@ app.post("/getChatData", requireLogin, (req, res) => {
                   chatData[record.sender].log.push(record);
                 }
               });
-              console.log('chatData', chatData);
               res.send(JSON.stringify(chatData));
             });
           });

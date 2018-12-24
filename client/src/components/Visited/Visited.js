@@ -19,24 +19,24 @@ const styles = {
 };
 
 class Visited extends React.Component {
-  async componentDidMount() {
-    const data = await getVisited();
+  // async componentDidMount() {
+  //   const data = await getVisited();
 
-    this.setState({
-      users: data
-    });
-  }
+  //   this.setState({
+  //     users: data
+  //   });
+  // }
 
   render = () => {
-    if (!this.state) {
-      return <span>Loading...</span>;
-    }
-    const { classes } = this.props;
+    // if (!this.state) {
+    //   return <span>Loading...</span>;
+    // }
+    const { classes, visited } = this.props;
 
     return (
       <div className={classes.root}>
         <ul className={classes.userList}>
-          {this.state.users.map((user, index) => (
+          {visited.map((user, index) => (
             <li key={index}>
               <User
                 photoFolder="users/photos/"
@@ -44,7 +44,7 @@ class Visited extends React.Component {
                 full={false}
                 socket={this.props.socket}
                 sender={this.props.sender}
-                visited={this.props.visited}
+                // visited={this.props.visited}
                 updateVisited={this.props.updateVisited}
               />
             </li>
