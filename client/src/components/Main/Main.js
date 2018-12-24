@@ -201,7 +201,10 @@ class Main extends React.Component {
         () => this.setState({ profile: "signin" })
       ),
       getChatData().then(
-        chatData => this.setState({ chatData }),
+        chatData => {
+          console.log("chatData", chatData);
+          this.setState({ chatData });
+        },
         error => console.log(error)
       ),
       getSuggestions().then(
@@ -246,6 +249,8 @@ class Main extends React.Component {
   };
 
   updateSuggestions = suggestions => this.setState({ suggestions });
+
+  updateChatData = chatData => this.setState({ chatData });
 
   closeNotification = index => {
     let newNotifications = this.state.notifications;
@@ -420,6 +425,7 @@ class Main extends React.Component {
                   visited={visited}
                   updateVisited={this.updateVisited}
                   suggestions={suggestions}
+                  updateChatData={this.updateChatData}
                 />
               </TabContainer>
             )}
@@ -490,6 +496,7 @@ class Main extends React.Component {
                         full={true}
                         visited={visited}
                         updateVisited={this.updateVisited}
+                        updateChatData={this.updateChatData}
                       />
                     </div>
                   </TabContainer>
@@ -508,6 +515,7 @@ class Main extends React.Component {
                   sender={login}
                   visited={visited}
                   updateVisited={this.updateVisited}
+                  updateChatData={this.updateChatData}
                 />
               </TabContainer>
             )}

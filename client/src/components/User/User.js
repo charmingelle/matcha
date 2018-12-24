@@ -245,6 +245,7 @@ class User extends React.Component {
             socket={this.props.socket}
             sender={this.props.sender}
             login={login}
+            updateChatData={this.props.updateChatData}
           />
           <div>{fame}</div>
           {(interests.length > 0 || bio) && (

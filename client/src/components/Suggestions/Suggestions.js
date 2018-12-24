@@ -150,6 +150,7 @@ class Suggestions extends React.Component {
                 sender={this.props.sender}
                 visited={this.props.visited}
                 updateVisited={this.props.updateVisited}
+                updateChatData={this.props.updateChatData}
               />
             </li>
           ))}

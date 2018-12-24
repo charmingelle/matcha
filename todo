@@ -17,6 +17,7 @@
 - style everything
 
 - make sure that all data is received by highers component, after being saved on the server is transferred back to the highest needed component
+- make sure chat is re-rendered after like-dislike
 
 When app is loaded GET:
     - profile (likedBy, checkedBy as well);
@@ -24,4 +25,3 @@ When app is loaded GET:
     - visited;
     - chatList
 
-like, dislike - chat users update

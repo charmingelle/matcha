@@ -180,14 +180,12 @@ app.post(
       )
       .then(() => {
         getSuggestionsFromDB(req.session.login).then(data =>
-          res
-            .status(200)
-            .send(
-              JSON.stringify({
-                result: "Your data has been changed",
-                suggestions: data
-              })
-            )
+          res.status(200).send(
+            JSON.stringify({
+              result: "Your data has been changed",
+              suggestions: data
+            })
+          )
         );
       });
   }
@@ -489,7 +487,11 @@ app.post("/changeLikeStatus", requireLogin, (req, res) => {
           login: req.body.login
         })
       )
-      .then(() => res.send(JSON.stringify({ step: 1 })));
+      .then(() => {
+        getChatDataFromDB().then(data =>
+          res.send(JSON.stringify({ chatData: data, step: 1 }))
+        );
+      });
   } else {
     db.any("DELETE FROM likes WHERE liker = ${liker} AND likee = ${likee}", {
       liker: req.session.login,
@@ -500,7 +502,11 @@ app.post("/changeLikeStatus", requireLogin, (req, res) => {
           login: req.body.login
         })
       )
-      .then(() => res.send(JSON.stringify({ step: -1 })));
+      .then(() => {
+        getChatDataFromDB().then(data =>
+          res.send(JSON.stringify({ chatData: data, step: -1 }))
+        );
+      });
   }
 });
 
@@ -537,122 +543,128 @@ app.post("/saveVisited", requireLogin, (req, res) =>
     })
 );
 
-app.post("/getChatUsers", requireLogin, (req, res) => {
-  db.any("SELECT likee FROM likes WHERE liker = ${login}", {
-    login: req.session.login
-  }).then(data => {
-    if (data.length > 0) {
-      data = data.map(record => record.likee);
+// app.post("/getChatUsers", requireLogin, (req, res) => {
+//   db.any("SELECT likee FROM likes WHERE liker = ${login}", {
+//     login: req.session.login
+//   }).then(data => {
+//     if (data.length > 0) {
+//       data = data.map(record => record.likee);
 
-      const query = format(
-        "SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L",
-        data,
-        req.session.login
-      );
+//       const query = format(
+//         "SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L",
+//         data,
+//         req.session.login
+//       );
 
-      db.any(query).then(data => {
-        if (data.length > 0) {
-          data = data.map(record => record.liker);
+//       db.any(query).then(data => {
+//         if (data.length > 0) {
+//           data = data.map(record => record.liker);
 
-          const query = format(
-            "SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)",
-            data
-          );
-          db.any(query).then(data => res.send(JSON.stringify(data)));
-        } else {
-          res.send(JSON.stringify([]));
-        }
-      });
-    } else {
-      res.send(JSON.stringify([]));
-    }
-  });
-});
+//           const query = format(
+//             "SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)",
+//             data
+//           );
+//           db.any(query).then(data => res.send(JSON.stringify(data)));
+//         } else {
+//           res.send(JSON.stringify([]));
+//         }
+//       });
+//     } else {
+//       res.send(JSON.stringify([]));
+//     }
+//   });
+// });
 
-app.post("/getChatMessages", requireLogin, (req, res) => {
-  db.any("SELECT * FROM messages WHERE sender = ${me} OR receiver = ${me}", {
-    me: req.session.login
-  }).then(chatMessages => {
-    let chatMessagesObject = {};
+// app.post("/getChatMessages", requireLogin, (req, res) => {
+//   db.any("SELECT * FROM messages WHERE sender = ${me} OR receiver = ${me}", {
+//     me: req.session.login
+//   }).then(chatMessages => {
+//     let chatMessagesObject = {};
 
-    chatMessages.forEach(message => {
-      if (message.sender === req.session.login) {
-        chatMessagesObject.hasOwnProperty(message.receiver)
-          ? chatMessagesObject[message.receiver].push(message)
-          : (chatMessagesObject[message.receiver] = [message]);
-      } else {
-        chatMessagesObject.hasOwnProperty(message.sender)
-          ? chatMessagesObject[message.sender].push(message)
-          : (chatMessagesObject[message.sender] = [message]);
-      }
-    });
-    res.send(JSON.stringify(chatMessagesObject));
-  });
-});
+//     chatMessages.forEach(message => {
+//       if (message.sender === req.session.login) {
+//         chatMessagesObject.hasOwnProperty(message.receiver)
+//           ? chatMessagesObject[message.receiver].push(message)
+//           : (chatMessagesObject[message.receiver] = [message]);
+//       } else {
+//         chatMessagesObject.hasOwnProperty(message.sender)
+//           ? chatMessagesObject[message.sender].push(message)
+//           : (chatMessagesObject[message.sender] = [message]);
+//       }
+//     });
+//     res.send(JSON.stringify(chatMessagesObject));
+//   });
+// });
 
-app.post("/getChatData", requireLogin, (req, res) => {
-  db.any("SELECT likee FROM likes WHERE liker = ${login}", {
-    login: req.session.login
-  }).then(data => {
-    if (data.length > 0) {
-      data = data.map(record => record.likee);
+const getChatDataFromDB = login => {
+  return db
+    .any("SELECT likee FROM likes WHERE liker = ${login}", {
+      login
+    })
+    .then(data => {
+      if (data.length > 0) {
+        data = data.map(record => record.likee);
 
-      const query = format(
-        "SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L",
-        data,
-        req.session.login
-      );
+        const query = format(
+          "SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L",
+          data,
+          login
+        );
 
-      db.any(query).then(data => {
-        if (data.length > 0) {
-          data = data.map(record => record.liker);
-
-          const query = format(
-            "SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)",
-            data
-          );
-          db.any(query).then(data => {
-            let chatData = {};
-
-            data.forEach(
-              record =>
-                (chatData[record.login] = {
-                  online: record.online,
-                  gallery: record.gallery,
-                  avatarid: record.avatarid,
-                  log: []
-                })
-            );
-            data = data.map(record => record.login);
+        return db.any(query).then(data => {
+          if (data.length > 0) {
+            data = data.map(record => record.liker);
 
             const query = format(
-              "SELECT * FROM messages WHERE (sender IN (%L) AND receiver = '%s') OR (sender = '%s' AND receiver IN (%L)) ORDER BY id DESC",
-              data,
-              req.session.login,
-              req.session.login,
+              "SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)",
               data
             );
+            return db.any(query).then(data => {
+              let chatData = {};
 
-            db.any(query).then(data => {
-              data.forEach(record => {
-                if (record.sender === req.session.login) {
-                  chatData[record.receiver].log.push(record);
-                } else {
-                  chatData[record.sender].log.push(record);
-                }
+              data.forEach(
+                record =>
+                  (chatData[record.login] = {
+                    online: record.online,
+                    gallery: record.gallery,
+                    avatarid: record.avatarid,
+                    log: []
+                  })
+              );
+              data = data.map(record => record.login);
+
+              const query = format(
+                "SELECT * FROM messages WHERE (sender IN (%L) AND receiver = '%s') OR (sender = '%s' AND receiver IN (%L)) ORDER BY id DESC",
+                data,
+                login,
+                login,
+                data
+              );
+
+              return db.any(query).then(data => {
+                data.forEach(record => {
+                  if (record.sender === login) {
+                    chatData[record.receiver].log.push(record);
+                  } else {
+                    chatData[record.sender].log.push(record);
+                  }
+                });
+                return chatData;
               });
-              res.send(JSON.stringify(chatData));
             });
-          });
-        } else {
-          res.send(JSON.stringify([]));
-        }
-      });
-    } else {
-      res.send(JSON.stringify([]));
-    }
-  });
-});
+          }
+          return [];
+        });
+      }
+      return [];
+    });
+};
+
+app.post("/getChatData", requireLogin, (req, res) =>
+  getChatDataFromDB(req.session.login).then(data =>
+    res.send(JSON.stringify(data))
+  )
+);
 
 app.post("/saveOnline", requireLogin, (req, res) =>
   db.any("UPDATE users SET online = true WHERE login = ${login}", {

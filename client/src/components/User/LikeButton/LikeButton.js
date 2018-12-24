@@ -40,6 +40,7 @@ class LikeButton extends React.Component {
           });
         }
         this.props.changeFame(data.step);
+        this.props.updateChatData(data.chatData);
         this.setState({
           canLike: !this.state.canLike
         });
