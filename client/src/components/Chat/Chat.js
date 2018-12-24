@@ -42,22 +42,15 @@ const styles = theme => ({
 
 class Chat extends React.Component {
   render = () => {
-    // console.log('char render');
     const {
       classes,
       socket,
       sender,
       receiver,
       chatData,
-      drafts,
-      updateLog,
-      updateDraft
+      updateLog
     } = this.props;
 
-    // console.log("FROM CHAT: chatData", chatData);
-    // console.log('chat receiver log', chatData[receiver].log);
-    console.log('this.props from chat', this.props);
-    console.log('this.drafts from chat', drafts);    
     return (
       <div className={classes.root}>
         <List component="nav" className={classes.users}>
@@ -89,9 +82,8 @@ class Chat extends React.Component {
           sender={sender}
           receiver={receiver}
           log={chatData[receiver].log}
-          draft={drafts[receiver]}
           updateLog={updateLog}
-          updateDraft={updateDraft}
+          updateMessage={this.updateMessage}
         />
       </div>
     );

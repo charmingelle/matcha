@@ -611,7 +611,7 @@ app.post("/getChatData", requireLogin, (req, res) => {
             data = data.map(record => record.login);
 
             const query = format(
-              "SELECT * FROM messages WHERE (sender IN (%L) AND receiver = '%s') OR (sender = '%s' AND receiver IN (%L))",
+              "SELECT * FROM messages WHERE (sender IN (%L) AND receiver = '%s') OR (sender = '%s' AND receiver IN (%L)) ORDER BY id DESC",
               data,
               req.session.login,
               req.session.login,

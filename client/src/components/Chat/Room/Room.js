@@ -81,9 +81,8 @@ const styles = theme => ({
 class Room extends React.Component {
   constructor(props) {
     super(props);
-    // console.log("this.props.draft === ''", this.props.draft === "");
     this.state = {
-      message: this.props.draft,
+      message: "",
       typing: "",
       isLoading: false,
       lastloadedid: null,
@@ -148,12 +147,7 @@ class Room extends React.Component {
     // }
   };
 
-  componentWillReceiveProps = () => {
-    this.props.updateDraft(this.props.receiver, this.state.message);
-  };
-
   componentWillUnmount = () => {
-    // console.log('componentWillUnmount is called');
     this.props.socket.off("chat");
     this.props.socket.off("typing");
     this.props.socket.off("stoppedTyping");
@@ -237,11 +231,9 @@ class Room extends React.Component {
   };
 
   render = () => {
-    // console.log('room render');
     const { message, typing } = this.state;
-    const { classes, log } = this.props;
+    const { classes, sender, log } = this.props;
 
-    // console.log("mesage from render", message);
     return (
       <div className={classes.marioChat}>
         <div
@@ -257,7 +249,7 @@ class Room extends React.Component {
             {log.map((record, index) => (
               <div
                 className={
-                  record.sender === this.props.sender
+                  record.sender === sender
                     ? classes.outputPMine
                     : classes.outputPOther
                 }

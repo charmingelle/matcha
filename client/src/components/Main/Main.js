@@ -113,7 +113,6 @@ class Main extends React.Component {
       chatData: null,
       suggestions: null
     };
-    this.drafts = {};
   }
 
   ipLookUp = userid => {
@@ -200,11 +199,7 @@ class Main extends React.Component {
         () => this.setState({ profile: "signin" })
       ),
       getChatData().then(
-        chatData => {
-          // console.log("FROM SERVER: chatData ", chatData);
-          Object.keys(chatData).forEach(login => (this.drafts[login] = ""));
-          this.setState({ chatData });
-        },
+        chatData => this.setState({ chatData }),
         error => console.log(error)
       ),
       // getChatUsers().then(
@@ -298,11 +293,6 @@ class Main extends React.Component {
     this.setState({
       chatData: newChatData
     });
-  };
-
-  updateDraft = (receiver, draft) => {
-    this.drafts[receiver] = draft;
-    console.log('this.drafts from main', this.drafts);
   };
 
   render = () => {
@@ -468,7 +458,7 @@ class Main extends React.Component {
               path="/chat/:receiver"
               render={({ match }) => {
                 // console.log("match", match);
-                console.log('this.drafts from root', this.drafts);
+                // console.log('this.drafts from root', this.drafts);
                 if (Object.keys(chatData).includes(match.params.receiver)) {
                   return (
                     <TabContainer>
@@ -477,9 +467,7 @@ class Main extends React.Component {
                         sender={login}
                         receiver={match.params.receiver}
                         chatData={chatData}
-                        drafts={this.drafts}
                         updateLog={this.updateLog}
-                        updateDraft={this.updateDraft}
                       />
                     </TabContainer>
                   );
