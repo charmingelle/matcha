@@ -9,7 +9,6 @@
 - think about how an empty chat looks like
 - add minWidth
 - make chat time format beautiful
-- correct chat bug with incorrect message display
 - add pagination to Users
 - consider saving all data in one storage for the whole app
 - test notifications and chat carefully
@@ -24,3 +23,5 @@ When app is loaded GET:
     - suggestions;
     - visited;
     - chatList
+
+like, dislike - chat users update

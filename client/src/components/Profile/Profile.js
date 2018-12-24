@@ -1,29 +1,29 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import SimpleSelect from './../../components/SimpleSelect/SimpleSelect.js';
-import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTextFields.js';
-import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
-import ProfilePhotos from './ProfilePhotos/ProfilePhotos.js';
-import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
-import SmallUsers from './../SmallUsers/SmallUsers.js';
-import Button from '@material-ui/core/Button';
-import { saveUserProfile, getLikedBy, getCheckedBy } from './../../api/api.js';
-import { isEmailValid } from './../../utils/utils.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import SimpleSelect from "./../../components/SimpleSelect/SimpleSelect.js";
+import OutlinedTextFields from "./../../components/OutlinedTextFields/OutlinedTextFields.js";
+import InterestsInput from "./../../components/InterestsInput/InterestsInput.js";
+import ProfilePhotos from "./ProfilePhotos/ProfilePhotos.js";
+import ChangeStatus from "./../ChangeStatus/ChangeStatus.js";
+import SmallUsers from "./../SmallUsers/SmallUsers.js";
+import Button from "@material-ui/core/Button";
+import { saveUserProfile, getLikedBy, getCheckedBy } from "./../../api/api.js";
+import { isEmailValid } from "./../../utils/utils.js";
 
 const styles = theme => ({
   root: {
-    overflow: 'auto',
-    padding: '10px'
+    overflow: "auto",
+    padding: "10px"
   },
   profileDetails: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     padding: 8,
-    backgroundColor: '#ffffff'
+    backgroundColor: "#ffffff"
   },
   saveChangesButton: {
-    padding: '8px'
+    padding: "8px"
   }
 });
 
@@ -37,7 +37,7 @@ class Profile extends React.Component {
 
     if (!validStatus) {
       this.setState({
-        changeStatus: 'Please make sure that your email address is correct',
+        changeStatus: "Please make sure that your email address is correct",
         error: true
       });
     }
@@ -45,9 +45,9 @@ class Profile extends React.Component {
   };
 
   validateEmpty = value => {
-    if (value === '') {
+    if (value === "") {
       this.setState({
-        changeStatus: 'Please fill all the fields in',
+        changeStatus: "Please fill all the fields in",
         error: true
       });
       return false;
@@ -79,6 +79,9 @@ class Profile extends React.Component {
           this.setState({
             changeStatus: data.result
           });
+          if (data.suggestions) {
+            this.props.updateSuggestions(data.suggestions);
+          }
           this.props.onChange(this.state);
         });
     }
@@ -96,7 +99,7 @@ class Profile extends React.Component {
     }
   };
 
-  renderChangeStatus = value => {
+  renderChangeStatus = () => {
     if (this.state.changeStatus) {
       return (
         <ChangeStatus
@@ -172,14 +175,14 @@ class Profile extends React.Component {
           />
           <SimpleSelect
             title="Gender"
-            items={['male', 'female']}
+            items={["male", "female"]}
             name="gender"
             value={gender}
             onChange={this.onChange}
           />
           <SimpleSelect
             title="Preferences"
-            items={['heterosexual', 'homosexual', 'bisexual']}
+            items={["heterosexual", "homosexual", "bisexual"]}
             name="preferences"
             value={preferences}
             onChange={this.onChange}

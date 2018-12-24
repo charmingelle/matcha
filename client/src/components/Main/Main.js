@@ -230,7 +230,9 @@ class Main extends React.Component {
   };
 
   updateVisited = visitedLogin => {
-    if (!this.state.visited.map(profile => profile.login).includes(visitedLogin)) {
+    if (
+      !this.state.visited.map(profile => profile.login).includes(visitedLogin)
+    ) {
       saveVisited(visitedLogin).then(visited => {
         socket.emit("check", {
           sender: this.state.profile.login,
@@ -242,6 +244,8 @@ class Main extends React.Component {
       });
     }
   };
+
+  updateSuggestions = suggestions => this.setState({ suggestions });
 
   closeNotification = index => {
     let newNotifications = this.state.notifications;
@@ -432,6 +436,7 @@ class Main extends React.Component {
                   editable={true}
                   visited={visited}
                   updateVisited={this.updateVisited}
+                  updateSuggestions={this.updateSuggestions}
                 />
               </TabContainer>
             )}
