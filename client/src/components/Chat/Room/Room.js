@@ -83,10 +83,10 @@ class Room extends React.Component {
     super(props);
     this.state = {
       message: "",
-      typing: "",
-      isLoading: false,
-      lastloadedid: null,
-      moreData: true
+      typing: ""
+      // isLoading: false,
+      // lastloadedid: null,
+      // moreData: true
     };
   }
 
@@ -106,6 +106,13 @@ class Room extends React.Component {
       }
     });
     this.props.socket.on("typing", data => {
+      // console.log("this.props.receiver", this.props.receiver);
+      // console.log("data.sender", data.sender);
+      // console.log(
+      //   "this.props.receiver === data.sender",
+      //   this.props.receiver === data.sender
+      // );
+
       if (this.props.receiver === data.sender) {
         this.setState({
           typing: data.sender
@@ -192,6 +199,17 @@ class Room extends React.Component {
   //     }
   //   }
   // };
+
+  componentWillReceiveProps = () => {
+    this.props.socket.emit("stoppedTyping", {
+      sender: this.props.sender,
+      receiver: this.props.receiver
+    });
+    this.setState({
+      message: "",
+      typing: ""
+    });
+  };
 
   changeHandler = event => {
     // console.log('changeHandler is called', event.target.value);
