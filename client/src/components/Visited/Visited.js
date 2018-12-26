@@ -1,37 +1,32 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import User from './../User/User.js';
-import { getVisited } from './../../api/api.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import User from "./../User/User.js";
 
 const styles = {
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'auto'
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    overflow: "auto"
   },
   userList: {
     margin: 0,
     padding: 0,
-    listStyleType: 'none'
+    listStyleType: "none"
   }
 };
 
 class Visited extends React.Component {
-  // async componentDidMount() {
-  //   const data = await getVisited();
-
-  //   this.setState({
-  //     users: data
-  //   });
-  // }
-
   render = () => {
-    // if (!this.state) {
-    //   return <span>Loading...</span>;
-    // }
-    const { classes, visited } = this.props;
+    const {
+      classes,
+      visited,
+      socket,
+      sender,
+      updateVisited,
+      updateChatData
+    } = this.props;
 
     return (
       <div className={classes.root}>
@@ -42,11 +37,10 @@ class Visited extends React.Component {
                 photoFolder="users/photos/"
                 user={user}
                 full={false}
-                socket={this.props.socket}
-                sender={this.props.sender}
-                // visited={this.props.visited}
-                updateVisited={this.props.updateVisited}
-                updateChatData={this.props.updateChatData}
+                socket={socket}
+                sender={sender}
+                updateVisited={updateVisited}
+                updateChatData={updateChatData}
               />
             </li>
           ))}

@@ -481,32 +481,32 @@ app.post("/changeLikeStatus", requireLogin, (req, res) => {
     db.any("INSERT INTO likes(liker, likee) VALUES (${liker}, ${likee})", {
       liker: req.session.login,
       likee: req.body.login
-    })
-      .then(() =>
-        db.any("UPDATE users SET fame = fame + 1 WHERE login = ${login}", {
+    }).then(() =>
+      db
+        .any("UPDATE users SET fame = fame + 1 WHERE login = ${login}", {
           login: req.body.login
         })
-      )
-      .then(() => {
-        getChatDataFromDB().then(data =>
-          res.send(JSON.stringify({ chatData: data, step: 1 }))
-        );
-      });
+        .then(() =>
+          getChatDataFromDB(req.session.login).then(data =>
+            res.send(JSON.stringify({ chatData: data, step: 1 }))
+          )
+        )
+    );
   } else {
     db.any("DELETE FROM likes WHERE liker = ${liker} AND likee = ${likee}", {
       liker: req.session.login,
       likee: req.body.login
-    })
-      .then(() =>
-        db.any("UPDATE users SET fame = fame - 1 WHERE login = ${login}", {
+    }).then(() =>
+      db
+        .any("UPDATE users SET fame = fame - 1 WHERE login = ${login}", {
           login: req.body.login
         })
-      )
-      .then(() => {
-        getChatDataFromDB().then(data =>
-          res.send(JSON.stringify({ chatData: data, step: -1 }))
-        );
-      });
+        .then(() =>
+          getChatDataFromDB(req.session.login).then(data =>
+            res.send(JSON.stringify({ chatData: data, step: -1 }))
+          )
+        )
+    );
   }
 });
 
@@ -534,7 +534,6 @@ app.post("/saveVisited", requireLogin, (req, res) =>
       login: req.session.login
     })
     .then(data => {
-      // console.log('data[0]', data[0]);
       data[0].visited.push(req.body.visited);
       db.any("UPDATE users SET visited = ${visited} WHERE login = ${login}", {
         visited: data[0].visited,
