@@ -39,16 +39,14 @@ import {
   saveVisited
 } from "./../../api/api.js";
 
-function TabContainer(props) {
-  return (
-    <Typography
-      style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
-      component="div"
-    >
-      {props.children}
-    </Typography>
-  );
-}
+const TabContainer = props => (
+  <Typography
+    style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+    component="div"
+  >
+    {props.children}
+  </Typography>
+);
 
 TabContainer.propTypes = {
   children: PropTypes.node.isRequired
@@ -166,7 +164,6 @@ class Main extends React.Component {
   };
 
   componentDidMount() {
-    // console.log("MAIN COMPONENT DID MOUNT !!!!!!!!!!!!!!!!!!!!!!!!!!!");
     Promise.all([
       getUserProfile().then(
         data => {
@@ -188,7 +185,6 @@ class Main extends React.Component {
               gallery: data.user.gallery,
               avatarid: data.user.avatarid,
               location: data.user.location,
-              // visited: data.user.visited,
               allInterests: data.allInterests,
               changeStatus: null,
               error: false,
@@ -285,6 +281,7 @@ class Main extends React.Component {
   };
 
   render = () => {
+    console.log('window.location.pathname', window.location.pathname);
     if (
       !this.state.profile ||
       !this.state.chatData ||
@@ -308,7 +305,6 @@ class Main extends React.Component {
       visited
     } = this.state;
 
-    // console.log("FROM MAIN: chatData ", chatData);
     return (
       <div className={classes.root}>
         <Notifications
@@ -330,7 +326,7 @@ class Main extends React.Component {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              {tabName}
+              {window.location.pathname}
             </Typography>
             <Button color="inherit" onClick={this.signout}>
               Log out
@@ -345,7 +341,7 @@ class Main extends React.Component {
                 className={classes.menuItem}
                 component={Link}
                 to="/"
-                onClick={this.changeTabName.bind(this, "Suggestions")}
+                onClick={() => this.changeTabName("Suggestions")}
               >
                 <ListItemIcon className={classes.icon}>
                   <PeopleIcon />
@@ -360,7 +356,7 @@ class Main extends React.Component {
                 className={classes.menuItem}
                 component={Link}
                 to="/profile"
-                onClick={this.changeTabName.bind(this, "Profile")}
+                onClick={() => this.changeTabName("Profile")}
               >
                 <ListItemIcon className={classes.icon}>
                   <PersonIcon />
@@ -376,7 +372,7 @@ class Main extends React.Component {
                   className={classes.menuItem}
                   component={Link}
                   to={`/chat/${Object.keys(chatData)[0]}`}
-                  onClick={this.changeTabName.bind(this, "Chat")}
+                  onClick={() => this.changeTabName("Chat")}
                 >
                   <ListItemIcon className={classes.icon}>
                     <ChatIcon />
@@ -392,7 +388,7 @@ class Main extends React.Component {
                 className={classes.menuItem}
                 component={Link}
                 to="/visited"
-                onClick={this.changeTabName.bind(this, "Visited")}
+                onClick={() => this.changeTabName("Visited")}
               >
                 <ListItemIcon className={classes.icon}>
                   <CheckIcon />
@@ -411,45 +407,50 @@ class Main extends React.Component {
           <Route
             exact
             path="/"
-            render={() => (
-              <TabContainer>
-                <Suggestions
-                  socket={socket}
-                  sender={login}
-                  profile={profile}
-                  visited={visited}
-                  updateVisited={this.updateVisited}
-                  suggestions={suggestions}
-                  updateChatData={this.updateChatData}
-                />
-              </TabContainer>
-            )}
+            render={() => {
+              // this.changeTabName("Suggestions");
+              return (
+                <TabContainer>
+                  <Suggestions
+                    socket={socket}
+                    sender={login}
+                    profile={profile}
+                    visited={visited}
+                    updateVisited={this.updateVisited}
+                    suggestions={suggestions}
+                    updateChatData={this.updateChatData}
+                  />
+                </TabContainer>
+              );
+            }}
           />
           <Route
             exact
             path="/profile"
-            render={() => (
-              <TabContainer>
-                <Profile
-                  name="profile"
-                  value={profile}
-                  onChange={this.onProfileChange}
-                  editable={true}
-                  visited={visited}
-                  updateVisited={this.updateVisited}
-                  updateSuggestions={this.updateSuggestions}
-                />
-              </TabContainer>
-            )}
+            render={() => {
+              // this.changeTabName("Profile");
+              return (
+                <TabContainer>
+                  <Profile
+                    name="profile"
+                    value={profile}
+                    onChange={this.onProfileChange}
+                    editable={true}
+                    visited={visited}
+                    updateVisited={this.updateVisited}
+                    updateSuggestions={this.updateSuggestions}
+                  />
+                </TabContainer>
+              );
+            }}
           />
           {Object.keys(chatData).length > 0 && (
             <Route
               exact
               path="/chat/:receiver"
               render={({ match }) => {
-                // console.log("match", match);
-                // console.log('this.drafts from root', this.drafts);
                 if (Object.keys(chatData).includes(match.params.receiver)) {
+                  // this.changeTabName("Chat");
                   return (
                     <TabContainer>
                       <Chat
@@ -470,14 +471,12 @@ class Main extends React.Component {
             exact
             path="/users/:login"
             render={({ match }) => {
-              let index = -1;
+              let index = suggestions.indexOf(
+                suggestions.find(
+                  suggestion => match.params.login === suggestion.login
+                )
+              );
 
-              for (let i = 0; i < suggestions.length; i++) {
-                if (match.params.login === suggestions[i].login) {
-                  index = i;
-                  break;
-                }
-              }
               if (index !== -1) {
                 return (
                   <TabContainer>
@@ -503,17 +502,20 @@ class Main extends React.Component {
           <Route
             exact
             path="/visited"
-            render={() => (
-              <TabContainer>
-                <Visited
-                  socket={socket}
-                  sender={login}
-                  visited={visited}
-                  updateVisited={this.updateVisited}
-                  updateChatData={this.updateChatData}
-                />
-              </TabContainer>
-            )}
+            render={() => {
+              // this.changeTabName("Visited");
+              return (
+                <TabContainer>
+                  <Visited
+                    socket={socket}
+                    sender={login}
+                    visited={visited}
+                    updateVisited={this.updateVisited}
+                    updateChatData={this.updateChatData}
+                  />
+                </TabContainer>
+              );
+            }}
           />
         </div>
       </div>

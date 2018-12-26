@@ -286,7 +286,7 @@ app.post("/signup", (req, res) => {
         if (err) {
           return next(err);
         }
-        bcrypt.hash(req.body.password, salt, function(err, hash) {
+        bcrypt.hash(req.body.password, salt, (err, hash) => {
           if (err) {
             return next(err);
           }

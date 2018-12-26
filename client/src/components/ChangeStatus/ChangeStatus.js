@@ -1,37 +1,38 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import Input from "@material-ui/core/Input";
 
 const styles = theme => ({
   container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-},
-input: {
-    margin: theme.spacing.unit,
-    width: '100%'
+    display: "flex",
+    flexWrap: "wrap"
   },
+  input: {
+    margin: theme.spacing.unit,
+    width: "100%"
+  }
 });
 
-function Inputs(props) {
+const Inputs = props => {
   const { classes, error } = props;
+
   return (
     <div className={classes.container}>
       <Input
         className={classes.input}
         error={error}
         inputProps={{
-          'aria-label': 'Description',
+          "aria-label": "Description"
         }}
         value={props.value}
       />
     </div>
   );
-}
+};
 
 Inputs.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(Inputs);

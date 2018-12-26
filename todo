@@ -4,7 +4,6 @@
 - check how to remove errors from browser console when 500 response status is returned from server
 - add validation of signup data on server
 - user API and OAuth2.0 for sending emails
-- make sure that all functions are arrow functions
 - clean all components
 - think about how an empty chat looks like
 - add minWidth
@@ -15,10 +14,5 @@
 - make sure that unnecessary information isn't passed to components
 - resolve the issue with locations
 - style everything
-- make sure that all data is received by highers component, after being saved on the server is transferred back to the highest needed component
-
-When app is loaded GET:
-    - profile (likedBy, checkedBy as well);
-    - suggestions;
-    - visited;
-    - chatList
+- get rid of unused variables
+- fix the bug with main menu title when app is loaded from not main root
