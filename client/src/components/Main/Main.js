@@ -192,7 +192,7 @@ class Main extends React.Component {
                 data.user.gallery.filter(image => image !== '').length > 0
             }
           });
-          // this.getLocation(data.user.id);
+          this.getLocation(data.user.id);
         },
         () => this.setState({ profile: 'signin' })
       ),
@@ -451,10 +451,28 @@ class Main extends React.Component {
           {Object.keys(chatData).length > 0 && (
             <Route
               exact
+              path="/chat"
+              render={() => {
+                return (
+                  <TabContainer>
+                    <Chat
+                      socket={socket}
+                      sender={login}
+                      receiver={Object.keys(chatData)[0]}
+                      chatData={chatData}
+                      updateLog={this.updateLog}
+                    />
+                  </TabContainer>
+                );
+              }}
+            />
+          )}
+          {Object.keys(chatData).length > 0 && (
+            <Route
+              exact
               path="/chat/:receiver"
               render={({ match }) => {
                 if (Object.keys(chatData).includes(match.params.receiver)) {
-                  // this.changeTabName("Chat");
                   return (
                     <TabContainer>
                       <Chat
