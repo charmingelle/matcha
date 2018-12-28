@@ -143,7 +143,6 @@ class Suggestions extends React.Component {
           {filteredUsers.map(user => (
             <li key={user.login}>
               <User
-                photoFolder="users/photos/"
                 user={user}
                 full={false}
                 socket={this.props.socket}

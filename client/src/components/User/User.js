@@ -127,7 +127,7 @@ class User extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes, photoFolder } = this.props;
+    const { classes } = this.props;
     const {
       login,
       firstname,
@@ -155,7 +155,7 @@ class User extends React.Component {
               aria-label="Recipe"
               className={classes.avatar}
               alt={`${firstname} ${lastname}`}
-              src={`${photoFolder}/${gallery[avatarid]}`}
+              src={require(`../../../public/users/photos/${gallery[avatarid]}`)}
             />
           }
           action={
@@ -211,7 +211,7 @@ class User extends React.Component {
         />
         <CardMedia
           className={classes.media}
-          image={`${photoFolder}/${gallery[currentPhoto]}`}
+          image={require(`../../../public/users/photos/${gallery[currentPhoto]}`)}
         />
         <div className={classes.leftRightArea}>
           {currentPhoto > 0 && (

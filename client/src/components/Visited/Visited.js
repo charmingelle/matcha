@@ -34,7 +34,6 @@ class Visited extends React.Component {
           {visited.map((user, index) => (
             <li key={index}>
               <User
-                photoFolder="users/photos/"
                 user={user}
                 full={false}
                 socket={socket}

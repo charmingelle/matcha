@@ -508,7 +508,6 @@ class Main extends React.Component {
                         socket={socket}
                         sender={login}
                         canLike={canLike}
-                        photoFolder="photos/"
                         full={true}
                         visited={visited}
                         updateVisited={this.updateVisited}
