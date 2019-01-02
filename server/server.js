@@ -175,27 +175,39 @@ app.post(
 );
 
 app.post('/saveUserPhoto', requireLogin, (req, res) => {
-  const fileName = crypto.randomBytes(20).toString('hex');
+  const fileName = `${crypto.randomBytes(20).toString('hex')}${Date.now()}`;
 
   fs.writeFile(
     `client/public/users/photos/${fileName}.png`,
     req.body.photo.replace(/^data:image\/png;base64,/, ''),
     'base64',
-    err => console.error(err)
-  );
-  db.one('SELECT gallery FROM users WHERE login = ${login}', {
-    login: req.session.login
-  }).then(data => {
-    let gallery = data.gallery;
-
-    fs.unlink(`client/public/users/photos/${gallery[req.body.photoid]}`, () => {
-      gallery[req.body.photoid] = `${fileName}.png`;
-      db.any('UPDATE users SET gallery = ${gallery} WHERE login = ${login}', {
-        gallery,
+    error => {
+      if (error) {
+        throw error;
+      }
+      db.one('SELECT gallery FROM users WHERE login = ${login}', {
         login: req.session.login
-      }).then(() => res.send(JSON.stringify({ fileName: `${fileName}.png` })));
-    });
-  });
+      }).then(data => {
+        let gallery = data.gallery;
+
+        fs.unlink(
+          `client/public/users/photos/${gallery[req.body.photoid]}`,
+          () => {
+            gallery[req.body.photoid] = `${fileName}.png`;
+            db.any(
+              'UPDATE users SET gallery = ${gallery} WHERE login = ${login}',
+              {
+                gallery,
+                login: req.session.login
+              }
+            ).then(() =>
+              res.send(JSON.stringify({ fileName: `${fileName}.png` }))
+            );
+          }
+        );
+      });
+    }
+  );
 });
 
 app.post('/setAvatar', requireLogin, (req, res) => {
@@ -317,7 +329,7 @@ app.post('/signup', (req, res) => {
                     },
                     error => {
                       if (error) {
-                        console.error('ERROR', error);
+                        console.error('Error while email sending', error);
                         db.any('DELETE FROM users WHERE id = ${id}', {
                           id: data.id
                         }).then(() =>
@@ -415,8 +427,12 @@ app.post('/getResetPasswordEmail', (req, res) => {
               }&hash=${hash}`
             },
             () => {
-              res
-                .send(JSON.stringify({ status: 'success', result: 'Check your email' }));
+              res.send(
+                JSON.stringify({
+                  status: 'success',
+                  result: 'Check your email'
+                })
+              );
             }
           );
         });
