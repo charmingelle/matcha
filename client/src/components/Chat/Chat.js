@@ -54,28 +54,33 @@ class Chat extends React.Component {
     return (
       <div className={classes.root}>
         <List component="nav" className={classes.users}>
-          {Object.keys(chatData).map((login, index) => (
-            <Link className={classes.link} key={index} to={`/chat/${login}`}>
-              <ListItem
-                button
-                className={
-                  login === receiver ? classes.selectedUser : classes.user
-                }
-              >
-                <Avatar
-                  alt={login}
-                  src={require(`../../../public/users/photos/${
-                    chatData[login].gallery[chatData[login].avatarid]
-                  }`)}
-                />
-                <ListItemText primary={login} />
-                {chatData[login].online && (
-                  <div className={classes.onlineDot} />
-                )}
-              </ListItem>
-              <Divider light />
-            </Link>
-          ))}
+          {Object.keys(chatData).map((login, index) => {
+            const avatar =
+              chatData[login].gallery.length > 0
+                ? chatData[login].gallery[chatData[login].avatarid]
+                : 'avatar.png';
+
+            return (
+              <Link className={classes.link} key={index} to={`/chat/${login}`}>
+                <ListItem
+                  button
+                  className={
+                    login === receiver ? classes.selectedUser : classes.user
+                  }
+                >
+                  <Avatar
+                    alt={login}
+                    src={require(`../../../public/users/photos/${avatar}`)}
+                  />
+                  <ListItemText primary={login} />
+                  {chatData[login].online && (
+                    <div className={classes.onlineDot} />
+                  )}
+                </ListItem>
+                <Divider light />
+              </Link>
+            );
+          })}
         </List>
         <Room
           socket={socket}

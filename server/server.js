@@ -55,11 +55,6 @@ app.use(
   })
 );
 
-app.get('*', (req, res) => {
-  // res.sendFile("/Users/grevenko/projects/matcha/client/public/index.html");
-  res.sendFile('C:/Users/Anna/Documents/unit/matcha/client/public/index.html');
-});
-
 app.get('/confirm', (req, res) => {
   db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
     email: req.query.email,
@@ -542,59 +537,6 @@ app.post('/saveVisited', requireLogin, (req, res) =>
       }).then(() => sendVisitedToClient(req, res));
     })
 );
-
-// app.post("/getChatUsers", requireLogin, (req, res) => {
-//   db.any("SELECT likee FROM likes WHERE liker = ${login}", {
-//     login: req.session.login
-//   }).then(data => {
-//     if (data.length > 0) {
-//       data = data.map(record => record.likee);
-
-//       const query = format(
-//         "SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L",
-//         data,
-//         req.session.login
-//       );
-
-//       db.any(query).then(data => {
-//         if (data.length > 0) {
-//           data = data.map(record => record.liker);
-
-//           const query = format(
-//             "SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)",
-//             data
-//           );
-//           db.any(query).then(data => res.send(JSON.stringify(data)));
-//         } else {
-//           res.send(JSON.stringify([]));
-//         }
-//       });
-//     } else {
-//       res.send(JSON.stringify([]));
-//     }
-//   });
-// });
-
-// app.post("/getChatMessages", requireLogin, (req, res) => {
-//   db.any("SELECT * FROM messages WHERE sender = ${me} OR receiver = ${me}", {
-//     me: req.session.login
-//   }).then(chatMessages => {
-//     let chatMessagesObject = {};
-
-//     chatMessages.forEach(message => {
-//       if (message.sender === req.session.login) {
-//         chatMessagesObject.hasOwnProperty(message.receiver)
-//           ? chatMessagesObject[message.receiver].push(message)
-//           : (chatMessagesObject[message.receiver] = [message]);
-//       } else {
-//         chatMessagesObject.hasOwnProperty(message.sender)
-//           ? chatMessagesObject[message.sender].push(message)
-//           : (chatMessagesObject[message.sender] = [message]);
-//       }
-//     });
-//     res.send(JSON.stringify(chatMessagesObject));
-//   });
-// });
 
 const getChatDataFromDB = login => {
   return db
