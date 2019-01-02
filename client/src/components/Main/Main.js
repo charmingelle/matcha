@@ -102,20 +102,17 @@ const styles = theme => ({
 let socket = null;
 
 class Main extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tabid: 0,
-      profile: null,
-      notifications: [],
-      showMenu: false,
-      tabName: 'Suggestions',
-      chatData: null,
-      suggestions: null
-    };
-  }
+  state = {
+    tabid: 0,
+    profile: null,
+    notifications: [],
+    showMenu: false,
+    tabName: 'Suggestions',
+    chatData: null,
+    suggestions: null
+  };
 
-  ipLookUp = userid => {
+  ipLookUp = () => {
     fetch('http://ip-api.com/json', {
       method: 'POST'
     })

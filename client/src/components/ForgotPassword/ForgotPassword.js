@@ -60,24 +60,12 @@ class ForgotPassword extends React.Component {
       this.setState({
         message: ''
       });
-      getResetPasswordEmail(this.state.email)
-        .then(response => {
-          if (response.status === 200) {
-            this.setState({
-              error: false
-            });
-          } else {
-            this.setState({
-              error: true
-            });
-          }
-          return response.json();
+      getResetPasswordEmail(this.state.email).then(data =>
+        this.setState({
+          error: data.status === 'error',
+          message: data.result
         })
-        .then(data =>
-          this.setState({
-            message: data.result
-          })
-        );
+      );
     }
   };
 

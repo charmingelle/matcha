@@ -114,22 +114,12 @@ class Signup extends React.Component {
         this.state.password,
         this.state.firstname,
         this.state.lastname
-      )
-        .then(res => {
-          res.status === 200
-            ? this.setState({
-                error: false
-              })
-            : this.setState({
-                error: true
-              });
-          return res.json();
+      ).then(data =>
+        this.setState({
+          error: data.status === 'error',
+          message: data.result
         })
-        .then(data =>
-          this.setState({
-            message: data.result
-          })
-        );
+      );
     }
   };
 

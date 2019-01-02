@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -62,18 +61,16 @@ class Signin extends React.Component {
       this.setState({
         message: ''
       });
-      signin(this.state.login, this.state.password).then(res => {
-        if (res.status === 200) {
+      signin(this.state.login, this.state.password).then(data => {
+        if (data.status === 'success') {
           this.setState({
             main: true
           });
           saveOnline();
         } else {
-          res.json().then(data =>
-            this.setState({
-              message: data.result
-            })
-          );
+          this.setState({
+            message: data.result
+          });
         }
       });
     }
@@ -122,8 +119,8 @@ class Signin extends React.Component {
           <Button className={classes.button} onClick={this.signin}>
             Sign In
           </Button>
-          <Link to='/signup'>Sign Up</Link>
-          <Link to='/forgot-password'>Forgot Password?</Link>
+          <Link to="/signup">Sign Up</Link>
+          <Link to="/forgot-password">Forgot Password?</Link>
         </form>
       </div>
     );
