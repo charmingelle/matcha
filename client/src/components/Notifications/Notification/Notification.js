@@ -4,14 +4,13 @@ import { withStyles } from '@material-ui/core/styles';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import green from '@material-ui/core/colors/green';
 
 const styles = {
   notification: {
     padding: 0,
     paddingLeft: '20px',
     paddingRight: '10px',
-    backgroundColor: green[600]
+    backgroundColor: '#f50057'
   },
   message: {
     display: 'flex',

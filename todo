@@ -1,12 +1,11 @@
-- prettify everything
 - add validation of signup data on server
 - user API and OAuth2.0 for sending emails
 - clean all components
-- add minWidth
-- make chat time format beautiful
-- add pagination to Users
-- test notifications and chat carefully
 - make sure that unnecessary information isn't passed to components
 - style everything
 - get rid of unused variables
+- add pagination to Users
+- prettify everything
+- test everything
+
 - write initiate file (don't forget about the database)

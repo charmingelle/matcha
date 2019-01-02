@@ -21,6 +21,155 @@ const transporter = nodemailer.createTransport({
 const { check } = require('express-validator/check');
 const { generateHash } = require('random-hash');
 
+// SET statement_timeout = 0;
+// SET lock_timeout = 0;
+// SET idle_in_transaction_session_timeout = 0;
+// SET client_encoding = 'UTF8';
+// SET standard_conforming_strings = on;
+// SELECT pg_catalog.set_config('search_path', '', false);
+// SET check_function_bodies = false;
+// SET client_min_messages = warning;
+// SET row_security = off;
+
+// CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+// COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+// SET default_tablespace = '';
+
+// SET default_with_oids = false;
+
+// CREATE TABLE public.blocks (
+//     id integer NOT NULL,
+//     blocker text,
+//     blockee text
+// );
+
+// ALTER TABLE public.blocks OWNER TO postgres;
+
+// CREATE SEQUENCE public.blocks_id_seq
+//     AS integer
+//     START WITH 1
+//     INCREMENT BY 1
+//     NO MINVALUE
+//     NO MAXVALUE
+//     CACHE 1;
+
+// ALTER TABLE public.blocks_id_seq OWNER TO postgres;
+
+// ALTER SEQUENCE public.blocks_id_seq OWNED BY public.blocks.id;
+
+// CREATE TABLE public.interests (
+//     interest text NOT NULL,
+//     id integer NOT NULL
+// );
+
+// ALTER TABLE public.interests OWNER TO postgres;
+
+// CREATE SEQUENCE public.interests_id_seq
+//     AS integer
+//     START WITH 1
+//     INCREMENT BY 1
+//     NO MINVALUE
+//     NO MAXVALUE
+//     CACHE 1;
+
+// ALTER TABLE public.interests_id_seq OWNER TO postgres;
+
+// ALTER SEQUENCE public.interests_id_seq OWNED BY public.interests.id;
+
+// CREATE TABLE public.likes (
+//     id integer NOT NULL,
+//     liker text,
+//     likee text
+// );
+
+// ALTER TABLE public.likes OWNER TO postgres;
+
+// CREATE SEQUENCE public.likes_id_seq
+//     AS integer
+//     START WITH 1
+//     INCREMENT BY 1
+//     NO MINVALUE
+//     NO MAXVALUE
+//     CACHE 1;
+
+// ALTER TABLE public.likes_id_seq OWNER TO postgres;
+
+// ALTER SEQUENCE public.likes_id_seq OWNED BY public.likes.id;
+
+// CREATE TABLE public.messages (
+//     id integer NOT NULL,
+//     sender text,
+//     receiver text,
+//     "time" bigint,
+//     message text
+// );
+
+// ALTER TABLE public.messages OWNER TO postgres;
+
+// CREATE SEQUENCE public.messages_id_seq
+//     AS integer
+//     START WITH 1
+//     INCREMENT BY 1
+//     NO MINVALUE
+//     NO MAXVALUE
+//     CACHE 1;
+
+// ALTER TABLE public.messages_id_seq OWNER TO postgres;
+
+// ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
+
+// CREATE TABLE public.users (
+//     login text NOT NULL,
+//     password text NOT NULL,
+//     email text NOT NULL,
+//     hash character(16),
+//     active boolean DEFAULT false NOT NULL,
+//     gender character varying(6) DEFAULT 'male'::text NOT NULL,
+//     preferences character varying(12) DEFAULT 'heterosexual'::text NOT NULL,
+//     bio text DEFAULT ''::text,
+//     interests text[] DEFAULT ARRAY[]::text[],
+//     gallery text[] DEFAULT ARRAY[]::text[] NOT NULL,
+//     id integer NOT NULL,
+//     avatarid integer DEFAULT 0 NOT NULL,
+//     firstname text DEFAULT 'John'::text NOT NULL,
+//     lastname text DEFAULT 'Doe'::text NOT NULL,
+//     fame integer DEFAULT 0,
+//     location numeric[],
+//     age integer DEFAULT 18 NOT NULL,
+//     visited text[] DEFAULT ARRAY[]::text[],
+//     "time" bigint DEFAULT 0,
+//     online boolean DEFAULT false NOT NULL,
+//     fake boolean DEFAULT false,
+//     CONSTRAINT check_gender CHECK ((((gender)::text = 'male'::text) OR ((gender)::text = 'female'::text))),
+//     CONSTRAINT check_preferences CHECK ((((preferences)::text = 'heterosexual'::text) OR ((preferences)::text = 'homosexual'::text) OR ((preferences)::text = 'bisexual'::text)))
+// );
+
+// ALTER TABLE public.users OWNER TO postgres;
+
+// CREATE SEQUENCE public.users_id_seq
+//     AS integer
+//     START WITH 1
+//     INCREMENT BY 1
+//     NO MINVALUE
+//     NO MAXVALUE
+//     CACHE 1;
+
+// ALTER TABLE public.users_id_seq OWNER TO postgres;
+
+// ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+// ALTER TABLE ONLY public.blocks ALTER COLUMN id SET DEFAULT nextval('public.blocks_id_seq'::regclass);
+
+// ALTER TABLE ONLY public.interests ALTER COLUMN id SET DEFAULT nextval('public.interests_id_seq'::regclass);
+
+// ALTER TABLE ONLY public.likes ALTER COLUMN id SET DEFAULT nextval('public.likes_id_seq'::regclass);
+
+// ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.messages_id_seq'::regclass);
+
+// ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
 const requireLogin = (req, res, next) => {
   if (req.session && req.session.login) {
     db.any('SELECT * FROM users WHERE login = ${login}', {
