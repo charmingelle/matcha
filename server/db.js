@@ -165,7 +165,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       VALUES
       (
         'ivan77',
-        '$2b$10$0z4ENcBk8mefk4ad81tYd.HciHcjASOgCrmVb6/dHjfMWll3WRDyG',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
         'ivan@gmail.com',
         true,
         'male',
@@ -175,7 +175,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       ),
       (
         'misha7',
-        '$2b$10$5gkh6HmrjL6UKj7oYyS1f.FsWM2dXC7AnmHYpAHtIZCzjihr8rPXa',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
         'misha@gmail.com',
         true,
         'male',
@@ -185,7 +185,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       ),
       (
         'ura777',
-        '$2b$10$i3UqF7.35o07F/LFaoNVVOEJ2WIfIgxq.h5tjwqWENV/6MXMjjKhe',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
         'ura@gmail.com',
         true,
         'male',
@@ -195,17 +195,17 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       ),
       (
         'olya77',
-        '$2b$10$Vz2PmNQcYD8AP.XKqR0qr.EG0b27x5MGC5tZhxyM5/EiWKsmwr0nm',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
         'olya@gmail.com',
         true,
-        'male',
+        'female',
         'heterosexual',
         'Olya',
         'O'
       ),
       (
         'sasha7',
-        '$2b$10$hahtLxlszzpFpq13uYa4uuFgkuj/zyrtXxToi36rrO7eGRuDUMEku',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
         'sasha@gmail.com',
         true,
         'male',
@@ -215,28 +215,28 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       ),
       (
         'borys7',
-        '$2b$10$hahtLxlszzpFpq13uYa4uuFgkuj/zyrtXxToi36rrO7eGRuDUMEku',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
         'borys@gmail.com',
         true,
-        'female',
+        'male',
         'heterosexual',
         'Borys',
         'B'
       ),
       (
         'nastya',
-        '$2b$10$rpwpYJxvwrCFaXIZCqeIwe.nyhDYyU9ohmE.VYOqXi4GZU0Qmcm6e',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
         'nastya@gmail.com',
         true,
-        'male',
+        'female',
         'heterosexual',
         'Nastya',
         'N'
       ),
       (
         'anna77',
-        '$2b$10$JWbl758DtkXBq5bDvzO7s.0wIkRcnMY8UUKjUBQGZeecDgwiv5P9e',
-        'anna@gmail.com',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+        'annar703unit@gmail.com',
         true,
         'female',
         'heterosexual',

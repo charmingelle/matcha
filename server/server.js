@@ -211,7 +211,7 @@ app.get('/confirm', (req, res) => {
   }).then(data => {
     if (data.length === 1) {
       db.any(
-        'UPDATE users SET active = true, hash = null WHERE email = ${email}',
+        "UPDATE users SET active = true, hash = '' WHERE email = ${email}",
         {
           email: req.query.email
         }
@@ -619,7 +619,7 @@ app.post('/resetPasswordOrExpired', (req, res) => {
       res.send(JSON.stringify({ result: 'expired' }));
     }
     if (data[0].hash === req.body.hash) {
-      db.any('UPDATE users SET hash = null WHERE email = ${email}', {
+      db.any("UPDATE users SET hash = '' WHERE email = ${email}", {
         email: req.body.email
       }).then(() => res.send(JSON.stringify({ result: 'reset-password' })));
     } else {
