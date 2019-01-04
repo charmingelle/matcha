@@ -236,7 +236,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       (
         'anna77',
         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-        'annar703unit@gmail.com',
+        'anna@gmail.com',
         true,
         'female',
         'heterosexual',

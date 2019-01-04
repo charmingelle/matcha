@@ -1,4 +1,3 @@
-- add validation of signup data on server
 - clean all components
 - make sure that unnecessary information isn't passed to components
 - style everything
@@ -8,3 +7,4 @@
 - test everything
 
 - write initiate file (don't forget about the database)
+- add validation of signup data on server

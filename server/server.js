@@ -27,7 +27,7 @@ const transporter = nodemailer.createTransport({
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 
-app.use(express.static(path.join(__dirname, "../client/build")));
+// app.use(express.static(path.join(__dirname, "../client/build")));
 
 app.get("/confirm", (req, res) => {
   db.any("SELECT * FROM users WHERE email = ${email} AND hash = ${hash}", {
@@ -50,9 +50,9 @@ app.get("/confirm", (req, res) => {
   });
 });
 
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build/index.html"));
-});
+// app.get("/*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../client/build/index.html"));
+// });
 
 const requireLogin = (req, res, next) => {
   if (req.session && req.session.login) {
@@ -287,7 +287,27 @@ app.post("/signin", (req, res) => {
   });
 });
 
-app.post("/signup", (req, res) => {
+const isNotEmpty = param => param !== "";
+
+const isEmailValid = email => {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  return re.test(String(email).toLowerCase());
+};
+
+const isLoginValid = value => {
+  return value.length >= 6 && /^[a-zA-Z]+[a-zA-Z0-9]*$/.test(String(value));
+};
+
+const isPasswordValid = password => {
+  return password.length >= 6 && /[a-zA-Z0-9]+/.test(String(password));
+};
+
+const isFirstLastNameValid = password => {
+  return /^[a-zA-Z]+(-[a-zA-Z])?[a-zA-Z]*$/.test(String(password));
+};
+
+const createUser = (req, res) => {
   db.any("SELECT * FROM users WHERE email = ${email} OR login = ${login}", {
     email: req.body.email,
     login: req.body.login
@@ -301,101 +321,90 @@ app.post("/signup", (req, res) => {
           if (err) {
             return next(err);
           }
-          let password = hash;
+          const password = hash;
+          const tempHash = generateHash({
+            length: 16,
+            charset:
+              "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+          });
 
           db.any(
-            "INSERT INTO users(email, login, password, firstname, lastname) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname})",
+            "INSERT INTO users(email, login, password, firstname, lastname, hash) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash})",
             {
               email: req.body.email,
               login: req.body.login,
               password: password,
               firstname: req.body.firstname,
-              lastname: req.body.lastname
+              lastname: req.body.lastname,
+              hash: tempHash
             }
           ).then(() =>
-            db
-              .one("SELECT id FROM users WHERE login = ${login}", {
-                login: req.body.login
-              })
-              .then(data => {
-                const hash = generateHash({
-                  length: 16,
-                  charset:
-                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
-                });
-
-                db.any("UPDATE users SET hash = ${hash} WHERE id = ${id}", {
-                  hash,
-                  id: data.id
-                }).then(() =>
-                  // transporter.sendMail(
-                  //   {
-                  //     from: "annar703unit@gmail.com",
-                  //     to: req.body.email,
-                  //     subject: "Matcha Registration Confirmation",
-                  //     text: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
-                  //       req.body.email
-                  //     }&hash=${hash}`
-                  //   },
-                  //   error => {
-                  //     if (error) {
-                  //       console.error("Error while email sending", error);
-                  //       db.any("DELETE FROM users WHERE id = ${id}", {
-                  //         id: data.id
-                  //       }).then(() =>
-                  //         res.send(
-                  //           JSON.stringify({
-                  //             status: "error",
-                  //             result: "Your email is invalid"
-                  //           })
-                  //         )
-                  //       );
-                  //     } else {
-                  //       res.send(
-                  //         JSON.stringify({
-                  //           status: "success",
-                  //           result: "Check your email"
-                  //         })
-                  //       );
-                  //     }
-                  //   }
-                  // )
-                  sendmail(
-                    {
-                      from: "noreply@matcha.com",
-                      to: req.body.email,
-                      subject: "Matcha Registration Confirmation",
-                      // html: `Please active your Matcha account using the following link: http://localhost:3000/confirm?email=${
-                      //   req.body.email
-                      // }&hash=${hash}`
-                      html: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
-                        req.body.email
-                      }&hash=${hash}`
-                    },
-                    error => {
-                      if (error) {
-                        db.any("DELETE FROM users WHERE id = ${id}", {
-                          id: data.id
-                        }).then(() =>
-                          res.send(
-                            JSON.stringify({
-                              status: "error",
-                              result: "Your email is invalid"
-                            })
-                          )
-                        );
-                      } else {
-                        res.send(
-                          JSON.stringify({
-                            status: "success",
-                            result: "Check your email"
-                          })
-                        );
-                      }
-                    }
-                  )
-                );
-              })
+            // transporter.sendMail(
+            //   {
+            //     from: "annar703unit@gmail.com",
+            //     to: req.body.email,
+            //     subject: "Matcha Registration Confirmation",
+            //     text: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
+            //       req.body.email
+            //     }&hash=${hash}`
+            //   },
+            //   error => {
+            //     if (error) {
+            //       console.error("Error while email sending", error);
+            //       db.any("DELETE FROM users WHERE id = ${id}", {
+            //         id: data.id
+            //       }).then(() =>
+            //         res.send(
+            //           JSON.stringify({
+            //             status: "error",
+            //             result: "Your email is invalid"
+            //           })
+            //         )
+            //       );
+            //     } else {
+            //       res.send(
+            //         JSON.stringify({
+            //           status: "success",
+            //           result: "Check your email"
+            //         })
+            //       );
+            //     }
+            //   }
+            // )
+            sendmail(
+              {
+                from: "noreply@matcha.com",
+                to: req.body.email,
+                subject: "Matcha Registration Confirmation",
+                // html: `Please active your Matcha account using the following link: http://localhost:3000/confirm?email=${
+                //   req.body.email
+                // }&hash=${hash}`
+                html: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
+                  req.body.email
+                }&hash=${hash}`
+              },
+              error => {
+                if (error) {
+                  db.any("DELETE FROM users WHERE id = ${id}", {
+                    id: data.id
+                  }).then(() =>
+                    res.send(
+                      JSON.stringify({
+                        status: "error",
+                        result: "Your email is invalid"
+                      })
+                    )
+                  );
+                } else {
+                  res.send(
+                    JSON.stringify({
+                      status: "success",
+                      result: "Check your email"
+                    })
+                  );
+                }
+              }
+            )
           );
         });
       });
@@ -408,7 +417,9 @@ app.post("/signup", (req, res) => {
       );
     }
   });
-});
+};
+
+app.post("/signup", (req, res) => createUser(req, res));
 
 app.post("/signout", (req, res) => {
   db.any(
