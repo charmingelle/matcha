@@ -1,5 +1,4 @@
 - add validation of signup data on server
-- use API and OAuth 2.0 for sending emails
 - clean all components
 - make sure that unnecessary information isn't passed to components
 - style everything

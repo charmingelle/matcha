@@ -10,8 +10,12 @@ const bodyParser = require("body-parser");
 const crypto = require("crypto");
 const fs = require("fs");
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
+const Mailgun = require("mailgun-js");
 const session = require("client-sessions");
+const { check } = require("express-validator/check");
+const { generateHash } = require("random-hash");
+const sendmail = require("sendmail")();
+const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -19,8 +23,6 @@ const transporter = nodemailer.createTransport({
     pass: "eiling357unit"
   }
 });
-const { check } = require("express-validator/check");
-const { generateHash } = require("random-hash");
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
@@ -39,7 +41,7 @@ app.get("/confirm", (req, res) => {
           email: req.query.email
         }
       ).then(() => {
-        // res.redirect('http://localhost:3000/');
+        // res.redirect("http://localhost:3000/");
         res.redirect("http://localhost:5000/");
       });
     } else {
@@ -326,18 +328,52 @@ app.post("/signup", (req, res) => {
                   hash,
                   id: data.id
                 }).then(() =>
-                  transporter.sendMail(
+                  // transporter.sendMail(
+                  //   {
+                  //     from: "annar703unit@gmail.com",
+                  //     to: req.body.email,
+                  //     subject: "Matcha Registration Confirmation",
+                  //     text: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
+                  //       req.body.email
+                  //     }&hash=${hash}`
+                  //   },
+                  //   error => {
+                  //     if (error) {
+                  //       console.error("Error while email sending", error);
+                  //       db.any("DELETE FROM users WHERE id = ${id}", {
+                  //         id: data.id
+                  //       }).then(() =>
+                  //         res.send(
+                  //           JSON.stringify({
+                  //             status: "error",
+                  //             result: "Your email is invalid"
+                  //           })
+                  //         )
+                  //       );
+                  //     } else {
+                  //       res.send(
+                  //         JSON.stringify({
+                  //           status: "success",
+                  //           result: "Check your email"
+                  //         })
+                  //       );
+                  //     }
+                  //   }
+                  // )
+                  sendmail(
                     {
-                      from: "annar703unit@gmail.com",
+                      from: "noreply@matcha.com",
                       to: req.body.email,
                       subject: "Matcha Registration Confirmation",
-                      text: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
+                      // html: `Please active your Matcha account using the following link: http://localhost:3000/confirm?email=${
+                      //   req.body.email
+                      // }&hash=${hash}`
+                      html: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
                         req.body.email
                       }&hash=${hash}`
                     },
                     error => {
                       if (error) {
-                        console.error("Error while email sending", error);
                         db.any("DELETE FROM users WHERE id = ${id}", {
                           id: data.id
                         }).then(() =>
@@ -383,7 +419,7 @@ app.post("/signout", (req, res) => {
     }
   ).then(() => {
     req.session.reset();
-    // res.redirect('http://localhost:3000/');
+    // res.redirect("http://localhost:3000/");
     res.redirect("http://localhost:5000/");
   });
 });
@@ -425,29 +461,59 @@ app.post("/getResetPasswordEmail", (req, res) => {
         db.any("UPDATE users SET hash = ${hash} WHERE email = ${email}", {
           hash: hash,
           email: req.body.email
-        }).then(() => {
-          transporter.sendMail(
+        }).then(() =>
+          // transporter.sendMail(
+          //   {
+          //     from: "annar703unit@gmail.com",
+          //     to: req.body.email,
+          //     subject: "Reset Your Matcha Password",
+          //     text: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
+          //       req.body.email
+          //     }&hash=${hash}`
+          //     // text: `Please use the following link to reset your Matcha password: http://localhost:5000/reset-password?email=${
+          //     //   req.body.email
+          //     // }&hash=${hash}`
+          //   },
+          //   () => {
+          //     res.send(
+          //       JSON.stringify({
+          //         status: "success",
+          //         result: "Check your email"
+          //       })
+          //     );
+          //   }
+          // )
+          sendmail(
             {
-              from: "annar703unit@gmail.com",
+              from: "noreply@matcha.com",
               to: req.body.email,
               subject: "Reset Your Matcha Password",
-              // text: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
+              // html: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
               //   req.body.email
               // }&hash=${hash}`
-              text: `Please use the following link to reset your Matcha password: http://localhost:5000/reset-password?email=${
+              html: `Please use the following link to reset your Matcha password: http://localhost:5000/reset-password?email=${
                 req.body.email
               }&hash=${hash}`
             },
-            () => {
-              res.send(
-                JSON.stringify({
-                  status: "success",
-                  result: "Check your email"
-                })
-              );
+            error => {
+              if (error) {
+                res.send(
+                  JSON.stringify({
+                    status: "error",
+                    result: "Something went wrong. Please try again"
+                  })
+                );
+              } else {
+                res.send(
+                  JSON.stringify({
+                    status: "success",
+                    result: "Check your email"
+                  })
+                );
+              }
             }
-          );
-        });
+          )
+        );
       }
     } else {
       res.send(JSON.stringify({ status: "error", result: "Invalid email" }));
