@@ -8,6 +8,7 @@ const db = require('pg-promise')()(
 );
 const bodyParser = require('body-parser');
 const session = require('client-sessions');
+const path = require('path');
 
 app.use(bodyParser.json({ limit: '50mb' }));
 
@@ -24,7 +25,7 @@ app.use(
   })
 );
 
-// app.use(express.static('./../client/build'));
+app.use(express.static(path.join(__dirname, './../client/build')));
 
 const requireLogin = (req, res, next) => {
   if (req.session && req.session.login) {
@@ -42,9 +43,9 @@ const requireLogin = (req, res, next) => {
   }
 };
 
-// app.get('/*', (req, res) => {
-//   res.sendFile('./../client/build/index.html');
-// });
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, './../client/build/index.html'));
+});
 
 require('./main.js')(app, requireLogin, db);
 
