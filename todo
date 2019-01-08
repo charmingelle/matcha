@@ -6,7 +6,7 @@
 - prettify everything
 - test everything
 
-- write initiate file (don't forget about the database)
+- write readme
 - add validation of signup data on server
-- remove webSocket error in console
 - make sure that photos of different size look good on Cards
+- check if chat messages can be added to bottom
