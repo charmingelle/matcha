@@ -161,10 +161,11 @@ class Main extends React.Component {
   };
 
   componentDidMount() {
+    console.log('componentDidMount is called');
     Promise.all([
       getUserProfile().then(
         data => {
-          socket = socketIOClient('http://localhost:5000', {
+          socket = socketIOClient({
             query: `login=${data.user.login}`
           });
           this.addSocketEventListeners();
