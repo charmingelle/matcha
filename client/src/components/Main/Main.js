@@ -161,7 +161,6 @@ class Main extends React.Component {
   };
 
   componentDidMount() {
-    console.log('componentDidMount is called');
     Promise.all([
       getUserProfile().then(
         data => {

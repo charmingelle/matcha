@@ -1,57 +1,30 @@
 const express = require('express');
 const app = express();
-const path = require('path');
-const port = 5000;
-const pgp = require('pg-promise')(/*options*/);
-// const db = pgp("postgres://grevenko:postgres@localhost:5432/matcha");
-const db = pgp('postgres://postgres:123456@localhost:5432/matcha');
-const format = require('pg-format');
+// const db = require('pg-promise')()(
+//   'postgres://grevenko:postgres@localhost:5432/matcha'
+// );
+const db = require('pg-promise')()(
+  'postgres://postgres:123456@localhost:5432/matcha'
+);
 const bodyParser = require('body-parser');
-const crypto = require('crypto');
-const fs = require('fs');
-const bcrypt = require('bcrypt');
 const session = require('client-sessions');
-const { check } = require('express-validator/check');
-const { generateHash } = require('random-hash');
-const sendmail = require('sendmail')();
-const nodemailer = require('nodemailer');
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'annar703unit@gmail.com',
-    pass: 'eiling357unit'
-  }
-});
 
 app.use(bodyParser.json({ limit: '50mb' }));
+
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
-// app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(
+  session({
+    cookieName: 'session',
+    secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
+    httpOnly: true,
+    ephemeral: true
+  })
+);
 
-app.get('/confirm', (req, res) => {
-  db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
-    email: req.query.email,
-    hash: req.query.hash
-  }).then(data => {
-    if (data.length === 1) {
-      db.any(
-        "UPDATE users SET active = true, hash = '' WHERE email = ${email}",
-        {
-          email: req.query.email
-        }
-      ).then(() => {
-        // res.redirect("http://localhost:3000/");
-        res.redirect('http://localhost:5000/');
-      });
-    } else {
-      res.end();
-    }
-  });
-});
-
-// app.get("/*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/build/index.html"));
-// });
+// app.use(express.static('./../client/build'));
 
 const requireLogin = (req, res, next) => {
   if (req.session && req.session.login) {
@@ -69,784 +42,59 @@ const requireLogin = (req, res, next) => {
   }
 };
 
-app.use(
-  session({
-    cookieName: 'session',
-    secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
-    duration: 30 * 60 * 1000,
-    activeDuration: 5 * 60 * 1000,
-    httpOnly: true,
-    ephemeral: true
-  })
-);
+// app.get('/*', (req, res) => {
+//   res.sendFile('./../client/build/index.html');
+// });
 
-app.post('/getUserProfile', requireLogin, (req, res) => {
-  Promise.all([
-    db.any('SELECT * FROM users WHERE login = ${login}', {
-      login: req.session.login
-    }),
-    db.any('SELECT interest FROM interests')
-  ]).then(data =>
-    res.send(
-      JSON.stringify({
-        user: data[0][0],
-        allInterests: data[1].map(interest => interest.interest)
-      })
-    )
-  );
-});
+require('./main.js')(app, requireLogin, db);
 
-const saveNewInterests = reqBody => {
-  db.any('SELECT interest FROM interests').then(data => {
-    data = data.map(interest => interest.interest);
+require('./profile.js')(app, requireLogin, db);
 
-    let toSave = reqBody.interests.filter(
-      interest => data.indexOf(interest) === -1
-    );
+require('./signin.js')(app, requireLogin, db);
 
-    toSave = toSave.map(interest => [interest]);
+require('./signup.js')(app, db);
 
-    if (toSave.length >= 1) {
-      const query = format('INSERT INTO interests(interest) VALUES %L', toSave);
+require('./resetPassword.js')(app, db);
 
-      db.any(query);
-    }
-  });
-};
+require('./user.js')(app, requireLogin, db);
 
-const updateProfile = (reqBody, login) => {
-  return db
-    .any(
-      'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE login = ${login}',
-      {
-        firstname: reqBody.firstname,
-        lastname: reqBody.lastname,
-        email: reqBody.email,
-        age: reqBody.age,
-        gender: reqBody.gender,
-        preferences: reqBody.preferences,
-        bio: reqBody.bio,
-        interests: reqBody.interests,
-        gallery: reqBody.gallery,
-        avatarid: reqBody.avatarid,
-        login: login
-      }
-    )
-    .then(() => saveNewInterests(reqBody));
-};
+require('./chat.js')(app, requireLogin, app.listen(5000), db);
 
-const checkBusyEmail = (email, login) => {
-  return new Promise((resolve, reject) => {
-    db.any(
-      'SELECT email FROM users WHERE email = ${email} AND login <> ${login}',
-      {
-        email,
-        login
-      }
-    ).then(data => {
-      data.length === 0 ? resolve() : reject();
-    });
-  });
-};
+// app.post('/getUsers', requireLogin, (req, res) => {
+//   db.any('SELECT blockee FROM blocks WHERE blocker = ${blocker}', {
+//     blocker: req.session.login
+//   }).then(data => {
+//     if (data.length === 0) {
+//       db.any('SELECT * FROM users').then(data =>
+//         res.send(JSON.stringify(data))
+//       );
+//     } else {
+//       data = data.map(record => record.blockee);
 
-app.post(
-  '/saveUserProfile',
-  requireLogin,
-  [check('firstname').isEmpty(), check('lastname').isEmpty()],
-  (req, res) => {
-    checkBusyEmail(req.body.email, req.session.login)
-      .then(
-        () => updateProfile(req.body, req.session.login),
-        () =>
-          res.send(
-            JSON.stringify({
-              status: 'error',
-              result: 'The email address is busy'
-            })
-          )
-      )
-      .then(() => {
-        getSuggestionsFromDB(req.session.login).then(data =>
-          res.send(
-            JSON.stringify({
-              status: 'success',
-              result: 'Your data has been changed',
-              suggestions: data
-            })
-          )
-        );
-      });
-  }
-);
+//       const query = format('SELECT * FROM users WHERE login NOT IN (%L)', data);
 
-app.post('/saveUserPhoto', requireLogin, (req, res) => {
-  const fileName = `${crypto.randomBytes(20).toString('hex')}${Date.now()}`;
+//       db.any(query).then(data => res.send(JSON.stringify(data)));
+//     }
+//   });
+// });
 
-  fs.writeFile(
-    `client/public/users/photos/${fileName}.png`,
-    req.body.photo.replace(/^data:image\/png;base64,/, ''),
-    'base64',
-    error => {
-      if (error) {
-        throw error;
-      }
-      db.one('SELECT gallery FROM users WHERE login = ${login}', {
-        login: req.session.login
-      }).then(data => {
-        let gallery = data.gallery;
+// app.post('/getMessages', requireLogin, (req, res) => {
+//   let query =
+//     'SELECT * FROM messages WHERE (sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender}) ORDER BY time DESC LIMIT 30';
 
-        fs.unlink(
-          `client/public/users/photos/${gallery[req.body.photoid]}`,
-          () => {
-            gallery[req.body.photoid] = `${fileName}.png`;
-            db.any(
-              'UPDATE users SET gallery = ${gallery} WHERE login = ${login}',
-              {
-                gallery,
-                login: req.session.login
-              }
-            ).then(() =>
-              res.send(JSON.stringify({ fileName: `${fileName}.png` }))
-            );
-          }
-        );
-      });
-    }
-  );
-});
-
-app.post('/setAvatar', requireLogin, (req, res) => {
-  db.any('UPDATE users SET avatarid = ${avatarid} WHERE login = ${login}', {
-    avatarid: req.body.avatarid,
-    login: req.session.login
-  }).then(() => res.send());
-});
-
-app.post('/saveLocation', requireLogin, (req, res) => {
-  db.any('UPDATE users SET location = ${location} WHERE login = ${login}', {
-    location: req.body.location,
-    login: req.session.login
-  }).then(() => res.send());
-});
-
-app.post('/getUsers', requireLogin, (req, res) => {
-  db.any('SELECT blockee FROM blocks WHERE blocker = ${blocker}', {
-    blocker: req.session.login
-  }).then(data => {
-    if (data.length === 0) {
-      db.any('SELECT * FROM users').then(data =>
-        res.send(JSON.stringify(data))
-      );
-    } else {
-      data = data.map(record => record.blockee);
-
-      const query = format('SELECT * FROM users WHERE login NOT IN (%L)', data);
-
-      db.any(query).then(data => res.send(JSON.stringify(data)));
-    }
-  });
-});
-
-app.post('/signin', (req, res) => {
-  db.any('SELECT active, password FROM users WHERE login = ${login}', {
-    login: req.body.login
-  }).then(data => {
-    if (data.length === 1) {
-      if (!data[0].active) {
-        res.send(
-          JSON.stringify({
-            status: 'error',
-            result: 'Activate your account first'
-          })
-        );
-      } else {
-        bcrypt.compare(req.body.password, data[0].password).then(result => {
-          if (result === true) {
-            req.session.login = req.body.login;
-            res.send(JSON.stringify({ status: 'success' }));
-          } else {
-            res.send(
-              JSON.stringify({
-                status: 'error',
-                result: 'Invalid login or password'
-              })
-            );
-          }
-        });
-      }
-    } else {
-      res.send(
-        JSON.stringify({ status: 'error', result: 'Invalid login or password' })
-      );
-    }
-  });
-});
-
-const isNotEmpty = param => param !== '';
-
-const isEmailValid = email => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-  return re.test(String(email).toLowerCase());
-};
-
-const isLoginValid = value => {
-  return value.length >= 6 && /^[a-zA-Z]+[a-zA-Z0-9]*$/.test(String(value));
-};
-
-const isPasswordValid = password => {
-  return password.length >= 6 && /[a-zA-Z0-9]+/.test(String(password));
-};
-
-const isFirstLastNameValid = password => {
-  return /^[a-zA-Z]+(-[a-zA-Z])?[a-zA-Z]*$/.test(String(password));
-};
-
-const createUser = (req, res) => {
-  db.any('SELECT * FROM users WHERE email = ${email} OR login = ${login}', {
-    email: req.body.email,
-    login: req.body.login
-  }).then(data => {
-    if (data.length === 0) {
-      bcrypt.genSalt(10, (err, salt) => {
-        if (err) {
-          return next(err);
-        }
-        bcrypt.hash(req.body.password, salt, (err, hash) => {
-          if (err) {
-            return next(err);
-          }
-          const password = hash;
-          const tempHash = generateHash({
-            length: 16,
-            charset:
-              'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
-          });
-
-          db.any(
-            'INSERT INTO users(email, login, password, firstname, lastname, hash) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash})',
-            {
-              email: req.body.email,
-              login: req.body.login,
-              password: password,
-              firstname: req.body.firstname,
-              lastname: req.body.lastname,
-              hash: tempHash
-            }
-          ).then(() =>
-            // transporter.sendMail(
-            //   {
-            //     from: "annar703unit@gmail.com",
-            //     to: req.body.email,
-            //     subject: "Matcha Registration Confirmation",
-            //     text: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
-            //       req.body.email
-            //     }&hash=${hash}`
-            //   },
-            //   error => {
-            //     if (error) {
-            //       console.error("Error while email sending", error);
-            //       db.any("DELETE FROM users WHERE id = ${id}", {
-            //         id: data.id
-            //       }).then(() =>
-            //         res.send(
-            //           JSON.stringify({
-            //             status: "error",
-            //             result: "Your email is invalid"
-            //           })
-            //         )
-            //       );
-            //     } else {
-            //       res.send(
-            //         JSON.stringify({
-            //           status: "success",
-            //           result: "Check your email"
-            //         })
-            //       );
-            //     }
-            //   }
-            // )
-            sendmail(
-              {
-                from: 'noreply@matcha.com',
-                to: req.body.email,
-                subject: 'Matcha Registration Confirmation',
-                // html: `Please active your Matcha account using the following link: http://localhost:3000/confirm?email=${
-                //   req.body.email
-                // }&hash=${hash}`
-                html: `Please active your Matcha account using the following link: http://localhost:5000/confirm?email=${
-                  req.body.email
-                }&hash=${hash}`
-              },
-              error => {
-                if (error) {
-                  db.any('DELETE FROM users WHERE id = ${id}', {
-                    id: data.id
-                  }).then(() =>
-                    res.send(
-                      JSON.stringify({
-                        status: 'error',
-                        result: 'Your email is invalid'
-                      })
-                    )
-                  );
-                } else {
-                  res.send(
-                    JSON.stringify({
-                      status: 'success',
-                      result: 'Check your email'
-                    })
-                  );
-                }
-              }
-            )
-          );
-        });
-      });
-    } else {
-      res.send(
-        JSON.stringify({
-          status: 'error',
-          result: 'Your email or login is busy'
-        })
-      );
-    }
-  });
-};
-
-app.post('/signup', (req, res) => createUser(req, res));
-
-app.post('/signout', (req, res) => {
-  db.any(
-    'UPDATE users SET time = ${now}, online = false WHERE login = ${login}',
-    {
-      now: Date.now(),
-      login: req.session.login
-    }
-  ).then(() => {
-    req.session.reset();
-    // res.redirect("http://localhost:3000/");
-    res.redirect('http://localhost:5000/');
-  });
-});
-
-app.post('/signinOrMain', (req, res) => {
-  if (req.session && req.session.login) {
-    db.any('SELECT login FROM users WHERE login = ${login}', {
-      login: req.session.login
-    }).then(data => {
-      data.length === 1
-        ? res.send(JSON.stringify({ result: 'main' }))
-        : res.send(JSON.stringify({ result: 'signin' }));
-    });
-  } else {
-    res.send(JSON.stringify({ result: 'signin' }));
-  }
-});
-
-app.post('/getResetPasswordEmail', (req, res) => {
-  db.any('SELECT * FROM users WHERE email = ${email}', {
-    email: req.body.email
-  }).then(data => {
-    if (data.length === 1) {
-      if (!data[0].active) {
-        res.send(
-          JSON.stringify({
-            status: 'error',
-            result:
-              'Please activate your account using the link received in Matcha Registration Confirmation email first'
-          })
-        );
-      } else {
-        const hash = generateHash({
-          length: 16,
-          charset:
-            'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
-        });
-
-        db.any('UPDATE users SET hash = ${hash} WHERE email = ${email}', {
-          hash: hash,
-          email: req.body.email
-        }).then(() =>
-          // transporter.sendMail(
-          //   {
-          //     from: "annar703unit@gmail.com",
-          //     to: req.body.email,
-          //     subject: "Reset Your Matcha Password",
-          //     text: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
-          //       req.body.email
-          //     }&hash=${hash}`
-          //     // text: `Please use the following link to reset your Matcha password: http://localhost:5000/reset-password?email=${
-          //     //   req.body.email
-          //     // }&hash=${hash}`
-          //   },
-          //   () => {
-          //     res.send(
-          //       JSON.stringify({
-          //         status: "success",
-          //         result: "Check your email"
-          //       })
-          //     );
-          //   }
-          // )
-          sendmail(
-            {
-              from: 'noreply@matcha.com',
-              to: req.body.email,
-              subject: 'Reset Your Matcha Password',
-              // html: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
-              //   req.body.email
-              // }&hash=${hash}`
-              html: `Please use the following link to reset your Matcha password: http://localhost:5000/reset-password?email=${
-                req.body.email
-              }&hash=${hash}`
-            },
-            error => {
-              if (error) {
-                res.send(
-                  JSON.stringify({
-                    status: 'error',
-                    result: 'Something went wrong. Please try again'
-                  })
-                );
-              } else {
-                res.send(
-                  JSON.stringify({
-                    status: 'success',
-                    result: 'Check your email'
-                  })
-                );
-              }
-            }
-          )
-        );
-      }
-    } else {
-      res.send(JSON.stringify({ status: 'error', result: 'Invalid email' }));
-    }
-  });
-});
-
-app.post('/resetPassword', (req, res) => {
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) {
-      return next(err);
-    }
-    bcrypt.hash(req.body.password, salt, (err, hash) => {
-      if (err) {
-        return next(err);
-      }
-      db.any('UPDATE users SET password = ${password} WHERE email = ${email}', {
-        password: hash,
-        email: req.body.email
-      }).then(() =>
-        res.send(JSON.stringify({ result: 'Your password has been changed' }))
-      );
-    });
-  });
-});
-
-app.post('/resetPasswordOrExpired', (req, res) => {
-  db.any('SELECT hash FROM users WHERE email = ${email}', {
-    email: req.body.email
-  }).then(data => {
-    if (data.length !== 1) {
-      res.send(JSON.stringify({ result: 'expired' }));
-    }
-    if (data[0].hash === req.body.hash) {
-      db.any("UPDATE users SET hash = '' WHERE email = ${email}", {
-        email: req.body.email
-      }).then(() => res.send(JSON.stringify({ result: 'reset-password' })));
-    } else {
-      res.send(JSON.stringify({ result: 'expired' }));
-    }
-  });
-});
-
-app.post('/getLikeStatus', requireLogin, (req, res) =>
-  db
-    .any('SELECT * FROM likes WHERE liker = ${liker} AND likee = ${likee}', {
-      liker: req.session.login,
-      likee: req.body.login
-    })
-    .then(data => res.send(JSON.stringify({ canLike: !(data.length === 1) })))
-);
-
-app.post('/changeLikeStatus', requireLogin, (req, res) => {
-  if (req.body.canLike) {
-    db.any('INSERT INTO likes(liker, likee) VALUES (${liker}, ${likee})', {
-      liker: req.session.login,
-      likee: req.body.login
-    }).then(() =>
-      db
-        .any('UPDATE users SET fame = fame + 1 WHERE login = ${login}', {
-          login: req.body.login
-        })
-        .then(() =>
-          getChatDataFromDB(req.session.login).then(data =>
-            res.send(JSON.stringify({ chatData: data, step: 1 }))
-          )
-        )
-    );
-  } else {
-    db.any('DELETE FROM likes WHERE liker = ${liker} AND likee = ${likee}', {
-      liker: req.session.login,
-      likee: req.body.login
-    }).then(() =>
-      db
-        .any('UPDATE users SET fame = fame - 1 WHERE login = ${login}', {
-          login: req.body.login
-        })
-        .then(() =>
-          getChatDataFromDB(req.session.login).then(data =>
-            res.send(JSON.stringify({ chatData: data, step: -1 }))
-          )
-        )
-    );
-  }
-});
-
-const sendVisitedToClient = (req, res) => {
-  db.any('SELECT visited FROM users WHERE login = ${login}', {
-    login: req.session.login
-  }).then(data => {
-    if (data[0].visited.length > 0) {
-      db.any('SELECT * FROM users WHERE login IN ($1:csv)', [
-        data[0].visited
-      ]).then(data => res.send(JSON.stringify(data)));
-    } else {
-      res.send(JSON.stringify([]));
-    }
-  });
-};
-
-app.post('/getVisited', requireLogin, (req, res) =>
-  sendVisitedToClient(req, res)
-);
-
-app.post('/saveVisited', requireLogin, (req, res) =>
-  db
-    .any('SELECT visited FROM users WHERE login = ${login}', {
-      login: req.session.login
-    })
-    .then(data => {
-      data[0].visited.push(req.body.visited);
-      db.any('UPDATE users SET visited = ${visited} WHERE login = ${login}', {
-        visited: data[0].visited,
-        login: req.session.login
-      }).then(() => sendVisitedToClient(req, res));
-    })
-);
-
-const getChatDataFromDB = login => {
-  return db
-    .any('SELECT likee FROM likes WHERE liker = ${login}', {
-      login
-    })
-    .then(data => {
-      if (data.length > 0) {
-        data = data.map(record => record.likee);
-
-        const query = format(
-          'SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L',
-          data,
-          login
-        );
-
-        return db.any(query).then(data => {
-          if (data.length > 0) {
-            data = data.map(record => record.liker);
-
-            const query = format(
-              'SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)',
-              data
-            );
-            return db.any(query).then(data => {
-              let chatData = {};
-
-              data.forEach(
-                record =>
-                  (chatData[record.login] = {
-                    online: record.online,
-                    gallery: record.gallery,
-                    avatarid: record.avatarid,
-                    log: []
-                  })
-              );
-              data = data.map(record => record.login);
-
-              const query = format(
-                "SELECT * FROM messages WHERE (sender IN (%L) AND receiver = '%s') OR (sender = '%s' AND receiver IN (%L)) ORDER BY id DESC",
-                data,
-                login,
-                login,
-                data
-              );
-
-              return db.any(query).then(data => {
-                data.forEach(record => {
-                  if (record.sender === login) {
-                    chatData[record.receiver].log.push(record);
-                  } else {
-                    chatData[record.sender].log.push(record);
-                  }
-                });
-                return chatData;
-              });
-            });
-          }
-          return [];
-        });
-      }
-      return [];
-    });
-};
-
-app.post('/getChatData', requireLogin, (req, res) =>
-  getChatDataFromDB(req.session.login).then(data =>
-    res.send(JSON.stringify(data))
-  )
-);
-
-app.post('/saveOnline', requireLogin, (req, res) =>
-  db
-    .any('UPDATE users SET online = true WHERE login = ${login}', {
-      login: req.session.login
-    })
-    .then(() => res.end())
-);
-
-app.post('/reportFake', requireLogin, (req, res) =>
-  db
-    .any('UPDATE users SET fake = true WHERE login = ${login}', {
-      login: req.body.login
-    })
-    .then(() => res.end())
-);
-
-app.post('/getBlockStatus', requireLogin, (req, res) =>
-  db
-    .any(
-      'SELECT * FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
-      {
-        blocker: req.session.login,
-        blockee: req.body.login
-      }
-    )
-    .then(data => res.send(JSON.stringify({ canBlock: !(data.length === 1) })))
-);
-
-app.post('/changeBlockStatus', requireLogin, (req, res) => {
-  if (req.body.canBlock) {
-    db.any(
-      'INSERT INTO blocks(blocker, blockee) VALUES (${blocker}, ${blockee})',
-      {
-        blocker: req.session.login,
-        blockee: req.body.login
-      }
-    ).then(() => res.end());
-  } else {
-    db.any(
-      'DELETE FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
-      {
-        blocker: req.session.login,
-        blockee: req.body.login
-      }
-    ).then(() => res.end());
-  }
-});
-
-app.post('/getMessages', requireLogin, (req, res) => {
-  let query =
-    'SELECT * FROM messages WHERE (sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender}) ORDER BY time DESC LIMIT 30';
-
-  if (req.body.lastloadedid !== null) {
-    query =
-      'SELECT * FROM messages WHERE id < ${lastloadedid} AND ((sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender})) ORDER BY time DESC LIMIT 30';
-  }
-  db.any(query, {
-    sender: req.body.sender,
-    receiver: req.body.receiver,
-    lastloadedid: req.body.lastloadedid
-  }).then(data => {
-    if (data.length > 0) {
-      res.send(JSON.stringify(data));
-    } else {
-      res.send(JSON.stringify([]));
-    }
-  });
-});
-
-app.post('/getCheckedBy', requireLogin, (req, res) =>
-  db
-    .any(
-      'SELECT login, firstname, lastname, gallery, avatarid, visited from users'
-    )
-    .then(data => {
-      data = data.filter(record => record.visited.includes(req.session.login));
-      res.send(JSON.stringify(data));
-    })
-);
-
-app.post('/getLikedBy', requireLogin, (req, res) =>
-  db
-    .any('SELECT liker FROM likes WHERE likee = ${likee}', {
-      likee: req.session.login
-    })
-    .then(data => {
-      if (data.length !== 0) {
-        data = data.map(record => record.liker);
-        const query = format(
-          'SELECT login, firstname, lastname, gallery, avatarid FROM users WHERE login IN (%L)',
-          data
-        );
-
-        db.any(query).then(data => res.send(JSON.stringify(data)));
-      } else {
-        res.send(JSON.stringify([]));
-      }
-    })
-);
-
-const getSuggestionsFromDB = login => {
-  return db
-    .any('SELECT gender, preferences FROM users WHERE login = ${login}', {
-      login
-    })
-    .then(data => {
-      let request,
-        params = {
-          login
-        };
-
-      if (
-        (data[0].gender === 'male' && data[0].preferences === 'heterosexual') ||
-        (data[0].gender === 'female' && data[0].preferences === 'homosexual')
-      ) {
-        request =
-          'SELECT * FROM users WHERE login <> ${login} AND gender = ${gender}';
-        params.gender = 'female';
-      } else if (
-        (data[0].gender === 'female' &&
-          data[0].preferences === 'heterosexual') ||
-        (data[0].gender === 'male' && data[0].preferences === 'homosexual')
-      ) {
-        request =
-          'SELECT * FROM users WHERE login <> ${login} AND gender = ${gender}';
-        params.gender = 'male';
-      } else {
-        request = 'SELECT * FROM users WHERE login <> ${login}';
-      }
-      return db.any(request, params);
-    });
-};
-
-app.post('/getSuggestions', requireLogin, (req, res) =>
-  getSuggestionsFromDB(req.session.login).then(data =>
-    res.send(JSON.stringify(data))
-  )
-);
-
-const server = app.listen(port);
-
-require('./chat.js')(server, db);
+//   if (req.body.lastloadedid !== null) {
+//     query =
+//       'SELECT * FROM messages WHERE id < ${lastloadedid} AND ((sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender})) ORDER BY time DESC LIMIT 30';
+//   }
+//   db.any(query, {
+//     sender: req.body.sender,
+//     receiver: req.body.receiver,
+//     lastloadedid: req.body.lastloadedid
+//   }).then(data => {
+//     if (data.length > 0) {
+//       res.send(JSON.stringify(data));
+//     } else {
+//       res.send(JSON.stringify([]));
+//     }
+//   });
+// });

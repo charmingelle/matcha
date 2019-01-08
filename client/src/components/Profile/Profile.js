@@ -1,17 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import SimpleSelect from './../../components/SimpleSelect/SimpleSelect.js';
-import OutlinedTextFields from './../../components/OutlinedTextFields/OutlinedTextFields.js';
-import InterestsInput from './../../components/InterestsInput/InterestsInput.js';
+import ProfileSelect from './ProfileSelect/ProfileSelect.js';
+import ProfileTextField from './ProfileTextField/ProfileTextField.js';
+import InterestsInput from './InterestsInput/InterestsInput.js';
+import ChangeStatusInput from './ChangeStatusInput/ChangeStatusInput.js';
 import ProfilePhotos from './ProfilePhotos/ProfilePhotos.js';
-import ChangeStatus from './../ChangeStatus/ChangeStatus.js';
 import SmallUsers from './../SmallUsers/SmallUsers.js';
+import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import { saveUserProfile, getLikedBy, getCheckedBy } from './../../api/api.js';
 import { isEmailValid } from './../../utils/utils.js';
 
-const styles = theme => ({
+const styles = {
   root: {
     overflow: 'auto',
     padding: '10px'
@@ -24,8 +25,18 @@ const styles = theme => ({
   },
   saveChangesButton: {
     padding: '8px'
+  },
+  ageInput: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: 8,
+    marginBottom: 8
+  },
+  ageLabel: {
+    fontSize: '12px',
+    color: 'rgba(0, 0, 0, 0.54)'
   }
-});
+};
 
 class Profile extends React.Component {
   componentDidMount() {
@@ -88,10 +99,13 @@ class Profile extends React.Component {
     this.setState(target);
   };
 
-  onAgeChange = age => {
-    if (age >= 18 && age <= 100) {
+  onAgeChange = event => {
+    if (
+      event.target.value >= 18 &&
+      event.target.value <= 100
+    ) {
       this.setState({
-        age
+        age: event.target.value
       });
     }
   };
@@ -99,7 +113,7 @@ class Profile extends React.Component {
   renderChangeStatus = () => {
     if (this.state.changeStatus) {
       return (
-        <ChangeStatus
+        <ChangeStatusInput
           value={this.state.changeStatus}
           error={this.state.error}
         />
@@ -143,48 +157,51 @@ class Profile extends React.Component {
         />
         <div className={classes.profileDetails}>
           {this.renderChangeStatus()}
-          <OutlinedTextFields
+          <ProfileTextField
             label="First name"
             name="firstname"
             value={firstname}
             onChange={this.onChange}
           />
-          <OutlinedTextFields
+          <ProfileTextField
             label="Last name"
             name="lastname"
             value={lastname}
             onChange={this.onChange}
           />
-          <OutlinedTextFields
+          <ProfileTextField
             label="Email address"
             name="email"
             value={email}
             validate={this.isEmailValid}
             onChange={this.onChange}
           />
-          <OutlinedTextFields
-            label="Age"
-            name="age"
-            value={age}
-            onChange={this.onAgeChange}
-            type="number"
-            variant="outlined"
-          />
-          <SimpleSelect
+          <div className={classes.ageInput}>
+            <label className={classes.ageLabel} htmlFor="age">
+              Age
+            </label>
+            <Input
+              name="age"
+              type="number"
+              value={age}
+              onChange={this.onAgeChange}
+            />
+          </div>
+          <ProfileSelect
             title="Gender"
             items={['male', 'female']}
             name="gender"
             value={gender}
             onChange={this.onChange}
           />
-          <SimpleSelect
+          <ProfileSelect
             title="Preferences"
             items={['heterosexual', 'homosexual', 'bisexual']}
             name="preferences"
             value={preferences}
             onChange={this.onChange}
           />
-          <OutlinedTextFields
+          <ProfileTextField
             label="Biography"
             placeholder="Tell us a few words about yourself"
             name="bio"

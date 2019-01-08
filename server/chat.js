@@ -1,4 +1,4 @@
-module.exports = (server, db) => {
+module.exports = (app, requireLogin, server, db) => {
   const io = require('socket.io')(server);
   const chatUsers = {};
 
