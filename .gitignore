@@ -4,11 +4,11 @@
 node_modules
 client/node_modules
 client/public/users/photos/*
-!client/public/users/photos/avatar.js
+!client/public/users/photos/avatar.png
 .vscode/settings.json
 package-lock.json
 package.json
 client/package-lock.json
 client/package.json
 client/build/users/photos/*
-!client/build/users/photos/avatar.js
+!client/build/users/photos/avatar.png
