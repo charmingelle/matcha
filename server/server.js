@@ -58,7 +58,9 @@ require('./resetPassword.js')(app, db);
 
 require('./user.js')(app, requireLogin, db);
 
-require('./chat.js')(app, requireLogin, app.listen(5000), db);
+require('./chat.js')(app, db);
+
+// Check if I need these functions
 
 // app.post('/getUsers', requireLogin, (req, res) => {
 //   db.any('SELECT blockee FROM blocks WHERE blocker = ${blocker}', {

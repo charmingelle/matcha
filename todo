@@ -8,3 +8,4 @@
 
 - write initiate file (don't forget about the database)
 - add validation of signup data on server
+- remove webSocket error in console

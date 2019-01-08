@@ -1,5 +1,5 @@
-module.exports = (app, requireLogin, server, db) => {
-  const io = require('socket.io')(server);
+module.exports = (app, db) => {
+  const io = require('socket.io')(app.listen(5000));
   const chatUsers = {};
 
   io.use((socket, next) => {
