@@ -62,18 +62,6 @@ export const signup = (email, login, password, firstname, lastname) =>
     body: JSON.stringify({ email, login, password, firstname, lastname })
   }).then(res => returnResOrError(res, "signup error"));
 
-export const getUsers = () =>
-  fetch("/getUsers", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" }
-  }).then(res => {
-    if (!res.ok) {
-      throw Error(res.code);
-    }
-
-    return res.json();
-  });
-
 export const getResetPasswordEmail = email =>
   fetch("/getResetPasswordEmail", {
     method: "POST",
@@ -112,46 +100,14 @@ export const changeLikeStatus = (login, canLike) =>
 export const getVisited = () =>
   fetch("/getVisited", {
     method: "POST"
-  }).then(res => {
-    if (!res.ok) {
-      throw Error(res.code);
-    }
-
-    return res.json();
-  });
+  }).then(res => returnResOrError(res, "getVisited error"));
 
 export const saveVisited = visited =>
   fetch("/saveVisited", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ visited })
-  }).then(res => {
-    if (!res.ok) {
-      throw Error(res.code);
-    }
-
-    return res.json();
-  });
-
-// export const getChatUsers = () =>
-//   fetch("/getChatUsers", {
-//     method: "POST"
-//   }).then(res => {
-//     if (res.ok) {
-//       return res.json();
-//     }
-//     throw new Error("Error");
-//   });
-
-// export const getChatMessages = () =>
-//   fetch("/getChatMessages", {
-//     method: "POST"
-//   }).then(res => {
-//     if (res.ok) {
-//       return res.json();
-//     }
-//     throw new Error("Error");
-//   });
+  }).then(res => returnResOrError(res, "saveVisited error"));
 
 export const getChatData = () =>
   fetch("/getChatData", {

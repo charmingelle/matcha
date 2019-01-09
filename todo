@@ -2,7 +2,7 @@
 - make sure that unnecessary information isn't passed to components
 - style everything
 - get rid of unused variables
-- add pagination to Users
+- add pagination to Users and everywhere where needed
 - prettify everything
 - test everything
 - write readme

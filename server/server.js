@@ -69,24 +69,6 @@ require('./chat.js')(app, db);
 
 // Check if I need these functions
 
-// app.post('/getUsers', requireLogin, (req, res) => {
-//   db.any('SELECT blockee FROM blocks WHERE blocker = ${blocker}', {
-//     blocker: req.session.login
-//   }).then(data => {
-//     if (data.length === 0) {
-//       db.any('SELECT * FROM users').then(data =>
-//         res.send(JSON.stringify(data))
-//       );
-//     } else {
-//       data = data.map(record => record.blockee);
-
-//       const query = format('SELECT * FROM users WHERE login NOT IN (%L)', data);
-
-//       db.any(query).then(data => res.send(JSON.stringify(data)));
-//     }
-//   });
-// });
-
 // app.post('/getMessages', requireLogin, (req, res) => {
 //   let query =
 //     'SELECT * FROM messages WHERE (sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender}) ORDER BY time DESC LIMIT 30';

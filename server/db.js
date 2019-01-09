@@ -1,6 +1,6 @@
-const pgp = require('pg-promise')();
-const db = require('pg-promise')()(
-  'postgres://grevenko:postgres@localhost:5432/matcha'
+const pgp = require("pg-promise")();
+const db = require("pg-promise")()(
+  "postgres://grevenko:postgres@localhost:5432/matcha"
 );
 
 db.any(`
@@ -244,14 +244,94 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'heterosexual',
         'Anna',
         'A'
+      ),
+      (
+        'femabi',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+        'fembi@gmail.com',
+        true,
+        'female',
+        'bisexual',
+        'Femabi',
+        'F'
+      ),
+      (
+        'femabi2',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+        'fembi@gmail.com',
+        true,
+        'female',
+        'bisexual',
+        'Femabi',
+        'F'
+      ),
+      (
+        'malebi',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+        'anna@gmail.com',
+        true,
+        'male',
+        'bisexual',
+        'Malebi',
+        'M'
+      ),
+      (
+        'malebi2',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+        'anna@gmail.com',
+        true,
+        'male',
+        'bisexual',
+        'Malebi',
+        'M'
+      ),
+      (
+        'gayguy',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+        'fembi@gmail.com',
+        true,
+        'male',
+        'homosexual',
+        'Gayguy',
+        'G'
+      ),
+      (
+        'gayguy2',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+        'fembi@gmail.com',
+        true,
+        'male',
+        'homosexual',
+        'Gayguy',
+        'G'
+      ),
+      (
+        'lesbian',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+        'fembi@gmail.com',
+        true,
+        'female',
+        'homosexual',
+        'Lesbian',
+        'L'
+      ),
+      (
+        'lesbian2',
+        '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+        'fembi@gmail.com',
+        true,
+        'female',
+        'homosexual',
+        'Lesbian',
+        'L'
       );
 `);
 
 // Windows version
 
-// const pgp = require('pg-promise')(/*options*/);
-// const db = require('pg-promise')()(
-//   'postgres://postgres:123456@localhost:5432/matcha'
+// const pgp = require("pg-promise")(/*options*/);
+// const db = require("pg-promise")()(
+//   "postgres://postgres:123456@localhost:5432/matcha"
 // );
 
 // db.any(`
@@ -495,5 +575,85 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'heterosexual',
 //         'Anna',
 //         'A'
+//       ),
+//       (
+//         'femabi',
+//         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+//         'fembi@gmail.com',
+//         true,
+//         'female',
+//         'bisexual',
+//         'Femabi',
+//         'F'
+//       ),
+//       (
+//         'femabi2',
+//         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+//         'fembi@gmail.com',
+//         true,
+//         'female',
+//         'bisexual',
+//         'Femabi',
+//         'F'
+//       ),
+//       (
+//         'malebi',
+//         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+//         'anna@gmail.com',
+//         true,
+//         'male',
+//         'bisexual',
+//         'Malebi',
+//         'M'
+//       ),
+//       (
+//         'malebi2',
+//         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+//         'anna@gmail.com',
+//         true,
+//         'male',
+//         'bisexual',
+//         'Malebi',
+//         'M'
+//       ),
+//       (
+//         'gayguy',
+//         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+//         'fembi@gmail.com',
+//         true,
+//         'male',
+//         'homosexual',
+//         'Gayguy',
+//         'G'
+//       ),
+//       (
+//         'gayguy2',
+//         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+//         'fembi@gmail.com',
+//         true,
+//         'male',
+//         'homosexual',
+//         'Gayguy',
+//         'G'
+//       ),
+//       (
+//         'lesbian',
+//         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+//         'fembi@gmail.com',
+//         true,
+//         'female',
+//         'homosexual',
+//         'Lesbian',
+//         'L'
+//       ),
+//       (
+//         'lesbian2',
+//         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
+//         'fembi@gmail.com',
+//         true,
+//         'female',
+//         'homosexual',
+//         'Lesbian',
+//         'L'
 //       );
 // `);
