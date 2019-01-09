@@ -8,6 +8,12 @@
 - write readme
 - check if chat messages can be added to bottom
 - remove matcha.end.pdf, music, notes, pgadmin4-3.5.dmg, .gitignore, todo
-- replace 3000 with 5000 everywhere before building React app
 
-- create development and production branches
+
+
+- checkout to prod
+- git merge master
+- replace port 3000 with 5000
+- uncomment "Built React version" lines in server.js
+- cd client && npm run build
+- http://localhost:5000
