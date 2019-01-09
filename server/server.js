@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const port = 3000;
+// const port = 5000;
 const db = require('pg-promise')()(
   'postgres://grevenko:postgres@localhost:5432/matcha'
 );
@@ -45,15 +47,15 @@ const requireLogin = (req, res, next) => {
   }
 };
 
-require('./main.js')(app, requireLogin, db);
+require('./main.js')(app, requireLogin, db, port);
 
 require('./profile.js')(app, requireLogin, db);
 
 require('./signin.js')(app, requireLogin, db);
 
-require('./signup.js')(app, db);
+require('./signup.js')(app, db, port);
 
-require('./resetPassword.js')(app, db);
+require('./resetPassword.js')(app, db, port);
 
 require('./user.js')(app, requireLogin, db);
 
