@@ -8,6 +8,7 @@
 - write readme
 - check if chat messages can be added to bottom
 - remove matcha.end.pdf, music, notes, pgadmin4-3.5.dmg, .gitignore, todo
+- set location to be equal to current user location for demo for the filter to find someboby
 
 
 
@@ -20,4 +21,5 @@
 - replace port 3000 with 5000
 - uncomment "Built React version" lines in server.js
 - cd client && npm run build
+- cd .. && node server/server.js
 - http://localhost:5000
