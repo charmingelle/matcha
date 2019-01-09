@@ -64,12 +64,12 @@ module.exports = (app, db, port) => {
           if (err) {
             return next(err);
           }
-          bcrypt.hash(req.body.password, salt, (err, hash) => {
+          bcrypt.hash(req.body.password, salt, (err, passwordHash) => {
             if (err) {
               return next(err);
             }
-            const password = hash;
-            const tempHash = generateHash({
+            const password = passwordHash;
+            const hash = generateHash({
               length: 16,
               charset:
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
@@ -102,7 +102,7 @@ module.exports = (app, db, port) => {
                     password: password,
                     firstname: req.body.firstname,
                     lastname: req.body.lastname,
-                    hash: tempHash
+                    hash
                   }
                 ).then(() =>
                   res.send(
@@ -120,21 +120,33 @@ module.exports = (app, db, port) => {
     }
   );
 
-  app.get("/confirm", (req, res) => {
+  app.post("/activateAccount", (req, res) => {
     db.any("SELECT * FROM users WHERE email = ${email} AND hash = ${hash}", {
-      email: req.query.email,
-      hash: req.query.hash
+      email: req.body.email,
+      hash: req.body.hash
     }).then(data => {
-      if (data.length === 1) {
-        db.any(
-          "UPDATE users SET active = true, hash = '' WHERE email = ${email}",
-          {
-            email: req.query.email
-          }
-        ).then(() => res.redirect(`http://localhost:${port}/`));
-      } else {
-        res.end();
+      if (data.length !== 1) {
+        res.send(
+          JSON.stringify({
+            status: "error",
+            result: "The account to be activated cannot be found"
+          })
+        );
+        return;
       }
+      db.any(
+        "UPDATE users SET active = true, hash = '' WHERE email = ${email}",
+        {
+          email: req.body.email
+        }
+      ).then(() =>
+        res.send(
+          JSON.stringify({
+            status: "success",
+            result: "Your account has been activated"
+          })
+        )
+      );
     });
   });
 };
