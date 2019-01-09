@@ -32,12 +32,12 @@ module.exports = (app, db) => {
                 from: 'noreply@matcha.com',
                 to: req.body.email,
                 subject: 'Reset Your Matcha Password',
-                // html: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
-                //   req.body.email
-                // }&hash=${hash}`
-                html: `Please use the following link to reset your Matcha password: http://localhost:5000/reset-password?email=${
+                html: `Please use the following link to reset your Matcha password: http://localhost:3000/reset-password?email=${
                   req.body.email
                 }&hash=${hash}`
+                // html: `Please use the following link to reset your Matcha password: http://localhost:5000/reset-password?email=${
+                //   req.body.email
+                // }&hash=${hash}`
               },
               error => {
                 if (error) {

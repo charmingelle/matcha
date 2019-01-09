@@ -25,7 +25,9 @@ app.use(
   })
 );
 
-app.use(express.static(path.join(__dirname, './../client/build')));
+// Built React version
+
+// app.use(express.static(path.join(__dirname, './../client/build')));
 
 const requireLogin = (req, res, next) => {
   if (req.session && req.session.login) {
@@ -43,10 +45,6 @@ const requireLogin = (req, res, next) => {
   }
 };
 
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, './../client/build/index.html'));
-});
-
 require('./main.js')(app, requireLogin, db);
 
 require('./profile.js')(app, requireLogin, db);
@@ -60,6 +58,12 @@ require('./resetPassword.js')(app, db);
 require('./user.js')(app, requireLogin, db);
 
 require('./chat.js')(app, db);
+
+// Built React version
+
+// app.get('/*', (req, res) => {
+//   res.sendFile(path.join(__dirname, './../client/build/index.html'));
+// });
 
 // Check if I need these functions
 

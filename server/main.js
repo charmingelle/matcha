@@ -47,8 +47,8 @@ module.exports = (app, requireLogin, db) => {
       }
     ).then(() => {
       req.session.reset();
-      // res.redirect("http://localhost:3000/");
-      res.redirect('http://localhost:5000/');
+      res.redirect("http://localhost:3000/");
+      // res.redirect('http://localhost:5000/');
     });
   });
 

@@ -74,32 +74,38 @@ class Signup extends React.Component {
         error: true,
         message: 'Please fill all the fields in'
       });
-    } else if (!isEmailValid(this.state.email)) {
+    } else
+    if (!isEmailValid(this.state.email)) {
       this.setState({
         error: true,
         message: 'Invalid email address'
       });
-    } else if (!isLoginValid(this.state.login)) {
+    } else
+    if (!isLoginValid(this.state.login)) {
       this.setState({
         error: true,
         message: 'Invalid login'
       });
-    } else if (!isPasswordValid(this.state.password)) {
+    } else
+    if (!isPasswordValid(this.state.password)) {
       this.setState({
         error: true,
         message: 'Invalid password'
       });
-    } else if (this.state.password !== this.state.passwordConfirm) {
+    } else
+    if (this.state.password !== this.state.passwordConfirm) {
       this.setState({
         error: true,
         message: 'Invalid password confirm'
       });
-    } else if (!isFirstLastNameValid(this.state.firstname)) {
+    } else
+    if (!isFirstLastNameValid(this.state.firstname)) {
       this.setState({
         error: true,
         message: 'Invalid first name'
       });
-    } else if (!isFirstLastNameValid(this.state.lastname)) {
+    } else
+    if (!isFirstLastNameValid(this.state.lastname)) {
       this.setState({
         error: false,
         message: 'Invalid last name'

@@ -6,7 +6,8 @@
 - prettify everything
 - test everything
 - write readme
-- add validation of signup data on server
 - check if chat messages can be added to bottom
 - remove matcha.end.pdf, music, notes, pgadmin4-3.5.dmg, .gitignore, todo
-- check what happens with logout in develper mode
+- replace 3000 with 5000 everywhere before building React app
+- create development and production branches
+- check why user table can contain two equal ids
