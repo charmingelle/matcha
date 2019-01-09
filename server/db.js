@@ -245,16 +245,6 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'Anna',
         'A'
       );
-
-    SELECT pg_catalog.setval('public.blocks_id_seq', 1, true);
-
-    SELECT pg_catalog.setval('public.interests_id_seq', 1, true);
-
-    SELECT pg_catalog.setval('public.likes_id_seq', 1, true);
-
-    SELECT pg_catalog.setval('public.messages_id_seq', 1, true);
-
-    SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 `);
 
 // Windows version
@@ -506,14 +496,4 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'Anna',
 //         'A'
 //       );
-
-//     SELECT pg_catalog.setval('public.blocks_id_seq', 1, true);
-
-//     SELECT pg_catalog.setval('public.interests_id_seq', 1, true);
-    
-//     SELECT pg_catalog.setval('public.likes_id_seq', 1, true);
-    
-//     SELECT pg_catalog.setval('public.messages_id_seq', 1, true);
-    
-//     SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 // `);
