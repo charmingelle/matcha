@@ -1,6 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
 node_modules
 client/node_modules
 client/public/users/photos/*
@@ -12,3 +9,5 @@ client/package-lock.json
 client/package.json
 client/build/users/photos/*
 !client/build/users/photos/avatar.png
+.DS_Store
+client/.DS_Store

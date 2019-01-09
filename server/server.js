@@ -1,11 +1,11 @@
 const express = require('express');
 const app = express();
-// const db = require('pg-promise')()(
-//   'postgres://grevenko:postgres@localhost:5432/matcha'
-// );
 const db = require('pg-promise')()(
-  'postgres://postgres:123456@localhost:5432/matcha'
+  'postgres://grevenko:postgres@localhost:5432/matcha'
 );
+// const db = require('pg-promise')()(
+//   'postgres://postgres:123456@localhost:5432/matcha'
+// );
 const bodyParser = require('body-parser');
 const session = require('client-sessions');
 const path = require('path');
