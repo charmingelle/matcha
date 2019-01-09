@@ -1,68 +1,74 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardActions from '@material-ui/core/CardActions';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
-import EditIcon from '@material-ui/icons/Edit';
-import { saveUserPhoto, setAvatar } from './../../../api/api.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
+import EditIcon from "@material-ui/icons/Edit";
+import { saveUserPhoto, setAvatar } from "./../../../api/api.js";
 
 const styles = {
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
   },
   upload: {
-    marginTop: '15px',
-    color: 'rgba(0, 0, 0, 0.54)',
+    marginTop: "15px",
+    color: "rgba(0, 0, 0, 0.54)",
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
   },
   rightIcon: {
     marginLeft: 10
   },
   hidden: {
-    display: 'none'
+    display: "none"
   },
   photoList: {
     margin: 0,
     padding: 0,
-    listStyleType: 'none'
+    listStyleType: "none"
   },
   photoContainer: {
-    margin: '50px',
-    width: '614px'
+    margin: "50px",
+    width: "614px"
   },
   imgContainer: {
-    position: 'relative',
-    top: '6px'
+    position: "relative",
+    top: "6px"
   },
   photo: {
-    width: '100%'
+    width: "100%"
   },
   photoActions: {
-    display: 'flex',
-    flexDirection: 'column'
+    display: "flex",
+    flexDirection: "column"
   },
   avatarNote: {
-    lineHeight: '38.8px',
-    textAlign: 'center',
+    lineHeight: "38.8px",
+    textAlign: "center",
     fontWeight: 500,
-    color: '#3f51b5'
+    color: "#3f51b5"
   },
   customFileUpload: {
-    marginTop: '50px'
+    marginTop: "50px"
   },
   card: {
     margin: 50,
     width: 500
   },
-  media: {
-    height: 0,
-    paddingTop: '56.25%'
+  content: {
+    height: 500,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  img: {
+    maxWidth: "100%",
+    maxHeight: "100%"
   }
 };
 
@@ -77,7 +83,7 @@ class ProfilePhotos extends React.Component {
   }
 
   upload = id => {
-    const uploadEl = document.getElementById('file-upload');
+    const uploadEl = document.getElementById("file-upload");
 
     this.photoid = id;
     uploadEl.click();
@@ -91,13 +97,13 @@ class ProfilePhotos extends React.Component {
   uploadPhoto = event => {
     let newGallery = JSON.parse(JSON.stringify(this.state.gallery));
     const image = new Image();
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
 
     image.onload = () => {
       canvas.width = image.width;
       canvas.height = image.height;
       canvas
-        .getContext('2d')
+        .getContext("2d")
         .drawImage(image, 0, 0, canvas.width, canvas.height);
       if (this.photoid === null) {
         this.photoid = newGallery.length;
@@ -139,10 +145,13 @@ class ProfilePhotos extends React.Component {
         <ul className={classes.photoList}>
           {gallery.map((photo, index) => (
             <Card className={classes.card} key={index}>
-              <CardMedia
-                className={classes.media}
-                image={`users/photos/${photo}`}
-              />
+              <CardContent className={classes.content}>
+                <img
+                  className={classes.img}
+                  src={require(`./../../../../public/users/photos/${photo}`)}
+                  alt={`${photo}`}
+                />
+              </CardContent>
               <CardActions>
                 <Button
                   size="small"

@@ -1,62 +1,67 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import classnames from 'classnames';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import LeftIcon from '@material-ui/icons/ChevronLeft';
-import RightIcon from '@material-ui/icons/ChevronRight';
-import LikeButton from './LikeButton/LikeButton.js';
-import BlockButton from './BlockButton/BlockButton.js';
-import { reportFake } from './../../api/api.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import classnames from "classnames";
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
+import Collapse from "@material-ui/core/Collapse";
+import Avatar from "@material-ui/core/Avatar";
+import IconButton from "@material-ui/core/IconButton";
+import Typography from "@material-ui/core/Typography";
+import Grow from "@material-ui/core/Grow";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
+import MenuItem from "@material-ui/core/MenuItem";
+import MenuList from "@material-ui/core/MenuList";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import LeftIcon from "@material-ui/icons/ChevronLeft";
+import RightIcon from "@material-ui/icons/ChevronRight";
+import LikeButton from "./LikeButton/LikeButton.js";
+import BlockButton from "./BlockButton/BlockButton.js";
+import { reportFake } from "./../../api/api.js";
 
 const styles = theme => ({
   card: {
     margin: 50,
     width: 500,
-    height: '100%'
+    height: "100%"
   },
-  media: {
-    height: 0,
-    paddingTop: '56.25%' // 16:9
+  photoContent: {
+    height: 500,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  img: {
+    maxWidth: "100%",
+    maxHeight: "100%"
   },
   actions: {
-    display: 'flex'
+    display: "flex"
   },
   expand: {
-    transform: 'rotate(0deg)',
-    transition: theme.transitions.create('transform', {
+    transform: "rotate(0deg)",
+    transition: theme.transitions.create("transform", {
       duration: theme.transitions.duration.shortest
     }),
-    marginLeft: 'auto',
-    [theme.breakpoints.up('sm')]: {
+    marginLeft: "auto",
+    [theme.breakpoints.up("sm")]: {
       marginRight: -8
     }
   },
   expandOpen: {
-    transform: 'rotate(180deg)'
+    transform: "rotate(180deg)"
   },
   leftRightArea: {
-    position: 'relative',
+    position: "relative",
     height: 30
   },
   right: {
-    position: 'absolute',
+    position: "absolute",
     right: 0
   },
   bold: {
@@ -137,9 +142,9 @@ class User extends React.Component {
       fake,
       isMenuOpen
     } = this.state;
-    const avatar = gallery.length > 0 ? gallery[avatarid] : 'avatar.png';
+    const avatar = gallery.length > 0 ? gallery[avatarid] : "avatar.png";
     const currentPhotoFile =
-      gallery.length > 0 ? gallery[currentPhoto] : 'avatar.png';
+      gallery.length > 0 ? gallery[currentPhoto] : "avatar.png";
 
     return (
       <Card className={classes.card}>
@@ -174,7 +179,7 @@ class User extends React.Component {
                     id="menu-list-grow"
                     style={{
                       transformOrigin:
-                        placement === 'bottom' ? 'center top' : 'center bottom'
+                        placement === "bottom" ? "center top" : "center bottom"
                     }}
                   >
                     <Paper>
@@ -199,14 +204,17 @@ class User extends React.Component {
           title={`${firstname} ${lastname}`}
           subheader={
             online
-              ? 'Online'
+              ? "Online"
               : `Last seen on ${new Date(parseInt(time)).toLocaleString()}`
           }
         />
-        <CardMedia
-          className={classes.media}
-          image={require(`../../../public/users/photos/${currentPhotoFile}`)}
-        />
+        <CardContent className={classes.photoContent}>
+          <img
+            className={classes.img}
+            src={require(`./../../../public/users/photos/${currentPhotoFile}`)}
+            alt={`${currentPhotoFile}`}
+          />
+        </CardContent>
         <div className={classes.leftRightArea}>
           {currentPhoto > 0 && (
             <IconButton onClick={this.showPreviousPhoto}>
@@ -260,7 +268,7 @@ class User extends React.Component {
             {interests.length > 0 && (
               <Typography component="p">
                 <span className={classes.bold}>Interests: </span>
-                {interests.join(', ')}
+                {interests.join(", ")}
               </Typography>
             )}
             {bio && (
