@@ -100,7 +100,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         hash character(16) DEFAULT ''::text NOT NULL,
         active boolean DEFAULT false NOT NULL,
         gender character varying(6) DEFAULT 'male'::text NOT NULL,
-        preferences character varying(12) DEFAULT 'heterosexual'::text NOT NULL,
+        preferences character varying(12) DEFAULT 'bisexual'::text NOT NULL,
         bio text DEFAULT ''::text NOT NULL,
         interests text[] DEFAULT ARRAY[]::text[] NOT NULL,
         gallery text[] DEFAULT ARRAY[]::text[] NOT NULL,
@@ -162,7 +162,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         gender,
         preferences,
         firstname,
-        lastname
+        lastname,
+        location
       )
       VALUES
       (
@@ -173,7 +174,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'male',
         'heterosexual',
         'Ivan',
-        'I'
+        'I',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'misha7',
@@ -183,7 +185,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'male',
         'heterosexual',
         'Misha',
-        'M'
+        'M',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'ura777',
@@ -193,7 +196,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'male',
         'heterosexual',
         'Ura',
-        'U'
+        'U',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'olya77',
@@ -203,7 +207,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'female',
         'heterosexual',
         'Olya',
-        'O'
+        'O',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'sasha7',
@@ -213,7 +218,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'male',
         'heterosexual',
         'Sasha',
-        'S'
+        'S',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'borys7',
@@ -223,7 +229,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'male',
         'heterosexual',
         'Borys',
-        'B'
+        'B',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'nastya',
@@ -233,7 +240,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'female',
         'heterosexual',
         'Nastya',
-        'N'
+        'N',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'anna77',
@@ -243,7 +251,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'female',
         'heterosexual',
         'Anna',
-        'A'
+        'A',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'femabi',
@@ -253,7 +262,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'female',
         'bisexual',
         'Femabi',
-        'F'
+        'F',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'femabi2',
@@ -262,8 +272,9 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         true,
         'female',
         'bisexual',
-        'Femabi',
-        'F'
+        'Femabi2',
+        'F',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'malebi',
@@ -273,7 +284,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'male',
         'bisexual',
         'Malebi',
-        'M'
+        'M',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'malebi2',
@@ -282,8 +294,9 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         true,
         'male',
         'bisexual',
-        'Malebi',
-        'M'
+        'Malebi2',
+        'M',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'gayguy',
@@ -293,7 +306,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'male',
         'homosexual',
         'Gayguy',
-        'G'
+        'G',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'gayguy2',
@@ -302,8 +316,9 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         true,
         'male',
         'homosexual',
-        'Gayguy',
-        'G'
+        'Gayguy2',
+        'G',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'lesbian',
@@ -313,7 +328,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         'female',
         'homosexual',
         'Lesbian',
-        'L'
+        'L',
+        ARRAY[50.468431599999995,30.4518626]
       ),
       (
         'lesbian2',
@@ -322,8 +338,9 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         true,
         'female',
         'homosexual',
-        'Lesbian',
-        'L'
+        'Lesbian2',
+        'L',
+        ARRAY[50.468431599999995,30.4518626]
       );
 `);
 
@@ -431,7 +448,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         hash character(16) DEFAULT 'abc'::text NOT NULL,
 //         active boolean DEFAULT false NOT NULL,
 //         gender character varying(6) DEFAULT 'male'::text NOT NULL,
-//         preferences character varying(12) DEFAULT 'heterosexual'::text NOT NULL,
+//         preferences character varying(12) DEFAULT 'bisexual'::text NOT NULL,
 //         bio text DEFAULT ''::text NOT NULL,
 //         interests text[] DEFAULT ARRAY[]::text[] NOT NULL,
 //         gallery text[] DEFAULT ARRAY[]::text[] NOT NULL,
@@ -493,7 +510,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         gender,
 //         preferences,
 //         firstname,
-//         lastname
+//         lastname,
+//         location
 //       )
 //       VALUES
 //       (
@@ -504,7 +522,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'male',
 //         'heterosexual',
 //         'Ivan',
-//         'I'
+//         'I',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'misha7',
@@ -514,7 +533,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'male',
 //         'heterosexual',
 //         'Misha',
-//         'M'
+//         'M',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'ura777',
@@ -524,7 +544,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'male',
 //         'heterosexual',
 //         'Ura',
-//         'U'
+//         'U',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'olya77',
@@ -534,7 +555,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'female',
 //         'heterosexual',
 //         'Olya',
-//         'O'
+//         'O',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'sasha7',
@@ -544,7 +566,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'male',
 //         'heterosexual',
 //         'Sasha',
-//         'S'
+//         'S',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'borys7',
@@ -554,7 +577,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'male',
 //         'heterosexual',
 //         'Borys',
-//         'B'
+//         'B',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'nastya',
@@ -564,7 +588,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'female',
 //         'heterosexual',
 //         'Nastya',
-//         'N'
+//         'N',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'anna77',
@@ -574,7 +599,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'female',
 //         'heterosexual',
 //         'Anna',
-//         'A'
+//         'A',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'femabi',
@@ -584,7 +610,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'female',
 //         'bisexual',
 //         'Femabi',
-//         'F'
+//         'F',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'femabi2',
@@ -593,8 +620,9 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         true,
 //         'female',
 //         'bisexual',
-//         'Femabi',
-//         'F'
+//         'Femabi2',
+//         'F',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'malebi',
@@ -604,7 +632,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'male',
 //         'bisexual',
 //         'Malebi',
-//         'M'
+//         'M',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'malebi2',
@@ -613,8 +642,9 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         true,
 //         'male',
 //         'bisexual',
-//         'Malebi',
-//         'M'
+//         'Malebi2',
+//         'M',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'gayguy',
@@ -624,7 +654,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'male',
 //         'homosexual',
 //         'Gayguy',
-//         'G'
+//         'G',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'gayguy2',
@@ -633,8 +664,9 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         true,
 //         'male',
 //         'homosexual',
-//         'Gayguy',
-//         'G'
+//         'Gayguy2',
+//         'G',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'lesbian',
@@ -644,7 +676,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         'female',
 //         'homosexual',
 //         'Lesbian',
-//         'L'
+//         'L',
+//         ARRAY[50.468431599999995,30.4518626]
 //       ),
 //       (
 //         'lesbian2',
@@ -653,7 +686,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //         true,
 //         'female',
 //         'homosexual',
-//         'Lesbian',
-//         'L'
+//         'Lesbian2',
+//         'L',
+//         ARRAY[50.468431599999995,30.4518626]
 //       );
 // `);

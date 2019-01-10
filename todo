@@ -2,13 +2,11 @@
 - make sure that unnecessary information isn't passed to components
 - style everything
 - get rid of unused variables
-- add pagination to Users and everywhere where needed
 - prettify everything
 - test everything
 - write readme
 - check if chat messages can be added to bottom
-- remove matcha.end.pdf, music, notes, pgadmin4-3.5.dmg, .gitignore, todo
-- set location to be equal to current user location for demo for the filter to find someboby
+- remove music, notes, .gitignore, todo
 
 
 
