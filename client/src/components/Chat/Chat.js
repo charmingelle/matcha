@@ -71,6 +71,7 @@ class Chat extends React.Component {
                   <Avatar
                     alt={login}
                     src={require(`../../../public/users/photos/${avatar}`)}
+                    // src={require(`../../../build/users/photos/${avatar}`)}
                   />
                   <ListItemText primary={login} />
                   {chatData[login].online && (

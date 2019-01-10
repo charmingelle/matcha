@@ -159,6 +159,7 @@ class User extends React.Component {
               className={classes.avatar}
               alt={`${firstname} ${lastname}`}
               src={require(`../../../public/users/photos/${avatar}`)}
+              // src={require(`../../../build/users/photos/${avatar}`)}
             />
           }
           action={
@@ -216,6 +217,7 @@ class User extends React.Component {
           <img
             className={classes.img}
             src={require(`./../../../public/users/photos/${currentPhotoFile}`)}
+            // src={require(`./../../../build/users/photos/${currentPhotoFile}`)}
             alt={`${currentPhotoFile}`}
           />
         </CardContent>

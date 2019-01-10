@@ -19,6 +19,8 @@
 - git merge master
 - replace port 3000 with 5000
 - uncomment "Built React version" lines in server.js
+- change folder in profile.js
+- change src with public to build in all components
 - cd client && npm run build
 - cd .. && node server/server.js
 - http://localhost:5000

@@ -45,6 +45,7 @@ class SmallUser extends React.Component {
           <Avatar
             alt={`${firstname} ${lastname}`}
             src={require(`./../../../../public/users/photos/${avatar}`)}
+            // src={require(`./../../../../build/users/photos/${avatar}`)}
             className={classes.avatar}
           />
           <span className={classes.name}>{`${firstname} ${lastname}`}</span>

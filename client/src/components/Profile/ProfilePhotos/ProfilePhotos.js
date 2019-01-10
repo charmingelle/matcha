@@ -152,6 +152,7 @@ class ProfilePhotos extends React.Component {
                 <img
                   className={classes.img}
                   src={require(`./../../../../public/users/photos/${photo}`)}
+                  // src={require(`./../../../../build/users/photos/${photo}`)}
                   alt={`${photo}`}
                 />
               </CardContent>
