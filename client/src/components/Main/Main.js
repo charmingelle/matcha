@@ -419,7 +419,6 @@ class Main extends React.Component {
             exact
             path="/"
             render={() => {
-              // this.changeTabName("Suggestions");
               return (
                 <TabContainer>
                   <Suggestions
@@ -439,7 +438,6 @@ class Main extends React.Component {
             exact
             path="/profile"
             render={() => {
-              // this.changeTabName("Profile");
               return (
                 <TabContainer>
                   <Profile
@@ -531,7 +529,6 @@ class Main extends React.Component {
             exact
             path="/visited"
             render={() => {
-              // this.changeTabName("Visited");
               return (
                 <TabContainer>
                   <Visited

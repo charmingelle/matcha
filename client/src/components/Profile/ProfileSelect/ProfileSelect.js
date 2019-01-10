@@ -32,8 +32,6 @@ class ProfileSelect extends React.Component {
 
   handleChange = event => {
     this.setState({ [this.props.name]: event.target.value });
-    // AMAZING MOMENT
-    // this.props.onChange(this.state);
     this.props.onChange({ [this.props.name]: event.target.value });
   };
 
@@ -42,7 +40,6 @@ class ProfileSelect extends React.Component {
 
     return (
       <FormControl
-        // variant="outlined"
         className={classes.formControl}>
         <InputLabel
           ref={ref => {

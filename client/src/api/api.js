@@ -114,11 +114,6 @@ export const getChatData = () =>
     method: "POST"
   }).then(res => returnResOrError(res, "getChatData error"));
 
-export const saveOnline = () =>
-  fetch("/saveOnline", {
-    method: "POST"
-  });
-
 export const reportFake = login =>
   fetch("/reportFake", {
     method: "POST",
