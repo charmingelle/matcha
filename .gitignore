@@ -1,13 +1,11 @@
 node_modules
 client/node_modules
-client/public/users/photos/*
-!client/public/users/photos/avatar.png
+client/photos/*
+!client/photos/avatar.png
 .vscode/settings.json
 package-lock.json
 package.json
 client/package-lock.json
 client/package.json
-client/build/users/photos/*
-!client/build/users/photos/avatar.png
 .DS_Store
 client/.DS_Store

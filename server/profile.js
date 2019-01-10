@@ -3,8 +3,6 @@ const format = require("pg-format");
 const fs = require("fs");
 const crypto = require("crypto");
 const { getSuggestionsFromDB } = require("./common.js");
-const folder = 'public';
-// const folder = 'build';
 
 const saveNewInterests = (reqBody, db) => {
   db.any("SELECT interest FROM interests").then(data => {
@@ -127,7 +125,7 @@ module.exports = (app, requireLogin, db) => {
     const fileName = `${crypto.randomBytes(20).toString("hex")}${Date.now()}`;
 
     fs.writeFile(
-      `client/${folder}/users/photos/${fileName}.png`,
+      `client/photos/${fileName}.png`,
       req.body.photo.replace(/^data:image\/png;base64,/, ""),
       "base64",
       error => {
@@ -140,7 +138,7 @@ module.exports = (app, requireLogin, db) => {
           let gallery = data.gallery;
 
           fs.unlink(
-            `client/${folder}/users/photos/${gallery[req.body.photoid]}`,
+            `client/photos/${gallery[req.body.photoid]}`,
             () => {
               gallery[req.body.photoid] = `${fileName}.png`;
               db.any(
