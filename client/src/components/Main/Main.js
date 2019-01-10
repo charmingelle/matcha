@@ -146,9 +146,19 @@ class Main extends React.Component {
       this.addNotification(`${data.sender} has just checked your profile`)
     );
     socket.on("chat", data => {
+      let newChatData = this.state.chatData;
+      let user;
+
       if (data.sender !== this.state.profile.login) {
-        this.addNotification(`${data.sender} has sent you a message`);
+        user = data.sender;
+        this.addNotification(`${user} has sent you a message`);
+      } else {
+        user = data.receiver;
       }
+      newChatData[user].log.unshift(data);
+      this.setState({
+        chatData: newChatData
+      });
     });
     socket.on("likeBack", data => {
       this.addNotification(`${data.data.sender} has just liked you back!`);

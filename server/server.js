@@ -66,26 +66,3 @@ require('./chat.js')(app, db);
 // app.get('/*', (req, res) => {
 //   res.sendFile(path.join(__dirname, './../client/build/index.html'));
 // });
-
-// Check if I need these functions
-
-// app.post('/getMessages', requireLogin, (req, res) => {
-//   let query =
-//     'SELECT * FROM messages WHERE (sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender}) ORDER BY time DESC LIMIT 30';
-
-//   if (req.body.lastloadedid !== null) {
-//     query =
-//       'SELECT * FROM messages WHERE id < ${lastloadedid} AND ((sender = ${sender} AND receiver = ${receiver}) OR (sender = ${receiver} AND receiver = ${sender})) ORDER BY time DESC LIMIT 30';
-//   }
-//   db.any(query, {
-//     sender: req.body.sender,
-//     receiver: req.body.receiver,
-//     lastloadedid: req.body.lastloadedid
-//   }).then(data => {
-//     if (data.length > 0) {
-//       res.send(JSON.stringify(data));
-//     } else {
-//       res.send(JSON.stringify([]));
-//     }
-//   });
-// });
