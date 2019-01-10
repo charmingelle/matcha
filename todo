@@ -6,6 +6,8 @@
 - test everything
 - write readme
 - remove music, notes, .gitignore, todo from prod
+- create package.json with script only on prod, change readme
+
 - check what happens during photo upload
 
 

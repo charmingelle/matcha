@@ -111,15 +111,18 @@ class ProfilePhotos extends React.Component {
       saveUserPhoto(canvas.toDataURL(), this.photoid)
         .then(response => response.json())
         .then(data => {
+          this.photoid = null;
           newGallery[this.photoid] = data.fileName;
           this.setState({ gallery: newGallery });
-          this.photoid = null;
         });
     };
     image.src = window.URL.createObjectURL(event.target.files[0]);
   };
 
   render = () => {
+    if (!this.state) {
+      return <span>Loading...</span>;
+    }
     const { classes } = this.props;
     const { gallery, avatarid } = this.state;
 

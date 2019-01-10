@@ -1,11 +1,11 @@
-const { check } = require('express-validator/check');
-const format = require('pg-format');
-const fs = require('fs');
-const crypto = require('crypto');
-const { getSuggestionsFromDB } = require('./common.js');
+const { check } = require("express-validator/check");
+const format = require("pg-format");
+const fs = require("fs");
+const crypto = require("crypto");
+const { getSuggestionsFromDB } = require("./common.js");
 
 const saveNewInterests = (reqBody, db) => {
-  db.any('SELECT interest FROM interests').then(data => {
+  db.any("SELECT interest FROM interests").then(data => {
     data = data.map(interest => interest.interest);
 
     let toSave = reqBody.interests.filter(
@@ -15,7 +15,7 @@ const saveNewInterests = (reqBody, db) => {
     toSave = toSave.map(interest => [interest]);
 
     if (toSave.length >= 1) {
-      const query = format('INSERT INTO interests(interest) VALUES %L', toSave);
+      const query = format("INSERT INTO interests(interest) VALUES %L", toSave);
 
       db.any(query);
     }
@@ -25,7 +25,7 @@ const saveNewInterests = (reqBody, db) => {
 const updateProfile = (reqBody, login, db) => {
   return db
     .any(
-      'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE login = ${login}',
+      "UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE login = ${login}",
       {
         firstname: reqBody.firstname,
         lastname: reqBody.lastname,
@@ -46,7 +46,7 @@ const updateProfile = (reqBody, login, db) => {
 const checkBusyEmail = (email, login, db) => {
   return new Promise((resolve, reject) => {
     db.any(
-      'SELECT email FROM users WHERE email = ${email} AND login <> ${login}',
+      "SELECT email FROM users WHERE email = ${email} AND login <> ${login}",
       {
         email,
         login
@@ -59,9 +59,9 @@ const checkBusyEmail = (email, login, db) => {
 
 module.exports = (app, requireLogin, db) => {
   app.post(
-    '/saveUserProfile',
+    "/saveUserProfile",
     requireLogin,
-    [check('firstname').isEmpty(), check('lastname').isEmpty()],
+    [check("firstname").isEmpty(), check("lastname").isEmpty()],
     (req, res) => {
       checkBusyEmail(req.body.email, req.session.login, db)
         .then(
@@ -69,8 +69,8 @@ module.exports = (app, requireLogin, db) => {
           () =>
             res.send(
               JSON.stringify({
-                status: 'error',
-                result: 'The email address is busy'
+                status: "error",
+                result: "The email address is busy"
               })
             )
         )
@@ -78,8 +78,8 @@ module.exports = (app, requireLogin, db) => {
           getSuggestionsFromDB(req.session.login, db).then(data =>
             res.send(
               JSON.stringify({
-                status: 'success',
-                result: 'Your data has been changed',
+                status: "success",
+                result: "Your data has been changed",
                 suggestions: data
               })
             )
@@ -88,16 +88,16 @@ module.exports = (app, requireLogin, db) => {
     }
   );
 
-  app.post('/getLikedBy', requireLogin, (req, res) =>
+  app.post("/getLikedBy", requireLogin, (req, res) =>
     db
-      .any('SELECT liker FROM likes WHERE likee = ${likee}', {
+      .any("SELECT liker FROM likes WHERE likee = ${likee}", {
         likee: req.session.login
       })
       .then(data => {
         if (data.length !== 0) {
           data = data.map(record => record.liker);
           const query = format(
-            'SELECT login, firstname, lastname, gallery, avatarid FROM users WHERE login IN (%L)',
+            "SELECT login, firstname, lastname, gallery, avatarid FROM users WHERE login IN (%L)",
             data
           );
 
@@ -108,10 +108,10 @@ module.exports = (app, requireLogin, db) => {
       })
   );
 
-  app.post('/getCheckedBy', requireLogin, (req, res) =>
+  app.post("/getCheckedBy", requireLogin, (req, res) =>
     db
       .any(
-        'SELECT login, firstname, lastname, gallery, avatarid, visited from users'
+        "SELECT login, firstname, lastname, gallery, avatarid, visited from users"
       )
       .then(data => {
         data = data.filter(record =>
@@ -120,29 +120,29 @@ module.exports = (app, requireLogin, db) => {
         res.send(JSON.stringify(data));
       })
   );
-  
-  app.post('/saveUserPhoto', requireLogin, (req, res) => {
-    const fileName = `${crypto.randomBytes(20).toString('hex')}${Date.now()}`;
-  
+
+  app.post("/saveUserPhoto", requireLogin, (req, res) => {
+    const fileName = `${crypto.randomBytes(20).toString("hex")}${Date.now()}`;
+
     fs.writeFile(
       `client/public/users/photos/${fileName}.png`,
-      req.body.photo.replace(/^data:image\/png;base64,/, ''),
-      'base64',
+      req.body.photo.replace(/^data:image\/png;base64,/, ""),
+      "base64",
       error => {
         if (error) {
           throw error;
         }
-        db.one('SELECT gallery FROM users WHERE login = ${login}', {
+        db.one("SELECT gallery FROM users WHERE login = ${login}", {
           login: req.session.login
         }).then(data => {
           let gallery = data.gallery;
-  
+
           fs.unlink(
             `client/public/users/photos/${gallery[req.body.photoid]}`,
             () => {
               gallery[req.body.photoid] = `${fileName}.png`;
               db.any(
-                'UPDATE users SET gallery = ${gallery} WHERE login = ${login}',
+                "UPDATE users SET gallery = ${gallery} WHERE login = ${login}",
                 {
                   gallery,
                   login: req.session.login
@@ -156,9 +156,9 @@ module.exports = (app, requireLogin, db) => {
       }
     );
   });
-  
-  app.post('/setAvatar', requireLogin, (req, res) => {
-    db.any('UPDATE users SET avatarid = ${avatarid} WHERE login = ${login}', {
+
+  app.post("/setAvatar", requireLogin, (req, res) => {
+    db.any("UPDATE users SET avatarid = ${avatarid} WHERE login = ${login}", {
       avatarid: req.body.avatarid,
       login: req.session.login
     }).then(() => res.send());

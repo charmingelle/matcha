@@ -25,7 +25,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Suggestions from "./../Suggestions/Suggestions.js";
 import Profile from "./../Profile/Profile.js";
 import User from "./../User/User.js";
-import Signin from "./../Signin/Signin.js";
+import Signin from "../Signin/Signin.js";
 import Visited from "./../Visited/Visited.js";
 import Chat from "./../Chat/Chat.js";
 import Notifications from "./../Notifications/Notifications.js";
@@ -197,8 +197,7 @@ class Main extends React.Component {
               allInterests: data.allInterests,
               changeStatus: null,
               error: false,
-              canRenderLikeButton:
-                data.user.gallery.length > 0
+              canRenderLikeButton: data.user.gallery.length > 0
             }
           });
           this.getLocation(data.user.id);
@@ -231,6 +230,19 @@ class Main extends React.Component {
     signout().then(() => this.setState({ profile: "signin" }));
   };
 
+  updateSuggestions = suggestions => this.setState({ suggestions });
+
+  updateChatData = chatData => this.setState({ chatData });
+
+  updateLog = (receiver, log) => {
+    let newChatData = this.state.chatData;
+
+    newChatData[receiver].log = log;
+    this.setState({
+      chatData: newChatData
+    });
+  };
+
   updateVisited = visitedLogin => {
     if (
       !this.state.visited.map(profile => profile.login).includes(visitedLogin)
@@ -246,11 +258,7 @@ class Main extends React.Component {
       });
     }
   };
-
-  updateSuggestions = suggestions => this.setState({ suggestions });
-
-  updateChatData = chatData => this.setState({ chatData });
-
+  
   closeNotification = index => {
     let newNotifications = this.state.notifications;
 
@@ -276,15 +284,6 @@ class Main extends React.Component {
       return;
     }
     this.setState({ showMenu: false });
-  };
-
-  updateLog = (receiver, log) => {
-    let newChatData = this.state.chatData;
-
-    newChatData[receiver].log = log;
-    this.setState({
-      chatData: newChatData
-    });
   };
 
   render = () => {
