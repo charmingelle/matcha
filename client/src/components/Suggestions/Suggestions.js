@@ -128,7 +128,7 @@ class Suggestions extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes } = this.props;
+    const { classes, canRenderLikeButton } = this.props;
     const { filteredUsers, moved } = this.state;
 
     return (
@@ -150,6 +150,7 @@ class Suggestions extends React.Component {
                 visited={this.props.visited}
                 updateVisited={this.props.updateVisited}
                 updateChatData={this.props.updateChatData}
+                canRenderLikeButton={canRenderLikeButton}
               />
             </li>
           ))}

@@ -25,7 +25,8 @@ class Visited extends React.Component {
       socket,
       sender,
       updateVisited,
-      updateChatData
+      updateChatData,
+      canRenderLikeButton
     } = this.props;
 
     return (
@@ -40,6 +41,7 @@ class Visited extends React.Component {
                 sender={sender}
                 updateVisited={updateVisited}
                 updateChatData={updateChatData}
+                canRenderLikeButton={canRenderLikeButton}
               />
             </li>
           ))}

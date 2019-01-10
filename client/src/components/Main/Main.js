@@ -197,8 +197,8 @@ class Main extends React.Component {
               allInterests: data.allInterests,
               changeStatus: null,
               error: false,
-              canLike:
-                data.user.gallery.filter(image => image !== "").length > 0
+              canRenderLikeButton:
+                data.user.gallery.length > 0
             }
           });
           this.getLocation(data.user.id);
@@ -308,7 +308,7 @@ class Main extends React.Component {
     const { classes } = this.props;
     const {
       profile,
-      profile: { login, canLike },
+      profile: { login, canRenderLikeButton },
       notifications,
       showMenu,
       chatData,
@@ -429,6 +429,7 @@ class Main extends React.Component {
                     updateVisited={this.updateVisited}
                     suggestions={suggestions}
                     updateChatData={this.updateChatData}
+                    canRenderLikeButton={canRenderLikeButton}
                   />
                 </TabContainer>
               );
@@ -512,11 +513,11 @@ class Main extends React.Component {
                         user={suggestions[index]}
                         socket={socket}
                         sender={login}
-                        canLike={canLike}
                         full={true}
                         visited={visited}
                         updateVisited={this.updateVisited}
                         updateChatData={this.updateChatData}
+                        canRenderLikeButton={canRenderLikeButton}
                       />
                     </div>
                   </TabContainer>
@@ -537,6 +538,7 @@ class Main extends React.Component {
                     visited={visited}
                     updateVisited={this.updateVisited}
                     updateChatData={this.updateChatData}
+                    canRenderLikeButton={canRenderLikeButton}
                   />
                 </TabContainer>
               );

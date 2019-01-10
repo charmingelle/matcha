@@ -56,6 +56,10 @@ const styles = theme => ({
   expandOpen: {
     transform: "rotate(180deg)"
   },
+  fameNote: {
+    marginRight: 8,
+    fontWeight: 'bold'
+  },
   leftRightArea: {
     position: "relative",
     height: 30
@@ -123,7 +127,7 @@ class User extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes } = this.props;
+    const { classes, canRenderLikeButton } = this.props;
     const {
       login,
       firstname,
@@ -242,13 +246,15 @@ class User extends React.Component {
           </Typography>
         </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
-          <LikeButton
-            changeFame={this.changeFame}
-            socket={this.props.socket}
-            sender={this.props.sender}
-            login={login}
-            updateChatData={this.props.updateChatData}
-          />
+          {canRenderLikeButton ? (
+            <LikeButton
+              changeFame={this.changeFame}
+              socket={this.props.socket}
+              sender={this.props.sender}
+              login={login}
+              updateChatData={this.props.updateChatData}
+            />
+          ) : <div className={classes.fameNote}>Fame:</div>}
           <div>{fame}</div>
           {(interests.length > 0 || bio) && (
             <IconButton
