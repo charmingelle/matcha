@@ -8,22 +8,22 @@ To start PostgreSQL server, run the following command in your terminal window
 pg_ctl -D /Users/grevenko/.brew/var/postgres start
 ```
 
-To initiate the project, cd to the root directory and run
+To initiate the project and start Node.js server, cd to the root directory and run
 
 ```
-npm init && npm i express && npm i pg-promise && npm i client-sessions && npm i pg-format && npm i express-validator && npm i random-hash && npm i sendmail && npm i socket.io && npm i bcrypt
+npm start
 ```
 
-To initiate the database, run
+Now Matcha website is available at [http://localhost:5000](http://localhost:5000)
+
+To re-initiate the database, run
 
 ```
-node server/db.js
+npm run initiate_db
 ```
 
 To start Node.js server, run
 
 ```
-node server/server.js
+npm run server
 ```
-
-Now Matcha website is available at [http://localhost:5000](http://localhost:5000)
