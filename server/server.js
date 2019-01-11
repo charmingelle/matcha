@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
-// const port = 3000;
-const port = 5000;
+const port = 3000;
+// const port = 5000;
 const db = require("pg-promise")()(
   "postgres://grevenko:postgres@localhost:5432/matcha"
 );
@@ -29,7 +29,7 @@ app.use(
 
 // Built React version
 
-app.use(express.static(path.join(__dirname, './../client/build')));
+// app.use(express.static(path.join(__dirname, './../client/build')));
 
 const requireLogin = (req, res, next) => {
   if (req.session && req.session.login) {
@@ -63,6 +63,6 @@ require("./chat.js")(app, db);
 
 // Built React version
 
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, './../client/build/index.html'));
-});
+// app.get('/*', (req, res) => {
+//   res.sendFile(path.join(__dirname, './../client/build/index.html'));
+// });

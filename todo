@@ -2,7 +2,6 @@
 - remove .gitignore, todo from prod
 - remove all comments
 - maybe write command to initiate client
-- check "email is busy" Profile bug
 
 - check what happens during photo upload
 

@@ -257,7 +257,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       (
         'femabi',
         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-        'fembi@gmail.com',
+        'femabi@gmail.com',
         true,
         'female',
         'bisexual',
@@ -268,7 +268,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       (
         'femabi2',
         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-        'fembi@gmail.com',
+        'femabi2@gmail.com',
         true,
         'female',
         'bisexual',
@@ -279,7 +279,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       (
         'malebi',
         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-        'anna@gmail.com',
+        'malebi@gmail.com',
         true,
         'male',
         'bisexual',
@@ -290,7 +290,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       (
         'malebi2',
         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-        'anna@gmail.com',
+        'malebi2@gmail.com',
         true,
         'male',
         'bisexual',
@@ -301,7 +301,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       (
         'gayguy',
         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-        'fembi@gmail.com',
+        'gayguy@gmail.com',
         true,
         'male',
         'homosexual',
@@ -312,7 +312,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       (
         'gayguy2',
         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-        'fembi@gmail.com',
+        'gayguy2@gmail.com',
         true,
         'male',
         'homosexual',
@@ -323,7 +323,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       (
         'lesbian',
         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-        'fembi@gmail.com',
+        'lesbian@gmail.com',
         true,
         'female',
         'homosexual',
@@ -334,7 +334,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
       (
         'lesbian2',
         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-        'fembi@gmail.com',
+        'lesbian2@gmail.com',
         true,
         'female',
         'homosexual',
@@ -605,7 +605,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //       (
 //         'femabi',
 //         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-//         'fembi@gmail.com',
+//         'femabi@gmail.com',
 //         true,
 //         'female',
 //         'bisexual',
@@ -616,7 +616,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //       (
 //         'femabi2',
 //         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-//         'fembi@gmail.com',
+//         'femabi2@gmail.com',
 //         true,
 //         'female',
 //         'bisexual',
@@ -627,7 +627,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //       (
 //         'malebi',
 //         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-//         'anna@gmail.com',
+//         'malebi@gmail.com',
 //         true,
 //         'male',
 //         'bisexual',
@@ -638,7 +638,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //       (
 //         'malebi2',
 //         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-//         'anna@gmail.com',
+//         'malebi2@gmail.com',
 //         true,
 //         'male',
 //         'bisexual',
@@ -649,7 +649,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //       (
 //         'gayguy',
 //         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-//         'fembi@gmail.com',
+//         'gayguy@gmail.com',
 //         true,
 //         'male',
 //         'homosexual',
@@ -660,7 +660,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //       (
 //         'gayguy2',
 //         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-//         'fembi@gmail.com',
+//         'gayguy2@gmail.com',
 //         true,
 //         'male',
 //         'homosexual',
@@ -671,7 +671,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //       (
 //         'lesbian',
 //         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-//         'fembi@gmail.com',
+//         'lesbian@gmail.com',
 //         true,
 //         'female',
 //         'homosexual',
@@ -682,7 +682,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //       (
 //         'lesbian2',
 //         '$2b$10$OaheWFrExG13Nv8DFFxwLuY8uOkBOG0pSirbQpL6hcDpaa5bpoa5G',
-//         'fembi@gmail.com',
+//         'lesbian2@gmail.com',
 //         true,
 //         'female',
 //         'homosexual',
