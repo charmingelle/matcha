@@ -125,7 +125,7 @@ module.exports = (app, requireLogin, db) => {
     const fileName = `${crypto.randomBytes(20).toString("hex")}${Date.now()}`;
 
     fs.writeFile(
-      `client/photos/${fileName}.png`,
+      `photos/${fileName}.png`,
       req.body.photo.replace(/^data:image\/png;base64,/, ""),
       "base64",
       error => {
@@ -137,7 +137,7 @@ module.exports = (app, requireLogin, db) => {
         }).then(data => {
           let gallery = data.gallery;
 
-          fs.unlink(`client/photos/${gallery[req.body.photoid]}`, () => {
+          fs.unlink(`photos/${gallery[req.body.photoid]}`, () => {
             gallery[req.body.photoid] = `${fileName}.png`;
             db.any(
               "UPDATE users SET gallery = ${gallery} WHERE login = ${login}",

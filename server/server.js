@@ -29,7 +29,9 @@ app.use(
 
 // Built React version
 
-// app.use(express.static(path.join(__dirname, './../client/build')));
+// app.use(express.static(path.join(__dirname, "./../client/build")));
+
+app.use(express.static(path.join(__dirname, "./../photos")));
 
 const requireLogin = (req, res, next) => {
   if (req.session && req.session.login) {
@@ -63,6 +65,6 @@ require("./chat.js")(app, db);
 
 // Built React version
 
-// app.get('/*', (req, res) => {
-//   res.sendFile(path.join(__dirname, './../client/build/index.html'));
+// app.get("/*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "./../client/build/index.html"));
 // });

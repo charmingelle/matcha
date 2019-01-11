@@ -155,7 +155,7 @@ class User extends React.Component {
               aria-label="Recipe"
               className={classes.avatar}
               alt={`${firstname} ${lastname}`}
-              src={require(`../../../photos/${avatar}`)}
+              src={`/${avatar}`}
             />
           }
           action={
@@ -212,7 +212,7 @@ class User extends React.Component {
         <CardContent className={classes.photoContent}>
           <img
             className={classes.img}
-            src={require(`./../../../photos/${currentPhotoFile}`)}
+            src={`/${currentPhotoFile}`}
             alt={`${currentPhotoFile}`}
           />
         </CardContent>

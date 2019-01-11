@@ -68,10 +68,7 @@ class Chat extends React.Component {
                     login === receiver ? classes.selectedUser : classes.user
                   }
                 >
-                  <Avatar
-                    alt={login}
-                    src={require(`../../../photos/${avatar}`)}
-                  />
+                  <Avatar alt={login} src={`/${avatar}`} />
                   <ListItemText primary={login} />
                   {chatData[login].online && (
                     <div className={classes.onlineDot} />

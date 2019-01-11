@@ -22,7 +22,7 @@ export const saveUserPhoto = (photo, photoid) =>
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ photo, photoid })
-  });
+  }).then(res => returnResOrError(res, "saveUserPhoto error"));;
 
 export const setAvatar = avatarid =>
   fetch("/setAvatar", {

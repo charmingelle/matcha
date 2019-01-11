@@ -88,21 +88,16 @@ class ProfilePhotos extends React.Component {
       if (this.photoid === null) {
         this.photoid = newGallery.length;
       }
-      saveUserPhoto(canvas.toDataURL(), this.photoid)
-        .then(response => response.json())
-        .then(data => {
-          this.photoid = null;
-          newGallery[this.photoid] = data.fileName;
-          this.setState({ gallery: newGallery });
-        });
+      saveUserPhoto(canvas.toDataURL(), this.photoid).then(data => {
+        newGallery[this.photoid] = data.fileName;
+        this.setState({ gallery: newGallery });
+        this.photoid = null;
+      });
     };
     image.src = window.URL.createObjectURL(event.target.files[0]);
   };
 
   render = () => {
-    if (!this.state) {
-      return <span>Loading...</span>;
-    }
     const { classes } = this.props;
     const { gallery, avatarid } = this.state;
 
@@ -131,7 +126,7 @@ class ProfilePhotos extends React.Component {
               <CardContent className={classes.content}>
                 <img
                   className={classes.img}
-                  src={require(`./../../../../photos/${photo}`)}
+                  src={`/${photo}`}
                   alt={`${photo}`}
                 />
               </CardContent>
