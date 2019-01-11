@@ -5,7 +5,7 @@
 To start PostgreSQL server, run the following command in your terminal window
 
 ```
-pg_ctl -D /Users/grevenko/.brew/var/postgres start
+npm run pg_start
 ```
 
 To initiate the project and start Node.js server, cd to the root directory and run

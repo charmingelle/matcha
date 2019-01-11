@@ -8,10 +8,13 @@
     "client": "cd client && npm start",
     "server": "node server/server.js",
     "dev": "concurrently 'npm run client' 'npm run server'",
-    "initiate_db": "node server/db.js",
-    "initiate_client": "cd client && npm run initiate && npm run build && cd ..",
+    "create_db": "./create_db.sh",
+    "initiate_db": "npm run create_db && node server/db.js",
+    "initiate_client": "(cd client && npm run initiate && npm run build)",
     "initiate": "npm run initiate_client && npm --loglevel=error i concurrently express pg-promise client-sessions pg-format express-validator random-hash sendmail socket.io bcrypt@2",
-    "start": "npm run initiate && node server/db.js && node server/server.js"
+    "start": "npm run initiate && npm run initiate_db && npm run server",
+    "pg_start": "pg_ctl -D /Users/grevenko/.brew/var/postgres start",
+    "pg_stop": "pg_ctl -D /Users/grevenko/.brew/var/postgres stop"
   },
   "repository": {
     "type": "git",
