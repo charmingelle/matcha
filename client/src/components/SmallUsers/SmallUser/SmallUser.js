@@ -1,21 +1,21 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
-import Avatar from '@material-ui/core/Avatar';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
+import Avatar from "@material-ui/core/Avatar";
 
 const styles = {
   link: {
-    color: 'initial',
-    textDecoration: 'none',
-    '&:hover': {
-      color: '#3f51b5'
+    color: "initial",
+    textDecoration: "none",
+    "&:hover": {
+      color: "#3f51b5"
     }
   },
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     paddingRight: 15
   },
   avatar: {
@@ -33,7 +33,7 @@ class SmallUser extends React.Component {
       classes,
       user: { login, firstname, lastname, gallery, avatarid }
     } = this.props;
-    const avatar = gallery.length > 0 ? gallery[avatarid] : 'avatar.png';
+    const avatar = gallery.length > 0 ? gallery[avatarid] : "avatar.png";
 
     return (
       <Link

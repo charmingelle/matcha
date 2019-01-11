@@ -1,26 +1,26 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import keycode from 'keycode';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { Link } from 'react-router-dom';
-import { isPasswordValid } from './../../utils/utils.js';
-import { resetPassword } from './../../api/api.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import keycode from "keycode";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import { Link } from "react-router-dom";
+import { isPasswordValid } from "./../../utils/utils.js";
+import { resetPassword } from "./../../api/api.js";
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100vw',
-    height: '100vh'
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100vw",
+    height: "100vh"
   },
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: 'fit-content'
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "fit-content"
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -28,16 +28,16 @@ const styles = theme => ({
     width: 200
   },
   button: {
-    margin: '8px'
+    margin: "8px"
   }
 });
 
 class ResetPassword extends React.Component {
   state = {
-    password: '',
-    passwordConfirm: '',
+    password: "",
+    passwordConfirm: "",
     error: false,
-    message: ''
+    message: ""
   };
 
   componentDidMount = () => {
@@ -47,7 +47,7 @@ class ResetPassword extends React.Component {
   };
 
   handleKeyPress = event => {
-    if (keycode(event) === 'enter') {
+    if (keycode(event) === "enter") {
       this.resetPassword();
     }
   };
@@ -59,20 +59,20 @@ class ResetPassword extends React.Component {
   };
 
   resetPassword = () => {
-    if (this.state.password === '' || this.state.passwordConfirm === '') {
+    if (this.state.password === "" || this.state.passwordConfirm === "") {
       this.setState({
         error: true,
-        message: 'Please fill all the fields in'
+        message: "Please fill all the fields in"
       });
     } else if (!isPasswordValid(this.state.password)) {
       this.setState({
         error: true,
-        message: 'Invalid password'
+        message: "Invalid password"
       });
     } else if (this.state.password !== this.state.passwordConfirm) {
       this.setState({
         error: true,
-        message: 'Invalid password confirm'
+        message: "Invalid password confirm"
       });
     } else {
       resetPassword(this.state.password, this.state.email)
@@ -82,7 +82,7 @@ class ResetPassword extends React.Component {
   };
 
   renderMessage = () => {
-    if (this.state.message !== '') {
+    if (this.state.message !== "") {
       return (
         <TextField
           className={this.props.classes.textField}
@@ -104,7 +104,7 @@ class ResetPassword extends React.Component {
           <TextField
             label="Password"
             className={classes.textField}
-            onChange={this.handleChange('password')}
+            onChange={this.handleChange("password")}
             onKeyPress={this.handleKeyPress}
             margin="normal"
             value={this.state.password}
@@ -113,7 +113,7 @@ class ResetPassword extends React.Component {
           <TextField
             label="Confirm your password"
             className={classes.textField}
-            onChange={this.handleChange('passwordConfirm')}
+            onChange={this.handleChange("passwordConfirm")}
             onKeyPress={this.handleKeyPress}
             margin="normal"
             value={this.state.passwordConfirm}

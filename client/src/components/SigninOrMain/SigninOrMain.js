@@ -8,11 +8,10 @@ export default class SigninOrMain extends Component {
     page: null
   };
 
-  componentDidMount = () => {
+  componentDidMount = () =>
     signinOrMain()
       .then(response => response.json())
       .then(result => this.setState({ page: result.result }));
-  };
 
   render = () => {
     if (!this.state.page) {

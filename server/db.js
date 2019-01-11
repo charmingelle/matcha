@@ -498,7 +498,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 //     DELETE FROM public.likes;
 
 //     DELETE FROM public.messages;
-    
+
 //     DELETE FROM public.users;
 
 //     INSERT INTO public.users

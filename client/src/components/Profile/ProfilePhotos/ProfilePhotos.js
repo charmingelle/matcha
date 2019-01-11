@@ -16,11 +16,6 @@ const styles = {
     flexDirection: "column",
     alignItems: "center"
   },
-  upload: {
-    marginTop: "15px",
-    color: "rgba(0, 0, 0, 0.54)",
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
-  },
   rightIcon: {
     marginLeft: 10
   },
@@ -31,21 +26,6 @@ const styles = {
     margin: 0,
     padding: 0,
     listStyleType: "none"
-  },
-  photoContainer: {
-    margin: "50px",
-    width: "614px"
-  },
-  imgContainer: {
-    position: "relative",
-    top: "6px"
-  },
-  photo: {
-    width: "100%"
-  },
-  photoActions: {
-    display: "flex",
-    flexDirection: "column"
   },
   avatarNote: {
     lineHeight: "38.8px",

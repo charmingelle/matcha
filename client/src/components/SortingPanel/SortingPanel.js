@@ -1,49 +1,49 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import classnames from 'classnames';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import classnames from "classnames";
+import IconButton from "@material-ui/core/IconButton";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    width: '100%',
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    width: "100%",
     padding: 3,
-    backgroundColor: '#ffffff',
-    transform: 'translate(0px, 0px)',
-    transition: 'transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms'
+    backgroundColor: "#ffffff",
+    transform: "translate(0px, 0px)",
+    transition: "transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms"
   },
   moved: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    width: '100%',
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    width: "100%",
     padding: 3,
-    backgroundColor: '#ffffff',
-    transform: 'translate(0, -430px)',
-    transition: 'transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms'
+    backgroundColor: "#ffffff",
+    transform: "translate(0, -430px)",
+    transition: "transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms"
   },
   span: {
-    color: 'rgba(0, 0, 0, 0.54)'
+    color: "rgba(0, 0, 0, 0.54)"
   },
   expand: {
-    transform: 'rotate(0deg)',
-    transition: theme.transitions.create('transform', {
+    transform: "rotate(0deg)",
+    transition: theme.transitions.create("transform", {
       duration: theme.transitions.duration.shortest
     }),
-    marginLeft: 'auto',
-    [theme.breakpoints.up('sm')]: {
+    marginLeft: "auto",
+    [theme.breakpoints.up("sm")]: {
       marginRight: -8
     }
   },
   expandOpen: {
-    transform: 'rotate(180deg)'
+    transform: "rotate(180deg)"
   },
   selected: {
-    color: '#3f51b5'
+    color: "#3f51b5"
   }
 });
 
@@ -54,7 +54,7 @@ class SortingPanel extends React.Component {
       distance: true,
       fame: false,
       amountOfCommonInterests: false,
-      selected: 'distance'
+      selected: "distance"
     });
   };
 
@@ -101,22 +101,22 @@ class SortingPanel extends React.Component {
     const { classes, moved } = this.props;
 
     return (
-      <div className={moved ? classes.root: classes.moved}>
+      <div className={moved ? classes.root : classes.moved}>
         <div>
           <span className={classes.span}>Sort by age</span>
-          {this.renderSortButton('age')}
+          {this.renderSortButton("age")}
         </div>
         <div>
           <span className={classes.span}>distance</span>
-          {this.renderSortButton('distance')}
+          {this.renderSortButton("distance")}
         </div>
         <div>
           <span className={classes.span}>fame</span>
-          {this.renderSortButton('fame')}
+          {this.renderSortButton("fame")}
         </div>
         <div>
           <span className={classes.span}>common interests amount</span>
-          {this.renderSortButton('amountOfCommonInterests')}
+          {this.renderSortButton("amountOfCommonInterests")}
         </div>
       </div>
     );

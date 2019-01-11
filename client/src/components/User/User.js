@@ -58,7 +58,7 @@ const styles = theme => ({
   },
   fameNote: {
     marginRight: 8,
-    fontWeight: 'bold'
+    fontWeight: "bold"
   },
   leftRightArea: {
     position: "relative",
@@ -83,11 +83,10 @@ class User extends React.Component {
     });
   };
 
-  showPreviousPhoto = () => {
+  showPreviousPhoto = () =>
     this.setState({
       currentPhoto: this.state.currentPhoto - 1
     });
-  };
 
   showNextPhoto = () => {
     this.props.updateVisited(this.state.login);
@@ -96,15 +95,13 @@ class User extends React.Component {
     });
   };
 
-  toggleMenu = () => {
+  toggleMenu = () =>
     this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
-  };
 
-  changeFame = step => {
+  changeFame = step =>
     this.setState({
       fame: this.state.fame + step
     });
-  };
 
   reportFake = () =>
     reportFake(this.state.login).then(() =>
@@ -254,7 +251,9 @@ class User extends React.Component {
               login={login}
               updateChatData={this.props.updateChatData}
             />
-          ) : <div className={classes.fameNote}>Fame:</div>}
+          ) : (
+            <div className={classes.fameNote}>Fame:</div>
+          )}
           <div>{fame}</div>
           {(interests.length > 0 || bio) && (
             <IconButton

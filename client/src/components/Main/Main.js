@@ -2,7 +2,6 @@ import React from "react";
 import { Route, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import socketIOClient from "socket.io-client";
-
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import MenuList from "@material-ui/core/MenuList";
@@ -15,13 +14,11 @@ import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-
 import ChatIcon from "@material-ui/icons/Chat";
 import CheckIcon from "@material-ui/icons/Check";
 import PeopleIcon from "@material-ui/icons/People";
 import PersonIcon from "@material-ui/icons/Person";
 import MenuIcon from "@material-ui/icons/Menu";
-
 import Suggestions from "./../Suggestions/Suggestions.js";
 import Profile from "./../Profile/Profile.js";
 import User from "./../User/User.js";
@@ -52,7 +49,7 @@ TabContainer.propTypes = {
   children: PropTypes.node.isRequired
 };
 
-const styles = theme => ({
+const styles = {
   root: {
     display: "flex",
     flexDirection: "column",
@@ -97,7 +94,7 @@ const styles = theme => ({
     justifyContent: "center",
     overflow: "auto"
   }
-});
+};
 
 let socket = null;
 
@@ -222,13 +219,9 @@ class Main extends React.Component {
     ]);
   }
 
-  onProfileChange = target => {
-    this.setState({ profile: target });
-  };
+  onProfileChange = target => this.setState({ profile: target });
 
-  signout = () => {
-    signout().then(() => this.setState({ profile: "signin" }));
-  };
+  signout = () => signout().then(() => this.setState({ profile: "signin" }));
 
   updateSuggestions = suggestions => this.setState({ suggestions });
 
@@ -258,7 +251,7 @@ class Main extends React.Component {
       });
     }
   };
-  
+
   closeNotification = index => {
     let newNotifications = this.state.notifications;
 

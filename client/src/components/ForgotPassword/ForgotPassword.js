@@ -1,25 +1,25 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import keycode from 'keycode';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { Link } from 'react-router-dom';
-import { getResetPasswordEmail } from '../../api/api.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import keycode from "keycode";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import { Link } from "react-router-dom";
+import { getResetPasswordEmail } from "../../api/api.js";
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100vw',
-    height: '100vh'
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100vw",
+    height: "100vh"
   },
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: 'fit-content'
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "fit-content"
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -27,19 +27,19 @@ const styles = theme => ({
     width: 200
   },
   button: {
-    margin: '8px'
+    margin: "8px"
   }
 });
 
 class ForgotPassword extends React.Component {
   state = {
-    email: '',
-    message: '',
+    email: "",
+    message: "",
     error: false
   };
 
   handleKeyPress = event => {
-    if (keycode(event) === 'enter') {
+    if (keycode(event) === "enter") {
       this.getResetPasswordEmail();
     }
   };
@@ -51,18 +51,18 @@ class ForgotPassword extends React.Component {
   };
 
   getResetPasswordEmail = () => {
-    if (this.state.email === '') {
+    if (this.state.email === "") {
       this.setState({
-        message: 'Please fill in your email',
+        message: "Please fill in your email",
         error: true
       });
     } else {
       this.setState({
-        message: ''
+        message: ""
       });
       getResetPasswordEmail(this.state.email).then(data =>
         this.setState({
-          error: data.status === 'error',
+          error: data.status === "error",
           message: data.result
         })
       );
@@ -70,7 +70,7 @@ class ForgotPassword extends React.Component {
   };
 
   renderMessage = () => {
-    if (this.state.message !== '') {
+    if (this.state.message !== "") {
       return (
         <TextField
           className={this.props.classes.textField}

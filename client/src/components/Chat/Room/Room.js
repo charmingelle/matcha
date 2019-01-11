@@ -5,7 +5,7 @@ import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
 
 const styles = theme => ({
-  marioChat: {
+  chat: {
     flexGrow: 1,
     display: "flex",
     flexDirection: "column",
@@ -78,13 +78,10 @@ const styles = theme => ({
 });
 
 class Room extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      message: "",
-      typing: ""
-    };
-  }
+  state = {
+    message: "",
+    typing: ""
+  };
 
   componentDidMount = () => {
     this.props.socket.on("chat", () => {
@@ -165,7 +162,7 @@ class Room extends React.Component {
     const { classes, sender, log } = this.props;
 
     return (
-      <div className={classes.marioChat}>
+      <div className={classes.chat}>
         <div className={classes.chatWindow}>
           {typing && (
             <p className={classes.typingP}>

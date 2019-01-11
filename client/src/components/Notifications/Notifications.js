@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Notification from './Notification/Notification.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import Notification from "./Notification/Notification.js";
 
 const styles = {
   root: {
-    position: 'fixed',
+    position: "fixed",
     right: 0,
     top: 0,
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     zIndex: 2000
   }
 };

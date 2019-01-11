@@ -1,31 +1,31 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import keycode from 'keycode';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { Link } from 'react-router-dom';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import keycode from "keycode";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import { Link } from "react-router-dom";
 import {
   isEmailValid,
   isLoginValid,
   isPasswordValid,
   isFirstLastNameValid
-} from './../../utils/utils.js';
-import { signup } from './../../api/api.js';
+} from "./../../utils/utils.js";
+import { signup } from "./../../api/api.js";
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100vw',
-    height: '100vh'
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100vw",
+    height: "100vh"
   },
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: 'fit-content'
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "fit-content"
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -33,24 +33,24 @@ const styles = theme => ({
     width: 200
   },
   button: {
-    margin: '8px'
+    margin: "8px"
   }
 });
 
 class Signup extends React.Component {
   state = {
-    email: '',
-    login: '',
-    password: '',
-    passwordConfirm: '',
-    firstname: '',
-    lastname: '',
+    email: "",
+    login: "",
+    password: "",
+    passwordConfirm: "",
+    firstname: "",
+    lastname: "",
     error: false,
-    message: ''
+    message: ""
   };
 
   handleKeyPress = event => {
-    if (keycode(event) === 'enter') {
+    if (keycode(event) === "enter") {
       this.signup();
     }
   };
@@ -63,56 +63,50 @@ class Signup extends React.Component {
 
   signup = () => {
     if (
-      this.state.email === '' ||
-      this.state.login === '' ||
-      this.state.password === '' ||
-      this.state.passwordConfirm === '' ||
-      this.state.firstname === '' ||
-      this.state.lastname === ''
+      this.state.email === "" ||
+      this.state.login === "" ||
+      this.state.password === "" ||
+      this.state.passwordConfirm === "" ||
+      this.state.firstname === "" ||
+      this.state.lastname === ""
     ) {
       this.setState({
         error: true,
-        message: 'Please fill all the fields in'
+        message: "Please fill all the fields in"
       });
-    } else
-    if (!isEmailValid(this.state.email)) {
+    } else if (!isEmailValid(this.state.email)) {
       this.setState({
         error: true,
-        message: 'Invalid email address'
+        message: "Invalid email address"
       });
-    } else
-    if (!isLoginValid(this.state.login)) {
+    } else if (!isLoginValid(this.state.login)) {
       this.setState({
         error: true,
-        message: 'Invalid login'
+        message: "Invalid login"
       });
-    } else
-    if (!isPasswordValid(this.state.password)) {
+    } else if (!isPasswordValid(this.state.password)) {
       this.setState({
         error: true,
-        message: 'Invalid password'
+        message: "Invalid password"
       });
-    } else
-    if (this.state.password !== this.state.passwordConfirm) {
+    } else if (this.state.password !== this.state.passwordConfirm) {
       this.setState({
         error: true,
-        message: 'Invalid password confirm'
+        message: "Invalid password confirm"
       });
-    } else
-    if (!isFirstLastNameValid(this.state.firstname)) {
+    } else if (!isFirstLastNameValid(this.state.firstname)) {
       this.setState({
         error: true,
-        message: 'Invalid first name'
+        message: "Invalid first name"
       });
-    } else
-    if (!isFirstLastNameValid(this.state.lastname)) {
+    } else if (!isFirstLastNameValid(this.state.lastname)) {
       this.setState({
         error: false,
-        message: 'Invalid last name'
+        message: "Invalid last name"
       });
     } else {
       this.setState({
-        message: ''
+        message: ""
       });
       signup(
         this.state.email,
@@ -122,7 +116,7 @@ class Signup extends React.Component {
         this.state.lastname
       ).then(data =>
         this.setState({
-          error: data.status === 'error',
+          error: data.status === "error",
           message: data.result
         })
       );
@@ -130,7 +124,7 @@ class Signup extends React.Component {
   };
 
   renderMessage = () => {
-    if (this.state.message !== '') {
+    if (this.state.message !== "") {
       return (
         <TextField
           className={this.props.classes.textField}
@@ -152,7 +146,7 @@ class Signup extends React.Component {
           <TextField
             label="Email"
             className={classes.textField}
-            onChange={this.handleChange('email')}
+            onChange={this.handleChange("email")}
             onKeyPress={this.handleKeyPress}
             margin="normal"
             value={this.state.email}
@@ -160,7 +154,7 @@ class Signup extends React.Component {
           <TextField
             label="Login"
             className={classes.textField}
-            onChange={this.handleChange('login')}
+            onChange={this.handleChange("login")}
             onKeyPress={this.handleKeyPress}
             margin="normal"
             value={this.state.login}
@@ -168,7 +162,7 @@ class Signup extends React.Component {
           <TextField
             label="Password"
             className={classes.textField}
-            onChange={this.handleChange('password')}
+            onChange={this.handleChange("password")}
             onKeyPress={this.handleKeyPress}
             margin="normal"
             value={this.state.password}
@@ -177,7 +171,7 @@ class Signup extends React.Component {
           <TextField
             label="Confirm your password"
             className={classes.textField}
-            onChange={this.handleChange('passwordConfirm')}
+            onChange={this.handleChange("passwordConfirm")}
             onKeyPress={this.handleKeyPress}
             margin="normal"
             value={this.state.passwordConfirm}
@@ -186,7 +180,7 @@ class Signup extends React.Component {
           <TextField
             label="First name"
             className={classes.textField}
-            onChange={this.handleChange('firstname')}
+            onChange={this.handleChange("firstname")}
             onKeyPress={this.handleKeyPress}
             margin="normal"
             value={this.state.firstname}
@@ -194,7 +188,7 @@ class Signup extends React.Component {
           <TextField
             label="Last name"
             className={classes.textField}
-            onChange={this.handleChange('lastname')}
+            onChange={this.handleChange("lastname")}
             onKeyPress={this.handleKeyPress}
             margin="normal"
             value={this.state.lastname}

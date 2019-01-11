@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import Input from "@material-ui/core/Input";
 
 const styles = {
   container: {
-    display: 'flex',
-    flexWrap: 'wrap'
+    display: "flex",
+    flexWrap: "wrap"
   },
   input: {
-    width: '100%'
+    width: "100%"
   }
 };
 
@@ -22,7 +22,7 @@ const Inputs = props => {
         className={classes.input}
         error={error}
         inputProps={{
-          'aria-label': 'Description'
+          "aria-label": "Description"
         }}
         value={props.value}
       />

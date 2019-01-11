@@ -1,27 +1,23 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
 
 const styles = theme => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
   formControl: {
     marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,    
+    marginBottom: theme.spacing.unit,
     minWidth: 120
   }
 });
 
 class ProfileSelect extends React.Component {
   state = {
-    [this.props.name]: ''
+    [this.props.name]: ""
   };
 
   componentDidMount() {
@@ -39,8 +35,7 @@ class ProfileSelect extends React.Component {
     const { classes, title, items } = this.props;
 
     return (
-      <FormControl
-        className={classes.formControl}>
+      <FormControl className={classes.formControl}>
         <InputLabel
           ref={ref => {
             this.InputLabelRef = ref;
@@ -52,11 +47,7 @@ class ProfileSelect extends React.Component {
         <Select
           value={this.state[[this.props.name]]}
           onChange={this.handleChange}
-          input={
-            <Input
-              id="outlined-age-simple"
-            />
-          }
+          input={<Input id="outlined-age-simple" />}
         >
           {items.map((item, index) => (
             <MenuItem key={index} value={item}>

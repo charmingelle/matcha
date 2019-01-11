@@ -1,5 +1,5 @@
-import React from 'react';
-import { getBlockStatus, changeBlockStatus } from './../../../api/api.js';
+import React from "react";
+import { getBlockStatus, changeBlockStatus } from "./../../../api/api.js";
 
 export default class BlockButton extends React.Component {
   componentDidMount = () =>

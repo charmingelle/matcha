@@ -137,21 +137,18 @@ module.exports = (app, requireLogin, db) => {
         }).then(data => {
           let gallery = data.gallery;
 
-          fs.unlink(
-            `client/photos/${gallery[req.body.photoid]}`,
-            () => {
-              gallery[req.body.photoid] = `${fileName}.png`;
-              db.any(
-                "UPDATE users SET gallery = ${gallery} WHERE login = ${login}",
-                {
-                  gallery,
-                  login: req.session.login
-                }
-              ).then(() =>
-                res.send(JSON.stringify({ fileName: `${fileName}.png` }))
-              );
-            }
-          );
+          fs.unlink(`client/photos/${gallery[req.body.photoid]}`, () => {
+            gallery[req.body.photoid] = `${fileName}.png`;
+            db.any(
+              "UPDATE users SET gallery = ${gallery} WHERE login = ${login}",
+              {
+                gallery,
+                login: req.session.login
+              }
+            ).then(() =>
+              res.send(JSON.stringify({ fileName: `${fileName}.png` }))
+            );
+          });
         });
       }
     );

@@ -1,54 +1,49 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import ProfileSelect from './ProfileSelect/ProfileSelect.js';
-import ProfileTextField from './ProfileTextField/ProfileTextField.js';
-import InterestsInput from './InterestsInput/InterestsInput.js';
-import ChangeStatusInput from './ChangeStatusInput/ChangeStatusInput.js';
-import ProfilePhotos from './ProfilePhotos/ProfilePhotos.js';
-import SmallUsers from './../SmallUsers/SmallUsers.js';
-import Input from '@material-ui/core/Input';
-import Button from '@material-ui/core/Button';
-import { saveUserProfile, getLikedBy, getCheckedBy } from './../../api/api.js';
-import { isEmailValid } from './../../utils/utils.js';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import ProfileSelect from "./ProfileSelect/ProfileSelect.js";
+import ProfileTextField from "./ProfileTextField/ProfileTextField.js";
+import InterestsInput from "./InterestsInput/InterestsInput.js";
+import ChangeStatusInput from "./ChangeStatusInput/ChangeStatusInput.js";
+import ProfilePhotos from "./ProfilePhotos/ProfilePhotos.js";
+import SmallUsers from "./../SmallUsers/SmallUsers.js";
+import Input from "@material-ui/core/Input";
+import Button from "@material-ui/core/Button";
+import { saveUserProfile, getLikedBy, getCheckedBy } from "./../../api/api.js";
+import { isEmailValid } from "./../../utils/utils.js";
 
 const styles = {
   root: {
-    overflow: 'auto',
-    padding: '10px'
+    overflow: "auto",
+    padding: "10px"
   },
   profileDetails: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     padding: 8,
-    backgroundColor: '#ffffff'
-  },
-  saveChangesButton: {
-    padding: '8px'
+    backgroundColor: "#ffffff"
   },
   ageInput: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     marginTop: 8,
     marginBottom: 8
   },
   ageLabel: {
-    fontSize: '12px',
-    color: 'rgba(0, 0, 0, 0.54)'
+    fontSize: "12px",
+    color: "rgba(0, 0, 0, 0.54)"
   }
 };
 
 class Profile extends React.Component {
-  componentDidMount() {
-    this.setState(this.props.value);
-  }
+  componentDidMount = () => this.setState(this.props.value);
 
   isEmailValid = email => {
     const validStatus = isEmailValid(email);
 
     if (!validStatus) {
       this.setState({
-        changeStatus: 'Please make sure that your email address is correct',
+        changeStatus: "Please make sure that your email address is correct",
         error: true
       });
     }
@@ -56,9 +51,9 @@ class Profile extends React.Component {
   };
 
   validateEmpty = value => {
-    if (value === '') {
+    if (value === "") {
       this.setState({
-        changeStatus: 'Please fill all the fields in',
+        changeStatus: "Please fill all the fields in",
         error: true
       });
       return false;
@@ -82,7 +77,7 @@ class Profile extends React.Component {
       saveUserProfile(this.state).then(
         data => {
           this.setState({
-            error: data.status === 'error',
+            error: data.status === "error",
             changeStatus: data.result
           });
           if (data.suggestions) {
@@ -95,15 +90,10 @@ class Profile extends React.Component {
     }
   };
 
-  onChange = target => {
-    this.setState(target);
-  };
+  onChange = target => this.setState(target);
 
   onAgeChange = event => {
-    if (
-      event.target.value >= 18 &&
-      event.target.value <= 100
-    ) {
+    if (event.target.value >= 18 && event.target.value <= 100) {
       this.setState({
         age: event.target.value
       });
@@ -189,14 +179,14 @@ class Profile extends React.Component {
           </div>
           <ProfileSelect
             title="Gender"
-            items={['male', 'female']}
+            items={["male", "female"]}
             name="gender"
             value={gender}
             onChange={this.onChange}
           />
           <ProfileSelect
             title="Preferences"
-            items={['heterosexual', 'homosexual', 'bisexual']}
+            items={["heterosexual", "homosexual", "bisexual"]}
             name="preferences"
             value={preferences}
             onChange={this.onChange}

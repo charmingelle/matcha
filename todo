@@ -1,10 +1,6 @@
-- clean all components
-- make sure that unnecessary information isn't passed to components
-- style everything
-- get rid of unused variables
-- prettify everything
 - test everything
 - remove .gitignore, todo from prod
+- remove all comments
 
 - check what happens during photo upload
 
