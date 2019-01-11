@@ -18,7 +18,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "initiate": "npm i material-ui && npm i downshift && npm i react && npm i react-dom && npm i react-router-dom && npm i react-scripts && npm i socket.io-client"
+    "initiate": "npm i material-ui && npm i @material-ui/core && npm i @material-ui/icons && npm i downshift && npm i react && npm i react-dom && npm i react-router-dom && npm i react-scripts && npm i socket.io-client"
   },
   "eslintConfig": {
     "extends": "react-app"
