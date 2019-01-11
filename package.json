@@ -10,7 +10,7 @@
     "dev": "concurrently 'npm run client' 'npm run server'",
     "initiate_db": "node server/db.js",
     "initiate_client": "cd client && npm run initiate && npm run build && cd ..",
-    "initiate": "npm run initiate_client && npm i concurrently && npm i express && npm i pg-promise && npm i client-sessions && npm i pg-format && npm i express-validator && npm i random-hash && npm i sendmail && npm i socket.io && npm i bcrypt",
+    "initiate": "npm run initiate_client && npm --loglevel=error i concurrently express pg-promise client-sessions pg-format express-validator random-hash sendmail socket.io bcrypt@2",
     "start": "npm run initiate && node server/db.js && node server/server.js"
   },
   "repository": {
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/charmingelle/matcha#readme",
   "dependencies": {
-    "bcrypt": "^3.0.3",
+    "bcrypt": "^2.0.1",
     "client-sessions": "^0.8.0",
     "concurrently": "^4.1.0",
     "express": "^4.16.4",

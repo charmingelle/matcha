@@ -1,17 +1,3 @@
 - test everything
-- remove .gitignore, todo from prod
+- remove todo
 - remove all comments
-
-
-
-
-
-
-
-- checkout to prod
-- git merge master
-- replace port 3000 with 5000, uncomment "Built React version" lines in server.js
-- change folder in profile.js
-- change src with public to build in all components
-- npm start
-- http://localhost:5000
