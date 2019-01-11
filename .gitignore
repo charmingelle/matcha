@@ -4,8 +4,6 @@ client/photos/*
 !client/photos/avatar.png
 .vscode/settings.json
 package-lock.json
-package.json
 client/package-lock.json
-client/package.json
 .DS_Store
 client/.DS_Store
