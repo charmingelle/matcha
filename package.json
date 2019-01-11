@@ -9,7 +9,9 @@
     "server": "node server/server.js",
     "dev": "concurrently 'npm run client' 'npm run server'",
     "initiate_db": "node server/db.js",
-    "start": "npm i express && npm i pg-promise && npm i client-sessions && npm i pg-format && npm i express-validator && npm i random-hash && npm i sendmail && npm i socket.io && npm i bcrypt && node server/db.js && node server/server.js"
+    "initiate_client": "cd client && npm run initiate && npm run build && cd ..",
+    "initiate": "npm run initiate_client && npm i concurrently && npm i express && npm i pg-promise && npm i client-sessions && npm i pg-format && npm i express-validator && npm i random-hash && npm i sendmail && npm i socket.io && npm i bcrypt",
+    "start": "npm run initiate && node server/db.js && node server/server.js"
   },
   "repository": {
     "type": "git",
