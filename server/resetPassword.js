@@ -2,7 +2,7 @@ const { generateHash } = require("random-hash");
 const sendmail = require("sendmail")();
 const bcrypt = require("bcrypt");
 
-module.exports = (app, db, port) => {
+module.exports = (app, db, host) => {
   app.post("/getResetPasswordEmail", (req, res) => {
     db.any("SELECT * FROM users WHERE email = ${email}", {
       email: req.body.email
@@ -26,13 +26,18 @@ module.exports = (app, db, port) => {
           db.any("UPDATE users SET hash = ${hash} WHERE email = ${email}", {
             hash: hash,
             email: req.body.email
-          }).then(() =>
+          }).then(() => {
+            let hostname = host;
+
+            if (!host) {
+              hostname = req.headers.host;
+            }
             sendmail(
               {
                 from: "noreply@matcha.com",
                 to: req.body.email,
                 subject: "Reset Your Matcha Password",
-                html: `Please use the following link to reset your Matcha password: http://${req.headers.host}/reset-password?email=${
+                html: `Please use the following link to reset your Matcha password: http://${hostname}/reset-password?email=${
                   req.body.email
                 }&hash=${hash}`
               },
@@ -53,8 +58,8 @@ module.exports = (app, db, port) => {
                   );
                 }
               }
-            )
-          );
+            );
+          });
         }
       } else {
         res.send(JSON.stringify({ status: "error", result: "Invalid email" }));

@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
-// const port = 3000;
-const port = 5000;
+const host = process.env.MATCHA_MOD == 'dev' ? 'localhost:3000' : null;
 const db = require("pg-promise")()(
   "postgres://grevenko:postgres@localhost:5432/matcha"
 );
@@ -49,15 +48,15 @@ const requireLogin = (req, res, next) => {
   }
 };
 
-require("./main.js")(app, requireLogin, db, port);
+require("./main.js")(app, requireLogin, db, host);
 
 require("./profile.js")(app, requireLogin, db);
 
 require("./signin.js")(app, db);
 
-require("./signup.js")(app, db, port);
+require("./signup.js")(app, db, host);
 
-require("./resetPassword.js")(app, db, port);
+require("./resetPassword.js")(app, db, host);
 
 require("./user.js")(app, requireLogin, db);
 

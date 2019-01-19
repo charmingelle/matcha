@@ -14,7 +14,7 @@ const sendVisitedToClient = (req, res, db) => {
   });
 };
 
-module.exports = (app, requireLogin, db, port) => {
+module.exports = (app, requireLogin, db, host) => {
   app.post("/getUserProfile", requireLogin, (req, res) => {
     Promise.all([
       db.any("SELECT * FROM users WHERE login = ${login}", {
@@ -46,8 +46,11 @@ module.exports = (app, requireLogin, db, port) => {
         login: req.session.login
       }
     ).then(() => {
+      console.log('req.headers.host', req.headers.host);
       req.session.reset();
-      res.redirect(`http://${req.headers.host}`);
+      !host
+        ? res.redirect(`http://${req.headers.host}`)
+        : res.redirect(`http://${host}`);
     });
   });
 

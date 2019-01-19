@@ -21,7 +21,7 @@ const isFirstLastNameValid = name => {
   return /^[a-zA-Z]+(-[a-zA-Z])?[a-zA-Z]*$/.test(String(name));
 };
 
-module.exports = (app, db, port) => {
+module.exports = (app, db, host) => {
   app.post(
     "/signup",
     [
@@ -74,13 +74,17 @@ module.exports = (app, db, port) => {
               charset:
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
             });
+            let hostname = host;
 
+            if (!host) {
+              hostname = req.headers.host;
+            }
             sendmail(
               {
                 from: "noreply@matcha.com",
                 to: req.body.email,
                 subject: "Matcha Registration Confirmation",
-                html: `Please active your Matcha account using the following link: http://${req.headers.host}/confirm?email=${
+                html: `Please active your Matcha account using the following link: http://${hostname}/confirm?email=${
                   req.body.email
                 }&hash=${hash}`
               },
