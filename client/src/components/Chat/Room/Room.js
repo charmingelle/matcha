@@ -105,12 +105,6 @@ class Room extends React.Component {
     });
   };
 
-  componentWillUnmount = () => {
-    this.props.socket.off("chat");
-    this.props.socket.off("typing");
-    this.props.socket.off("stoppedTyping");
-  };
-
   componentWillReceiveProps = () => {
     this.props.socket.emit("stoppedTyping", {
       sender: this.props.sender,

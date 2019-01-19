@@ -80,7 +80,7 @@ module.exports = (app, db, port) => {
                 from: "noreply@matcha.com",
                 to: req.body.email,
                 subject: "Matcha Registration Confirmation",
-                html: `Please active your Matcha account using the following link: http://localhost:${port}/confirm?email=${
+                html: `Please active your Matcha account using the following link: http://${req.headers.host}/confirm?email=${
                   req.body.email
                 }&hash=${hash}`
               },

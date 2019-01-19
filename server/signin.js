@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 
-module.exports = (app, requireLogin, db) => {
+module.exports = (app, db) => {
   app.post("/signinOrMain", (req, res) => {
     if (req.session && req.session.login) {
       db.any("SELECT login FROM users WHERE login = ${login}", {

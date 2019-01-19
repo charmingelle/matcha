@@ -47,7 +47,7 @@ module.exports = (app, requireLogin, db, port) => {
       }
     ).then(() => {
       req.session.reset();
-      res.redirect(`http://localhost:${port}/`);
+      res.redirect(`http://${req.headers.host}`);
     });
   });
 

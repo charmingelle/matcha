@@ -53,7 +53,7 @@ require("./main.js")(app, requireLogin, db, port);
 
 require("./profile.js")(app, requireLogin, db);
 
-require("./signin.js")(app, requireLogin, db);
+require("./signin.js")(app, db);
 
 require("./signup.js")(app, db, port);
 

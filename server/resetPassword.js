@@ -32,7 +32,7 @@ module.exports = (app, db, port) => {
                 from: "noreply@matcha.com",
                 to: req.body.email,
                 subject: "Reset Your Matcha Password",
-                html: `Please use the following link to reset your Matcha password: http://localhost:${port}/reset-password?email=${
+                html: `Please use the following link to reset your Matcha password: http://${req.headers.host}/reset-password?email=${
                   req.body.email
                 }&hash=${hash}`
               },
