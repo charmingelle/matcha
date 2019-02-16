@@ -252,6 +252,15 @@ class Main extends React.Component {
     }
   };
 
+  updateCanRenderLikeButton = canRenderLikeButton => {
+    const newProfile = this.state.profile;
+
+    newProfile.canRenderLikeButton = canRenderLikeButton;
+    this.setState({
+      profile: newProfile
+    });
+  };
+
   closeNotification = index => {
     let newNotifications = this.state.notifications;
 
@@ -441,6 +450,7 @@ class Main extends React.Component {
                     visited={visited}
                     updateVisited={this.updateVisited}
                     updateSuggestions={this.updateSuggestions}
+                    updateCanRenderLikeButton={this.updateCanRenderLikeButton}
                   />
                 </TabContainer>
               );

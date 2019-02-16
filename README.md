@@ -2,13 +2,13 @@
 
 ## Getting Started
 
-To start PostgreSQL server, run the following command in your terminal window
+To start PostgreSQL server, cd to the root directory and run the following command in your terminal window:
 
 ```
 npm run pg_start
 ```
 
-To initiate the project and start Node.js server, cd to the root directory and run
+To initiate the project and start Node.js server, run
 
 ```
 npm start

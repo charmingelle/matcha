@@ -127,7 +127,12 @@ class Profile extends React.Component {
       gallery,
       avatarid
     } = this.state;
-    const { classes } = this.props;
+    const {
+      classes,
+      visited,
+      updateVisited,
+      updateCanRenderLikeButton
+    } = this.props;
 
     return (
       <div className={classes.root}>
@@ -135,15 +140,15 @@ class Profile extends React.Component {
           title="Liked by"
           icon="&#9829;"
           getUserList={getLikedBy}
-          visited={this.props.visited}
-          updateVisited={this.props.updateVisited}
+          visited={visited}
+          updateVisited={updateVisited}
         />
         <SmallUsers
           title="Checked by"
           icon="&#10004;"
           getUserList={getCheckedBy}
-          visited={this.props.visited}
-          updateVisited={this.props.updateVisited}
+          visited={visited}
+          updateVisited={updateVisited}
         />
         <div className={classes.profileDetails}>
           {this.renderChangeStatus()}
@@ -208,7 +213,11 @@ class Profile extends React.Component {
             Save changes
           </Button>
         </div>
-        <ProfilePhotos gallery={gallery} avatarid={avatarid} />
+        <ProfilePhotos
+          gallery={gallery}
+          avatarid={avatarid}
+          updateCanRenderLikeButton={updateCanRenderLikeButton}
+        />
       </div>
     );
   }

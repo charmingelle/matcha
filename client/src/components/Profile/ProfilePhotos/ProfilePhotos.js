@@ -92,6 +92,7 @@ class ProfilePhotos extends React.Component {
         newGallery[this.photoid] = data.fileName;
         this.setState({ gallery: newGallery });
         this.photoid = null;
+        this.props.updateCanRenderLikeButton(true);
       });
     };
     image.src = window.URL.createObjectURL(event.target.files[0]);

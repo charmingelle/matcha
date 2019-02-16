@@ -4,9 +4,6 @@ const host = process.env.MATCHA_MOD == 'dev' ? 'localhost:3000' : null;
 const db = require("pg-promise")()(
   "postgres://grevenko:postgres@localhost:5432/matcha"
 );
-// const db = require('pg-promise')()(
-//   'postgres://postgres:123456@localhost:5432/matcha'
-// );
 const bodyParser = require("body-parser");
 const session = require("client-sessions");
 const path = require("path");
@@ -25,8 +22,6 @@ app.use(
     ephemeral: true
   })
 );
-
-// Built React version
 
 app.use(express.static(path.join(__dirname, "./../client/build")));
 
@@ -61,8 +56,6 @@ require("./resetPassword.js")(app, db, host);
 require("./user.js")(app, requireLogin, db);
 
 require("./chat.js")(app, db);
-
-// Built React version
 
 app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "./../client/build/index.html"));
