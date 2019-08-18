@@ -1,3 +1,13 @@
+import React from 'react';
+
+export const Context = React.createContext();
+
+export const withContext = Component => props => (
+  <Context.Consumer>
+    {context => <Component {...props} context={context} />}
+  </Context.Consumer>
+);
+
 export const isEmailValid = email => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 

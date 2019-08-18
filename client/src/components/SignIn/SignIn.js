@@ -1,118 +1,86 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import keycode from "keycode";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Main from "../Main/Main.js";
-import { signin } from "../../api/api.js";
-
-const styles = theme => ({
-  root: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100vw",
-    height: "100vh"
-  },
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "fit-content"
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: 200
-  },
-  button: {
-    margin: "8px"
-  }
-});
+import React from 'react';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import keycode from 'keycode';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Main from '../Main/Main.js';
+import { signin } from '../../api/api.js';
+import { styles } from './Signin.styles';
 
 class Signin extends React.Component {
   state = {
-    login: "",
-    password: "",
-    message: "",
-    main: false
+    login: '',
+    password: '',
+    message: '',
+    main: false,
   };
 
-  handleKeyPress = event => {
-    if (keycode(event) === "enter") {
-      this.signin();
-    }
-  };
+  handleKeyPress = event => keycode(event) === 'enter' && this.signin();
 
-  handleChange = name => event => {
+  handleChange = name => event =>
     this.setState({
-      [name]: event.target.value
+      [name]: event.target.value,
     });
-  };
 
-  signin = () => {
-    if (this.state.login === "" || this.state.password === "") {
-      this.setState({
-        message: "Please fill all the fields in"
-      });
-    } else {
-      this.setState({
-        message: ""
-      });
-      signin(this.state.login, this.state.password).then(data => {
-        if (data.status === "success") {
-          this.setState({
-            main: true
-          });
-        } else {
-          this.setState({
-            message: data.result
-          });
-        }
+  anyFieldIsEmpty = () => this.state.login === '' || this.state.password === '';
+
+  signin = async () => {
+    if (this.anyFieldIsEmpty()) {
+      return this.setState({
+        message: 'Please fill all the fields in',
       });
     }
+    const { status, result } = await signin(
+      this.state.login,
+      this.state.password,
+    );
+
+    status === 'success'
+      ? this.setState({
+          main: true,
+        })
+      : this.setState({
+          message: result,
+        });
   };
 
-  renderMessage = () => {
-    if (this.state.message !== "") {
-      return (
-        <TextField
-          className={this.props.classes.textField}
-          error
-          disabled
-          value={this.state.message}
-        />
-      );
-    }
-  };
+  renderMessage = () =>
+    this.state.message !== '' && (
+      <TextField
+        className={this.props.classes.textField}
+        error
+        disabled
+        value={this.state.message}
+      />
+    );
 
   render = () => {
     const { classes } = this.props;
+    const { main, login, password } = this.state;
 
-    if (this.state.main) {
-      return <Main />;
-    }
-    return (
+    return main ? (
+      <Main />
+    ) : (
       <div className={classes.root}>
         <form className={classes.container} noValidate autoComplete="off">
           {this.renderMessage()}
           <TextField
             label="Login"
             className={classes.textField}
-            onChange={this.handleChange("login")}
+            onChange={this.handleChange('login')}
             onKeyPress={this.handleKeyPress}
             margin="normal"
-            value={this.state.login}
+            value={login}
           />
           <TextField
             label="Password"
             className={classes.textField}
-            onChange={this.handleChange("password")}
+            onChange={this.handleChange('password')}
             onKeyPress={this.handleKeyPress}
             margin="normal"
-            value={this.state.password}
+            value={password}
             type="password"
           />
           <Button className={classes.button} onClick={this.signin}>
@@ -127,7 +95,7 @@ class Signin extends React.Component {
 }
 
 Signin.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Signin);

@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
 const host = process.env.MATCHA_MOD == 'dev' ? 'localhost:3000' : null;
+// const db = require("pg-promise")()(
+//   "postgres://grevenko:postgres@localhost:5432/matcha"
+// );
 const db = require("pg-promise")()(
-  "postgres://grevenko:postgres@localhost:5432/matcha"
+  "postgres://gannar:postgres@localhost:5432/matcha"
 );
 const bodyParser = require("body-parser");
 const session = require("client-sessions");

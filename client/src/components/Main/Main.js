@@ -1,31 +1,31 @@
-import React from "react";
-import { Route, Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import socketIOClient from "socket.io-client";
-import { withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import MenuList from "@material-ui/core/MenuList";
-import MenuItem from "@material-ui/core/MenuItem";
-import Paper from "@material-ui/core/Paper";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Toolbar from "@material-ui/core/Toolbar";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import ChatIcon from "@material-ui/icons/Chat";
-import CheckIcon from "@material-ui/icons/Check";
-import PeopleIcon from "@material-ui/icons/People";
-import PersonIcon from "@material-ui/icons/Person";
-import MenuIcon from "@material-ui/icons/Menu";
-import Suggestions from "./../Suggestions/Suggestions.js";
-import Profile from "./../Profile/Profile.js";
-import User from "./../User/User.js";
-import Signin from "../Signin/Signin.js";
-import Visited from "./../Visited/Visited.js";
-import Chat from "./../Chat/Chat.js";
-import Notifications from "./../Notifications/Notifications.js";
+import React from 'react';
+import { Route, Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import socketIOClient from 'socket.io-client';
+import { withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Toolbar from '@material-ui/core/Toolbar';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import ChatIcon from '@material-ui/icons/Chat';
+import CheckIcon from '@material-ui/icons/Check';
+import PeopleIcon from '@material-ui/icons/People';
+import PersonIcon from '@material-ui/icons/Person';
+import MenuIcon from '@material-ui/icons/Menu';
+import Suggestions from './../Suggestions/Suggestions.js';
+import Profile from './../Profile/Profile.js';
+import User from './../User/User.js';
+import Signin from '../Signin/Signin.js';
+import Visited from './../Visited/Visited.js';
+import Chat from './../Chat/Chat.js';
+import Notifications from './../Notifications/Notifications.js';
 import {
   getUserProfile,
   saveLocation,
@@ -33,12 +33,14 @@ import {
   getChatData,
   getSuggestions,
   getVisited,
-  saveVisited
-} from "./../../api/api.js";
+  saveVisited,
+} from './../../api/api.js';
+import { styles } from './Main.styles';
+import { withContext } from '../../utils/utils';
 
 const TabContainer = props => (
   <Typography
-    style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+    style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
     component="div"
   >
     {props.children}
@@ -46,54 +48,7 @@ const TabContainer = props => (
 );
 
 TabContainer.propTypes = {
-  children: PropTypes.node.isRequired
-};
-
-const styles = {
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-    minWidth: "568px",
-    height: "100vh",
-    backgroundColor: "#eeeeee"
-  },
-  appBar: {
-    backgroundColor: "#3f51b5"
-  },
-  appMenu: {
-    position: "fixed",
-    width: 200,
-    height: "100%",
-    zIndex: 2000,
-    transform: "translate(0px, 0px)",
-    transition: "transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms"
-  },
-  appMenuHidden: {
-    position: "fixed",
-    width: 200,
-    height: "100%",
-    zIndex: 2000,
-    transform: "translate(-200px, 0px)",
-    transition: "transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms"
-  },
-  appContent: {
-    flexGrow: 1,
-    display: "flex",
-    flexDirection: "column"
-  },
-  grow: {
-    flexGrow: 1
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20
-  },
-  singleUserContainer: {
-    display: "flex",
-    justifyContent: "center",
-    overflow: "auto"
-  }
+  children: PropTypes.node.isRequired,
 };
 
 let socket = null;
@@ -104,14 +59,14 @@ class Main extends React.Component {
     profile: null,
     notifications: [],
     showMenu: false,
-    tabName: "Suggestions",
+    tabName: 'Suggestions',
     chatData: null,
-    suggestions: null
+    suggestions: null,
   };
 
   ipLookUp = () => {
-    fetch("http://ip-api.com/json", {
-      method: "POST"
+    fetch('http://ip-api.com/json', {
+      method: 'POST',
     })
       .then(response => response.json())
       .then(data => saveLocation([data.lat, data.lon]))
@@ -122,7 +77,7 @@ class Main extends React.Component {
     navigator.geolocation.getCurrentPosition(
       position =>
         saveLocation([position.coords.latitude, position.coords.longitude]),
-      () => this.ipLookUp(userid)
+      () => this.ipLookUp(userid),
     );
   };
 
@@ -131,18 +86,18 @@ class Main extends React.Component {
 
     newNotifications.push(message);
     this.setState({
-      notifications: newNotifications
+      notifications: newNotifications,
     });
   };
 
   addSocketEventListeners = () => {
-    socket.on("like", data =>
-      this.addNotification(`${data.sender} has just liked you`)
+    socket.on('like', data =>
+      this.addNotification(`${data.sender} has just liked you`),
     );
-    socket.on("check", data =>
-      this.addNotification(`${data.sender} has just checked your profile`)
+    socket.on('check', data =>
+      this.addNotification(`${data.sender} has just checked your profile`),
     );
-    socket.on("chat", data => {
+    socket.on('chat', data => {
       let newChatData = this.state.chatData;
       let user;
 
@@ -154,16 +109,16 @@ class Main extends React.Component {
       }
       newChatData[user].log.unshift(data);
       this.setState({
-        chatData: newChatData
+        chatData: newChatData,
       });
     });
-    socket.on("likeBack", data => {
+    socket.on('likeBack', data => {
       this.addNotification(`${data.data.sender} has just liked you back!`);
       this.updateChatData(data.chatData);
     });
-    socket.on("unlike", data => {
+    socket.on('unlike', data => {
       this.addNotification(
-        `Unfortunately ${data.data.sender} has disconnected from you`
+        `Unfortunately ${data.data.sender} has disconnected from you`,
       );
       this.updateChatData(data.chatData);
     });
@@ -174,7 +129,7 @@ class Main extends React.Component {
       getUserProfile().then(
         data => {
           socket = socketIOClient({
-            query: `login=${data.user.login}`
+            query: `login=${data.user.login}`,
           });
           this.addSocketEventListeners();
           this.setState({
@@ -194,34 +149,34 @@ class Main extends React.Component {
               allInterests: data.allInterests,
               changeStatus: null,
               error: false,
-              canRenderLikeButton: data.user.gallery.length > 0
-            }
+              canRenderLikeButton: data.user.gallery.length > 0,
+            },
           });
           this.getLocation(data.user.id);
         },
-        () => this.setState({ profile: "signin" })
+        () => this.setState({ profile: 'signin' }),
       ),
       getChatData().then(
         chatData => this.setState({ chatData }),
-        error => console.error(error)
+        error => console.error(error),
       ),
       getSuggestions().then(
         suggestions =>
           this.setState({
-            suggestions
+            suggestions,
           }),
-        error => console.error(error)
+        error => console.error(error),
       ),
       getVisited().then(
         visited => this.setState({ visited }),
-        error => console.error(error)
-      )
+        error => console.error(error),
+      ),
     ]);
   }
 
   onProfileChange = target => this.setState({ profile: target });
 
-  signout = () => signout().then(() => this.setState({ profile: "signin" }));
+  signout = () => signout().then(() => this.setState({ profile: 'signin' }));
 
   updateSuggestions = suggestions => this.setState({ suggestions });
 
@@ -232,7 +187,7 @@ class Main extends React.Component {
 
     newChatData[receiver].log = log;
     this.setState({
-      chatData: newChatData
+      chatData: newChatData,
     });
   };
 
@@ -241,12 +196,12 @@ class Main extends React.Component {
       !this.state.visited.map(profile => profile.login).includes(visitedLogin)
     ) {
       saveVisited(visitedLogin).then(visited => {
-        socket.emit("check", {
+        socket.emit('check', {
           sender: this.state.profile.login,
-          receiver: visitedLogin
+          receiver: visitedLogin,
         });
         this.setState({
-          visited
+          visited,
         });
       });
     }
@@ -257,7 +212,7 @@ class Main extends React.Component {
 
     newProfile.canRenderLikeButton = canRenderLikeButton;
     this.setState({
-      profile: newProfile
+      profile: newProfile,
     });
   };
 
@@ -266,19 +221,19 @@ class Main extends React.Component {
 
     newNotifications.splice(index, 1);
     this.setState({
-      notifications: newNotifications
+      notifications: newNotifications,
     });
   };
 
   showMenu = () =>
     this.setState({
-      showMenu: !this.state.showMenu
+      showMenu: !this.state.showMenu,
     });
 
   changeTabName = tabName =>
     this.setState({
       tabName,
-      showMenu: false
+      showMenu: false,
     });
 
   handleMenuClose = event => {
@@ -289,11 +244,11 @@ class Main extends React.Component {
   };
 
   render = () => {
-    let tabName = window.location.pathname.split("/")[1];
+    let tabName = window.location.pathname.split('/')[1];
 
     tabName = tabName.charAt(0).toUpperCase() + tabName.slice(1);
-    if (tabName === "") {
-      tabName = "Suggestions";
+    if (tabName === '') {
+      tabName = 'Suggestions';
     }
     if (
       !this.state.profile ||
@@ -303,7 +258,7 @@ class Main extends React.Component {
     ) {
       return <span>Loading...</span>;
     }
-    if (this.state.profile === "signin") {
+    if (this.state.profile === 'signin') {
       return <Signin />;
     }
     const { classes } = this.props;
@@ -314,7 +269,7 @@ class Main extends React.Component {
       showMenu,
       chatData,
       suggestions,
-      visited
+      visited,
     } = this.state;
 
     return (
@@ -353,7 +308,7 @@ class Main extends React.Component {
                 className={classes.menuItem}
                 component={Link}
                 to="/"
-                onClick={() => this.changeTabName("Suggestions")}
+                onClick={() => this.changeTabName('Suggestions')}
               >
                 <ListItemIcon className={classes.icon}>
                   <PeopleIcon />
@@ -368,7 +323,7 @@ class Main extends React.Component {
                 className={classes.menuItem}
                 component={Link}
                 to="/profile"
-                onClick={() => this.changeTabName("Profile")}
+                onClick={() => this.changeTabName('Profile')}
               >
                 <ListItemIcon className={classes.icon}>
                   <PersonIcon />
@@ -384,7 +339,7 @@ class Main extends React.Component {
                   className={classes.menuItem}
                   component={Link}
                   to={`/chat/${Object.keys(chatData)[0]}`}
-                  onClick={() => this.changeTabName("Chat")}
+                  onClick={() => this.changeTabName('Chat')}
                 >
                   <ListItemIcon className={classes.icon}>
                     <ChatIcon />
@@ -400,7 +355,7 @@ class Main extends React.Component {
                 className={classes.menuItem}
                 component={Link}
                 to="/visited"
-                onClick={() => this.changeTabName("Visited")}
+                onClick={() => this.changeTabName('Visited')}
               >
                 <ListItemIcon className={classes.icon}>
                   <CheckIcon />
@@ -503,8 +458,8 @@ class Main extends React.Component {
             render={({ match }) => {
               let index = suggestions.indexOf(
                 suggestions.find(
-                  suggestion => match.params.login === suggestion.login
-                )
+                  suggestion => match.params.login === suggestion.login,
+                ),
               );
 
               if (index !== -1) {
@@ -553,7 +508,7 @@ class Main extends React.Component {
 }
 
 Main.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Main);
+export default withStyles(styles)(withContext(Main));

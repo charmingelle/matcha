@@ -1,7 +1,7 @@
-const { check } = require("express-validator/check");
-const bcrypt = require("bcrypt");
-const { generateHash } = require("random-hash");
-const sendmail = require("sendmail")();
+const { check } = require('express-validator/check');
+const bcrypt = require('bcrypt');
+const { generateHash } = require('random-hash');
+const sendmail = require('sendmail')();
 
 const isEmailValid = email => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -23,13 +23,13 @@ const isFirstLastNameValid = name => {
 
 module.exports = (app, db, host) => {
   app.post(
-    "/signup",
+    '/signup',
     [
-      check("email").isEmpty(),
-      check("login").isEmpty(),
-      check("password").isEmpty(),
-      check("firstname").isEmpty(),
-      check("lastname").isEmpty()
+      check('email').isEmpty(),
+      check('login').isEmpty(),
+      check('password').isEmpty(),
+      check('firstname').isEmpty(),
+      check('lastname').isEmpty(),
     ],
     (req, res) => {
       if (
@@ -41,22 +41,22 @@ module.exports = (app, db, host) => {
       ) {
         res.send(
           JSON.stringify({
-            status: "error",
-            result: "One of the fields is invalid"
-          })
+            status: 'error',
+            result: 'One of the fields is invalid',
+          }),
         );
         return;
       }
-      db.any("SELECT * FROM users WHERE email = ${email} OR login = ${login}", {
+      db.any('SELECT * FROM users WHERE email = ${email} OR login = ${login}', {
         email: req.body.email,
-        login: req.body.login
+        login: req.body.login,
       }).then(data => {
         if (data.length !== 0) {
           res.send(
             JSON.stringify({
-              status: "error",
-              result: "Your email or login is busy"
-            })
+              status: 'error',
+              result: 'Your email or login is busy',
+            }),
           );
           return;
         }
@@ -72,7 +72,7 @@ module.exports = (app, db, host) => {
             const hash = generateHash({
               length: 16,
               charset:
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+                'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_',
             });
             let hostname = host;
 
@@ -81,75 +81,75 @@ module.exports = (app, db, host) => {
             }
             sendmail(
               {
-                from: "noreply@matcha.com",
+                from: 'noreply@matcha.com',
                 to: req.body.email,
-                subject: "Matcha Registration Confirmation",
+                subject: 'Matcha Registration Confirmation',
                 html: `Please active your Matcha account using the following link: http://${hostname}/confirm?email=${
                   req.body.email
-                }&hash=${hash}`
+                }&hash=${hash}`,
               },
               error => {
                 if (error) {
                   res.send(
                     JSON.stringify({
-                      status: "error",
-                      result: "Your email is invalid"
-                    })
+                      status: 'error',
+                      result: 'Your email is invalid',
+                    }),
                   );
                   return;
                 }
                 db.any(
-                  "INSERT INTO users(email, login, password, firstname, lastname, hash) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash})",
+                  'INSERT INTO users(email, login, password, firstname, lastname, hash) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash})',
                   {
                     email: req.body.email,
                     login: req.body.login,
                     password: password,
                     firstname: req.body.firstname,
                     lastname: req.body.lastname,
-                    hash
-                  }
+                    hash,
+                  },
                 ).then(() =>
                   res.send(
                     JSON.stringify({
-                      status: "success",
-                      result: "Check your email"
-                    })
-                  )
+                      status: 'success',
+                      result: 'Check your email',
+                    }),
+                  ),
                 );
-              }
+              },
             );
           });
         });
       });
-    }
+    },
   );
 
-  app.post("/activateAccount", (req, res) => {
-    db.any("SELECT * FROM users WHERE email = ${email} AND hash = ${hash}", {
+  app.post('/activateAccount', (req, res) => {
+    db.any('SELECT * FROM users WHERE email = ${email} AND hash = ${hash}', {
       email: req.body.email,
-      hash: req.body.hash
+      hash: req.body.hash,
     }).then(data => {
       if (data.length !== 1) {
         res.send(
           JSON.stringify({
-            status: "error",
-            result: "The account to be activated cannot be found"
-          })
+            status: 'error',
+            result: 'The account to be activated cannot be found',
+          }),
         );
         return;
       }
       db.any(
         "UPDATE users SET active = true, hash = '' WHERE email = ${email}",
         {
-          email: req.body.email
-        }
+          email: req.body.email,
+        },
       ).then(() =>
         res.send(
           JSON.stringify({
-            status: "success",
-            result: "Your account has been activated"
-          })
-        )
+            status: 'success',
+            result: 'Your account has been activated',
+          }),
+        ),
       );
     });
   });
