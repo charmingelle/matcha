@@ -11,6 +11,10 @@ window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
 export class App extends Component {
   state = {
+    profile: null,
+    chatData: null,
+    suggestions: null,
+    visited: null,
     get: key => this.state[key],
     set: (key, value) => {
       const state = this.state;
