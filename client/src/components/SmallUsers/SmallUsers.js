@@ -1,31 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import SmallUser from "./SmallUser/SmallUser.js";
-
-const styles = {
-  root: {
-    backgroundColor: "#ffffff"
-  },
-  icon: {
-    color: "#3f51b5"
-  },
-  title: {
-    margin: 0,
-    fontSize: 12,
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    fontWeight: "normal",
-    color: "rgba(0, 0, 0, 0.54)"
-  },
-  list: {
-    display: "flex",
-    width: "100%",
-    marginTop: 10,
-    marginBottom: 10,
-    padding: 0,
-    listStyleType: "none"
-  }
-};
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import SmallUser from './SmallUser/SmallUser.js';
+import { styles } from './SmallUsers.styles';
 
 class SmallUsers extends React.Component {
   componentDidMount = () =>
@@ -34,8 +11,8 @@ class SmallUsers extends React.Component {
       .then(response => response.json())
       .then(data =>
         this.setState({
-          users: data
-        })
+          users: data,
+        }),
       );
 
   render() {
@@ -56,7 +33,6 @@ class SmallUsers extends React.Component {
               <li key={index}>
                 <SmallUser
                   user={user}
-                  visited={this.props.visited}
                   updateVisited={this.props.updateVisited}
                 />
               </li>
@@ -70,7 +46,7 @@ class SmallUsers extends React.Component {
 }
 
 SmallUsers.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(SmallUsers);

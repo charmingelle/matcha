@@ -1,60 +1,39 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import ProfileSelect from "./ProfileSelect/ProfileSelect.js";
-import ProfileTextField from "./ProfileTextField/ProfileTextField.js";
-import InterestsInput from "./InterestsInput/InterestsInput.js";
-import ChangeStatusInput from "./ChangeStatusInput/ChangeStatusInput.js";
-import ProfilePhotos from "./ProfilePhotos/ProfilePhotos.js";
-import SmallUsers from "./../SmallUsers/SmallUsers.js";
-import Input from "@material-ui/core/Input";
-import Button from "@material-ui/core/Button";
-import { saveUserProfile, getLikedBy, getCheckedBy } from "./../../api/api.js";
-import { isEmailValid } from "./../../utils/utils.js";
-
-const styles = {
-  root: {
-    overflow: "auto",
-    padding: "10px"
-  },
-  profileDetails: {
-    display: "flex",
-    flexDirection: "column",
-    padding: 8,
-    backgroundColor: "#ffffff"
-  },
-  ageInput: {
-    display: "flex",
-    flexDirection: "column",
-    marginTop: 8,
-    marginBottom: 8
-  },
-  ageLabel: {
-    fontSize: "12px",
-    color: "rgba(0, 0, 0, 0.54)"
-  }
-};
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import ProfileSelect from './ProfileSelect/ProfileSelect.js';
+import ProfileTextField from './ProfileTextField/ProfileTextField.js';
+import InterestsInput from './InterestsInput/InterestsInput.js';
+import ChangeStatusInput from './ChangeStatusInput/ChangeStatusInput.js';
+import ProfilePhotos from './ProfilePhotos/ProfilePhotos.js';
+import SmallUsers from './../SmallUsers/SmallUsers.js';
+import Input from '@material-ui/core/Input';
+import Button from '@material-ui/core/Button';
+import { saveUserProfile, getLikedBy, getCheckedBy } from './../../api/api.js';
+import { isEmailValid } from './../../utils/utils.js';
+import { styles } from './Profile.styles';
+import { withContext } from '../../utils/utils';
 
 class Profile extends React.Component {
-  componentDidMount = () => this.setState(this.props.value);
+  componentDidMount = () => this.setState(this.props.context.profile);
 
   isEmailValid = email => {
     const validStatus = isEmailValid(email);
 
     if (!validStatus) {
       this.setState({
-        changeStatus: "Please make sure that your email address is correct",
-        error: true
+        changeStatus: 'Please make sure that your email address is correct',
+        error: true,
       });
     }
     return validStatus;
   };
 
   validateEmpty = value => {
-    if (value === "") {
+    if (value === '') {
       this.setState({
-        changeStatus: "Please fill all the fields in",
-        error: true
+        changeStatus: 'Please fill all the fields in',
+        error: true,
       });
       return false;
     }
@@ -77,15 +56,15 @@ class Profile extends React.Component {
       saveUserProfile(this.state).then(
         data => {
           this.setState({
-            error: data.status === "error",
-            changeStatus: data.result
+            error: data.status === 'error',
+            changeStatus: data.result,
           });
           if (data.suggestions) {
-            this.props.updateSuggestions(data.suggestions);
+            this.props.context.set('suggestions', data.suggestions);
           }
-          this.props.onChange(this.state);
+          this.props.context.set('profile', this.state);
         },
-        error => console.error(error)
+        error => console.error(error),
       );
     }
   };
@@ -95,7 +74,7 @@ class Profile extends React.Component {
   onAgeChange = event => {
     if (event.target.value >= 18 && event.target.value <= 100) {
       this.setState({
-        age: event.target.value
+        age: event.target.value,
       });
     }
   };
@@ -125,30 +104,17 @@ class Profile extends React.Component {
       age,
       interests,
       gallery,
-      avatarid
+      avatarid,
     } = this.state;
-    const {
-      classes,
-      visited,
-      updateVisited,
-      updateCanRenderLikeButton
-    } = this.props;
+    const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-        <SmallUsers
-          title="Liked by"
-          icon="&#9829;"
-          getUserList={getLikedBy}
-          visited={visited}
-          updateVisited={updateVisited}
-        />
+        <SmallUsers title="Liked by" icon="&#9829;" getUserList={getLikedBy} />
         <SmallUsers
           title="Checked by"
           icon="&#10004;"
           getUserList={getCheckedBy}
-          visited={visited}
-          updateVisited={updateVisited}
         />
         <div className={classes.profileDetails}>
           {this.renderChangeStatus()}
@@ -184,14 +150,14 @@ class Profile extends React.Component {
           </div>
           <ProfileSelect
             title="Gender"
-            items={["male", "female"]}
+            items={['male', 'female']}
             name="gender"
             value={gender}
             onChange={this.onChange}
           />
           <ProfileSelect
             title="Preferences"
-            items={["heterosexual", "homosexual", "bisexual"]}
+            items={['heterosexual', 'homosexual', 'bisexual']}
             name="preferences"
             value={preferences}
             onChange={this.onChange}
@@ -213,18 +179,14 @@ class Profile extends React.Component {
             Save changes
           </Button>
         </div>
-        <ProfilePhotos
-          gallery={gallery}
-          avatarid={avatarid}
-          updateCanRenderLikeButton={updateCanRenderLikeButton}
-        />
+        <ProfilePhotos gallery={gallery} avatarid={avatarid} />
       </div>
     );
   }
 }
 
 Profile.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Profile);
+export default withStyles(styles)(withContext(Profile));

@@ -51,17 +51,12 @@ TabContainer.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-let socket = null;
-
 class Main extends React.Component {
   state = {
     tabid: 0,
-    profile: null,
     notifications: [],
     showMenu: false,
     tabName: 'Suggestions',
-    chatData: null,
-    suggestions: null,
   };
 
   ipLookUp = () => {
@@ -91,36 +86,35 @@ class Main extends React.Component {
   };
 
   addSocketEventListeners = () => {
-    socket.on('like', data =>
+    this.props.context.socket.on('like', data =>
       this.addNotification(`${data.sender} has just liked you`),
     );
-    socket.on('check', data =>
+    this.props.context.socket.on('check', data =>
       this.addNotification(`${data.sender} has just checked your profile`),
     );
-    socket.on('chat', data => {
-      let newChatData = this.state.chatData;
+    this.props.context.socket.on('chat', data => {
+      let newChatData = this.props.context.chatData;
       let user;
 
-      if (data.sender !== this.state.profile.login) {
+      if (data.sender !== this.props.context.profile.login) {
         user = data.sender;
         this.addNotification(`${user} has sent you a message`);
       } else {
         user = data.receiver;
       }
       newChatData[user].log.unshift(data);
-      this.setState({
-        chatData: newChatData,
-      });
+      this.props.context.set('chatData', newChatData);
     });
-    socket.on('likeBack', data => {
-      this.addNotification(`${data.data.sender} has just liked you back!`);
-      this.updateChatData(data.chatData);
-    });
-    socket.on('unlike', data => {
-      this.addNotification(
-        `Unfortunately ${data.data.sender} has disconnected from you`,
-      );
-      this.updateChatData(data.chatData);
+    this.props.context.socket.on(
+      'likeBack',
+      ({ data: { sender }, chatData }) => {
+        this.addNotification(`${sender} has just liked you back!`);
+        this.props.context.set('chatData', chatData);
+      },
+    );
+    this.props.context.socket.on('unlike', ({ data: { sender }, chatData }) => {
+      this.addNotification(`Unfortunately ${sender} has disconnected from you`);
+      this.props.context.set('chatData', chatData);
     });
   };
 
@@ -128,9 +122,12 @@ class Main extends React.Component {
     try {
       const { user, allInterests } = await getUserProfile();
 
-      socket = socketIOClient({
-        query: `login=${user.login}`,
-      });
+      this.props.context.set(
+        'socket',
+        socketIOClient({
+          query: `login=${user.login}`,
+        }),
+      );
       this.addSocketEventListeners();
       this.props.context.set('profile', {
         firstname: user.firstname,
@@ -150,53 +147,29 @@ class Main extends React.Component {
         error: false,
         canRenderLikeButton: user.gallery.length > 0,
       });
-      this.setState(
-        {
-          profile: {
-            firstname: user.firstname,
-            lastname: user.lastname,
-            login: user.login,
-            email: user.email,
-            age: user.age,
-            gender: user.gender,
-            preferences: user.preferences,
-            bio: user.bio,
-            interests: user.interests,
-            gallery: user.gallery,
-            avatarid: user.avatarid,
-            location: user.location,
-            allInterests: allInterests,
-            changeStatus: null,
-            error: false,
-            canRenderLikeButton: user.gallery.length > 0,
-          },
-        },
-        () => this.getLocation(user.id),
-      );
+      this.getLocation(user.id);
     } catch (error) {
-      this.setState({ profile: 'signin' });
+      this.props.context.set('profile', 'signin');
     }
   };
 
   loadChatData = () =>
-    getChatData().then(chatData => {
-      this.props.context.set('chatData', chatData);
-      this.setState({ chatData });
-    }, console.error);
+    getChatData().then(
+      chatData => this.props.context.set('chatData', chatData),
+      console.error,
+    );
 
   loadSuggestions = () =>
-    getSuggestions().then(suggestions => {
-      this.props.context.set('suggestions', suggestions);
-      this.setState({
-        suggestions,
-      });
-    }, console.error);
+    getSuggestions().then(
+      suggestions => this.props.context.set('suggestions', suggestions),
+      console.error,
+    );
 
   loadVisited = () =>
-    getVisited().then(visited => {
-      this.props.context.set('visited', visited);
-      this.setState({ visited });
-    }, console.error);
+    getVisited().then(
+      visited => this.props.context.set('visited', visited),
+      console.error,
+    );
 
   componentDidMount = () =>
     Promise.all([
@@ -206,46 +179,23 @@ class Main extends React.Component {
       this.loadVisited(),
     ]);
 
-  onProfileChange = target => this.setState({ profile: target });
-
-  signout = () => signout().then(() => this.setState({ profile: 'signin' }));
-
-  updateSuggestions = suggestions => this.setState({ suggestions });
-
-  updateChatData = chatData => this.setState({ chatData });
-
-  updateLog = (receiver, log) => {
-    let newChatData = this.state.chatData;
-
-    newChatData[receiver].log = log;
-    this.setState({
-      chatData: newChatData,
-    });
-  };
+  signout = () =>
+    signout().then(() => this.props.context.set('profile', 'signin'));
 
   updateVisited = visitedLogin => {
     if (
-      !this.state.visited.map(profile => profile.login).includes(visitedLogin)
+      !this.props.context.visited
+        .map(profile => profile.login)
+        .includes(visitedLogin)
     ) {
       saveVisited(visitedLogin).then(visited => {
-        socket.emit('check', {
-          sender: this.state.profile.login,
+        this.props.context.socket.emit('check', {
+          sender: this.props.context.profile.login,
           receiver: visitedLogin,
         });
-        this.setState({
-          visited,
-        });
+        this.props.context.set('visited', visited);
       });
     }
-  };
-
-  updateCanRenderLikeButton = canRenderLikeButton => {
-    const newProfile = this.state.profile;
-
-    newProfile.canRenderLikeButton = canRenderLikeButton;
-    this.setState({
-      profile: newProfile,
-    });
   };
 
   closeNotification = index => {
@@ -272,10 +222,10 @@ class Main extends React.Component {
     !this.anchorEl.contains(event.target) && this.setState({ showMenu: false });
 
   everythingLoaded = () =>
-    this.state.profile &&
-    this.state.chatData &&
-    this.state.suggestions &&
-    this.state.visited;
+    this.props.context.profile &&
+    this.props.context.chatData &&
+    this.props.context.suggestions &&
+    this.props.context.visited;
 
   getTabName = () => {
     let tabName = window.location.pathname.split('/')[1];
@@ -342,8 +292,11 @@ class Main extends React.Component {
   };
 
   renderSideMenu = () => {
-    const { classes } = this.props;
-    const { showMenu, chatData } = this.state;
+    const {
+      classes,
+      context: { chatData },
+    } = this.props;
+    const { showMenu } = this.state;
 
     return (
       <ClickAwayListener onClickAway={this.handleMenuClose}>
@@ -364,211 +317,91 @@ class Main extends React.Component {
     );
   };
 
-  renderSlashRoute = () => {
-    const {
-      profile,
-      profile: { login, canRenderLikeButton },
-      suggestions,
-      visited,
-    } = this.state;
+  renderRoute = (path, Component) => (
+    <Route
+      exact
+      path={path}
+      render={() => (
+        <TabContainer>
+          <Component />
+        </TabContainer>
+      )}
+    />
+  );
 
-    return (
+  renderChatRoute = () =>
+    Object.keys(this.props.context.chatData).length > 0 && (
       <Route
         exact
-        path="/"
-        render={() => {
-          return (
+        path="/chat"
+        render={() => (
+          <TabContainer>
+            <Chat receiver={Object.keys(this.props.context.chatData)[0]} />
+          </TabContainer>
+        )}
+      />
+    );
+
+  renderChatReceiverRoute = () =>
+    Object.keys(this.props.context.chatData).length > 0 && (
+      <Route
+        exact
+        path="/chat/:receiver"
+        render={({ match }) =>
+          Object.keys(this.props.context.chatData).includes(
+            match.params.receiver,
+          ) ? (
             <TabContainer>
-              <Suggestions
-                socket={socket}
-                sender={login}
-                profile={profile}
-                visited={visited}
-                updateVisited={this.updateVisited}
-                suggestions={suggestions}
-                updateChatData={this.updateChatData}
-                canRenderLikeButton={canRenderLikeButton}
-              />
+              <Chat receiver={match.params.receiver} />
             </TabContainer>
-          );
-        }}
+          ) : (
+            <span>Chat user not found</span>
+          )
+        }
       />
     );
-  };
 
-  renderProfileRoute = () => {
-    const { profile, visited } = this.state;
-
-    return (
-      <Route
-        exact
-        path="/profile"
-        render={() => {
-          return (
-            <TabContainer>
-              <Profile
-                name="profile"
-                value={profile}
-                onChange={this.onProfileChange}
-                editable={true}
-                visited={visited}
-                updateVisited={this.updateVisited}
-                updateSuggestions={this.updateSuggestions}
-                updateCanRenderLikeButton={this.updateCanRenderLikeButton}
-              />
-            </TabContainer>
-          );
-        }}
-      />
+  getUserIndex = match =>
+    this.props.context.suggestions.indexOf(
+      this.props.context.suggestions.find(
+        suggestion => match.params.login === suggestion.login,
+      ),
     );
-  };
 
-  renderChatRoute = () => {
-    const {
-      profile: { login },
-      chatData,
-    } = this.state;
+  renderUserRoute = () => (
+    <Route
+      exact
+      path="/users/:login"
+      render={({ match }) => {
+        const index = this.getUserIndex(match);
 
-    return (
-      Object.keys(chatData).length > 0 && (
-        <Route
-          exact
-          path="/chat"
-          render={() => {
-            return (
-              <TabContainer>
-                <Chat
-                  socket={socket}
-                  sender={login}
-                  receiver={Object.keys(chatData)[0]}
-                  chatData={chatData}
-                  updateLog={this.updateLog}
-                />
-              </TabContainer>
-            );
-          }}
-        />
-      )
-    );
-  };
-
-  renderChatReceiverRoute = () => {
-    const {
-      profile: { login },
-      chatData,
-    } = this.state;
-
-    return (
-      Object.keys(chatData).length > 0 && (
-        <Route
-          exact
-          path="/chat/:receiver"
-          render={({ match }) => {
-            if (Object.keys(chatData).includes(match.params.receiver)) {
-              return (
-                <TabContainer>
-                  <Chat
-                    socket={socket}
-                    sender={login}
-                    receiver={match.params.receiver}
-                    chatData={chatData}
-                    updateLog={this.updateLog}
-                  />
-                </TabContainer>
-              );
-            }
-            return <span>Chat user not found</span>;
-          }}
-        />
-      )
-    );
-  };
-
-  renderUserRoute = () => {
-    const { classes } = this.props;
-    const {
-      profile: { login, canRenderLikeButton },
-      suggestions,
-      visited,
-    } = this.state;
-
-    return (
-      <Route
-        exact
-        path="/users/:login"
-        render={({ match }) => {
-          let index = suggestions.indexOf(
-            suggestions.find(
-              suggestion => match.params.login === suggestion.login,
-            ),
-          );
-
-          if (index !== -1) {
-            return (
-              <TabContainer>
-                <div className={classes.singleUserContainer}>
-                  <User
-                    user={suggestions[index]}
-                    socket={socket}
-                    sender={login}
-                    full={true}
-                    visited={visited}
-                    updateVisited={this.updateVisited}
-                    updateChatData={this.updateChatData}
-                    canRenderLikeButton={canRenderLikeButton}
-                  />
-                </div>
-              </TabContainer>
-            );
-          }
-          return <span>User not found</span>;
-        }}
-      />
-    );
-  };
-
-  renderVisitedRoute = () => {
-    const {
-      profile: { login, canRenderLikeButton },
-      visited,
-    } = this.state;
-
-    return (
-      <Route
-        exact
-        path="/visited"
-        render={() => {
-          return (
-            <TabContainer>
-              <Visited
-                socket={socket}
-                sender={login}
-                visited={visited}
-                updateVisited={this.updateVisited}
-                updateChatData={this.updateChatData}
-                canRenderLikeButton={canRenderLikeButton}
-              />
-            </TabContainer>
-          );
-        }}
-      />
-    );
-  };
+        return index !== -1 ? (
+          <TabContainer>
+            <div className={this.props.classes.singleUserContainer}>
+              <User user={this.props.context.suggestions[index]} full={true} />
+            </div>
+          </TabContainer>
+        ) : (
+          <span>User not found</span>
+        );
+      }}
+    />
+  );
 
   renderRoutes = () => (
     <div className={this.props.classes.appContent}>
-      {this.renderSlashRoute()}
-      {this.renderProfileRoute()}
+      {this.renderRoute('/', Suggestions)}
+      {this.renderRoute('/profile', Profile)}
       {this.renderChatRoute()}
       {this.renderChatReceiverRoute()}
       {this.renderUserRoute()}
-      {this.renderVisitedRoute()}
+      {this.renderRoute('/visited', Visited)}
     </div>
   );
 
   render = () =>
     this.everythingLoaded() ? (
-      this.state.profile === 'signin' ? (
+      this.props.context.profile === 'signin' ? (
         <Signin />
       ) : (
         <div className={this.props.classes.root}>

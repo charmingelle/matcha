@@ -1,56 +1,16 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
-import EditIcon from "@material-ui/icons/Edit";
-import { saveUserPhoto, setAvatar } from "./../../../api/api.js";
-
-const styles = {
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  },
-  rightIcon: {
-    marginLeft: 10
-  },
-  hidden: {
-    display: "none"
-  },
-  photoList: {
-    margin: 0,
-    padding: 0,
-    listStyleType: "none"
-  },
-  avatarNote: {
-    lineHeight: "38.8px",
-    textAlign: "center",
-    fontWeight: 500,
-    color: "#3f51b5"
-  },
-  customFileUpload: {
-    marginTop: "50px"
-  },
-  card: {
-    margin: 50,
-    width: 500
-  },
-  content: {
-    height: 500,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  img: {
-    maxWidth: "100%",
-    maxHeight: "100%"
-  }
-};
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+import EditIcon from '@material-ui/icons/Edit';
+import { saveUserPhoto, setAvatar } from './../../../api/api.js';
+import { withContext } from '../../../utils/utils';
+import { styles } from './ProfilePhotos.styles';
 
 class ProfilePhotos extends React.Component {
   constructor(props) {
@@ -58,12 +18,12 @@ class ProfilePhotos extends React.Component {
     this.photoid = null;
     this.state = {
       gallery: this.props.gallery,
-      avatarid: this.props.avatarid
+      avatarid: this.props.avatarid,
     };
   }
 
   upload = id => {
-    const uploadEl = document.getElementById("file-upload");
+    const uploadEl = document.getElementById('file-upload');
 
     this.photoid = id;
     uploadEl.click();
@@ -77,13 +37,13 @@ class ProfilePhotos extends React.Component {
   uploadPhoto = event => {
     let newGallery = JSON.parse(JSON.stringify(this.state.gallery));
     const image = new Image();
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
 
     image.onload = () => {
       canvas.width = image.width;
       canvas.height = image.height;
       canvas
-        .getContext("2d")
+        .getContext('2d')
         .drawImage(image, 0, 0, canvas.width, canvas.height);
       if (this.photoid === null) {
         this.photoid = newGallery.length;
@@ -92,7 +52,7 @@ class ProfilePhotos extends React.Component {
         newGallery[this.photoid] = data.fileName;
         this.setState({ gallery: newGallery });
         this.photoid = null;
-        this.props.updateCanRenderLikeButton(true);
+        this.props.context.updateCanRenderLikeButton(true);
       });
     };
     image.src = window.URL.createObjectURL(event.target.files[0]);
@@ -165,7 +125,7 @@ class ProfilePhotos extends React.Component {
 }
 
 ProfilePhotos.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ProfilePhotos);
+export default withStyles(styles)(withContext(ProfilePhotos));

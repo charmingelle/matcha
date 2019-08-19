@@ -6,6 +6,7 @@ export const styles = {
     minWidth: '568px',
     height: '100vh',
     backgroundColor: '#eeeeee',
+    overflow: 'scroll',
   },
   appBar: {
     backgroundColor: '#3f51b5',

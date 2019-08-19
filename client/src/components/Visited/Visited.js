@@ -1,48 +1,20 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import User from "./../User/User.js";
-
-const styles = {
-  root: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-    overflow: "auto"
-  },
-  userList: {
-    margin: 0,
-    padding: 0,
-    listStyleType: "none"
-  }
-};
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import User from './../User/User.js';
+import { styles } from './Visited.styles';
+import { withContext } from '../../utils/utils';
 
 class Visited extends React.Component {
   render = () => {
-    const {
-      classes,
-      visited,
-      socket,
-      sender,
-      updateVisited,
-      updateChatData,
-      canRenderLikeButton
-    } = this.props;
+    const { classes } = this.props;
 
     return (
       <div className={classes.root}>
         <ul className={classes.userList}>
-          {visited.map((user, index) => (
+          {this.props.context.visited.map((user, index) => (
             <li key={index}>
-              <User
-                user={user}
-                full={false}
-                socket={socket}
-                sender={sender}
-                updateVisited={updateVisited}
-                updateChatData={updateChatData}
-                canRenderLikeButton={canRenderLikeButton}
-              />
+              <User user={user} full={false} />
             </li>
           ))}
         </ul>
@@ -52,7 +24,7 @@ class Visited extends React.Component {
 }
 
 Visited.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Visited);
+export default withStyles(styles)(withContext(Visited));

@@ -1,77 +1,30 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import classnames from "classnames";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
-import Collapse from "@material-ui/core/Collapse";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import Grow from "@material-ui/core/Grow";
-import Paper from "@material-ui/core/Paper";
-import Popper from "@material-ui/core/Popper";
-import MenuItem from "@material-ui/core/MenuItem";
-import MenuList from "@material-ui/core/MenuList";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import LeftIcon from "@material-ui/icons/ChevronLeft";
-import RightIcon from "@material-ui/icons/ChevronRight";
-import LikeButton from "./LikeButton/LikeButton.js";
-import BlockButton from "./BlockButton/BlockButton.js";
-import { reportFake } from "./../../api/api.js";
-
-const styles = theme => ({
-  card: {
-    margin: 50,
-    width: 500,
-    height: "100%"
-  },
-  photoContent: {
-    height: 500,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  img: {
-    maxWidth: "100%",
-    maxHeight: "100%"
-  },
-  actions: {
-    display: "flex"
-  },
-  expand: {
-    transform: "rotate(0deg)",
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest
-    }),
-    marginLeft: "auto",
-    [theme.breakpoints.up("sm")]: {
-      marginRight: -8
-    }
-  },
-  expandOpen: {
-    transform: "rotate(180deg)"
-  },
-  fameNote: {
-    marginRight: 8,
-    fontWeight: "bold"
-  },
-  leftRightArea: {
-    position: "relative",
-    height: 30
-  },
-  right: {
-    position: "absolute",
-    right: 0
-  },
-  bold: {
-    fontWeight: 500
-  }
-});
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import classnames from 'classnames';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Collapse from '@material-ui/core/Collapse';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import LeftIcon from '@material-ui/icons/ChevronLeft';
+import RightIcon from '@material-ui/icons/ChevronRight';
+import LikeButton from './LikeButton/LikeButton.js';
+import BlockButton from './BlockButton/BlockButton.js';
+import { reportFake } from './../../api/api.js';
+import { styles } from './User.styles';
+import { withContext } from '../../utils/utils';
 
 class User extends React.Component {
   componentDidMount = () => {
@@ -79,19 +32,19 @@ class User extends React.Component {
     this.setState({
       currentPhoto: 0,
       expanded: this.props.full,
-      isMenuOpen: false
+      isMenuOpen: false,
     });
   };
 
   showPreviousPhoto = () =>
     this.setState({
-      currentPhoto: this.state.currentPhoto - 1
+      currentPhoto: this.state.currentPhoto - 1,
     });
 
   showNextPhoto = () => {
-    this.props.updateVisited(this.state.login);
+    this.props.context.updateVisited(this.state.login);
     this.setState({
-      currentPhoto: this.state.currentPhoto + 1
+      currentPhoto: this.state.currentPhoto + 1,
     });
   };
 
@@ -100,14 +53,14 @@ class User extends React.Component {
 
   changeFame = step =>
     this.setState({
-      fame: this.state.fame + step
+      fame: this.state.fame + step,
     });
 
   reportFake = () =>
     reportFake(this.state.login).then(() =>
       this.setState({
-        fake: true
-      })
+        fake: true,
+      }),
     );
 
   handleExpandClick = () =>
@@ -124,7 +77,7 @@ class User extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes, canRenderLikeButton } = this.props;
+    const { classes } = this.props;
     const {
       login,
       firstname,
@@ -141,11 +94,11 @@ class User extends React.Component {
       bio,
       interests,
       fake,
-      isMenuOpen
+      isMenuOpen,
     } = this.state;
-    const avatar = gallery.length > 0 ? gallery[avatarid] : "avatar.png";
+    const avatar = gallery.length > 0 ? gallery[avatarid] : 'avatar.png';
     const currentPhotoFile =
-      gallery.length > 0 ? gallery[currentPhoto] : "avatar.png";
+      gallery.length > 0 ? gallery[currentPhoto] : 'avatar.png';
 
     return (
       <Card className={classes.card}>
@@ -180,7 +133,7 @@ class User extends React.Component {
                     id="menu-list-grow"
                     style={{
                       transformOrigin:
-                        placement === "bottom" ? "center top" : "center bottom"
+                        placement === 'bottom' ? 'center top' : 'center bottom',
                     }}
                   >
                     <Paper>
@@ -205,7 +158,7 @@ class User extends React.Component {
           title={`${firstname} ${lastname}`}
           subheader={
             online
-              ? "Online"
+              ? 'Online'
               : `Last seen on ${new Date(parseInt(time)).toLocaleString()}`
           }
         />
@@ -243,14 +196,8 @@ class User extends React.Component {
           </Typography>
         </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
-          {canRenderLikeButton ? (
-            <LikeButton
-              changeFame={this.changeFame}
-              socket={this.props.socket}
-              sender={this.props.sender}
-              login={login}
-              updateChatData={this.props.updateChatData}
-            />
+          {this.props.context.profile.canRenderLikeButton ? (
+            <LikeButton changeFame={this.changeFame} login={login} />
           ) : (
             <div className={classes.fameNote}>Fame:</div>
           )}
@@ -258,7 +205,7 @@ class User extends React.Component {
           {(interests.length > 0 || bio) && (
             <IconButton
               className={classnames(classes.expand, {
-                [classes.expandOpen]: this.state.expanded
+                [classes.expandOpen]: this.state.expanded,
               })}
               onClick={this.handleExpandClick}
               aria-expanded={this.state.expanded}
@@ -273,7 +220,7 @@ class User extends React.Component {
             {interests.length > 0 && (
               <Typography component="p">
                 <span className={classes.bold}>Interests: </span>
-                {interests.join(", ")}
+                {interests.join(', ')}
               </Typography>
             )}
             {bio && (
@@ -290,7 +237,7 @@ class User extends React.Component {
 }
 
 User.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(User);
+export default withStyles(styles)(withContext(User));
