@@ -2,7 +2,7 @@ const { check } = require("express-validator/check");
 const format = require("pg-format");
 const fs = require("fs");
 const crypto = require("crypto");
-const { getSuggestionsFromDB } = require("./common.js");
+const {  } = require("./common.js");
 
 const saveNewInterests = (reqBody, db) => {
   db.any("SELECT interest FROM interests").then(data => {

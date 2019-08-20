@@ -1,28 +1,21 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-
-const styles = theme => ({
-  formControl: {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
-    minWidth: 120
-  }
-});
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { styles } from './ProfileSelect.styles';
 
 class ProfileSelect extends React.Component {
   state = {
-    [this.props.name]: ""
+    [this.props.name]: '',
   };
 
   componentDidMount() {
     this.setState({
-      [this.props.name]: this.props.value
+      [this.props.name]: this.props.value,
     });
   }
 
@@ -61,7 +54,7 @@ class ProfileSelect extends React.Component {
 }
 
 ProfileSelect.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(ProfileSelect);

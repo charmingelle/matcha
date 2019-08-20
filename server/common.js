@@ -1,83 +1,83 @@
-const format = require("pg-format");
+const format = require('pg-format');
 
 module.exports = {
   getSuggestionsFromDB(login, db) {
     return db
-      .any("SELECT blockee FROM blocks WHERE blocker = ${blocker}", {
-        blocker: login
+      .any('SELECT blockee FROM blocks WHERE blocker = ${blocker}', {
+        blocker: login,
       })
       .then(data => {
         const blockedUsers = data.map(record => record.blockee);
 
         return db
-          .any("SELECT gender, preferences FROM users WHERE login = ${login}", {
-            login
+          .any('SELECT gender, preferences FROM users WHERE login = ${login}', {
+            login,
           })
           .then(data => {
             if (
-              (data[0].gender === "male" &&
-                data[0].preferences === "heterosexual") ||
-              (data[0].gender === "female" &&
-                data[0].preferences === "homosexual")
+              (data[0].gender === 'male' &&
+                data[0].preferences === 'heterosexual') ||
+              (data[0].gender === 'female' &&
+                data[0].preferences === 'homosexual')
             ) {
               return blockedUsers.length === 0
                 ? db.any(
                     format(
                       "SELECT * FROM users WHERE login <> '%s' AND gender = 'female' AND preferences IN (%L)",
                       login,
-                      [data[0].preferences, "bisexual"]
-                    )
+                      [data[0].preferences, 'bisexual'],
+                    ),
                   )
                 : db.any(
                     format(
                       "SELECT * FROM users WHERE login <> '%s' AND gender = 'female' AND preferences IN (%L) AND login NOT IN (%L)",
                       login,
-                      [data[0].preferences, "bisexual"],
-                      blockedUsers
-                    )
+                      [data[0].preferences, 'bisexual'],
+                      blockedUsers,
+                    ),
                   );
             }
             if (
-              (data[0].gender === "female" &&
-                data[0].preferences === "heterosexual") ||
-              (data[0].gender === "male" &&
-                data[0].preferences === "homosexual")
+              (data[0].gender === 'female' &&
+                data[0].preferences === 'heterosexual') ||
+              (data[0].gender === 'male' &&
+                data[0].preferences === 'homosexual')
             ) {
               return blockedUsers.length === 0
                 ? db.any(
                     format(
                       "SELECT * FROM users WHERE login <> '%s' AND gender = 'male' AND preferences IN (%L)",
                       login,
-                      [data[0].preferences, "bisexual"]
-                    )
+                      [data[0].preferences, 'bisexual'],
+                    ),
                   )
                 : db.any(
                     format(
                       "SELECT * FROM users WHERE login <> '%s' AND gender = 'male' AND preferences IN (%L) AND login NOT IN (%L)",
                       login,
-                      [data[0].preferences, "bisexual"],
-                      blockedUsers
-                    )
+                      [data[0].preferences, 'bisexual'],
+                      blockedUsers,
+                    ),
                   );
             }
-            if (data[0].gender === "male") {
+            if (data[0].gender === 'male') {
               return blockedUsers.length === 0
                 ? db.any(
                     format(
                       "SELECT * FROM users WHERE login <> '%s' AND ((gender = 'male' AND preferences IN (%L)) OR (gender = 'female' AND preferences in (%L)))",
                       login,
-                      ["bisexual", "homosexual"],
-                      ["bisexual", "heterosexual"]
-                    )
+                      ['bisexual', 'homosexual'],
+                      ['bisexual', 'heterosexual'],
+                    ),
                   )
                 : db.any(
                     format(
                       "SELECT * FROM users WHERE login <> '%s' AND login NOT IN (%L) AND ((gender = 'male' AND preferences IN (%L)) OR (gender = 'female' AND preferences in (%L)))",
                       login,
                       blockedUsers,
-                      ["bisexual", "homosexual"],
-                      ["bisexual", "heterosexual"]
-                    )
+                      ['bisexual', 'homosexual'],
+                      ['bisexual', 'heterosexual'],
+                    ),
                   );
             }
             return blockedUsers.length === 0
@@ -85,18 +85,18 @@ module.exports = {
                   format(
                     "SELECT * FROM users WHERE login <> '%s' AND ((gender = 'male' AND preferences IN (%L)) OR (gender = 'female' AND preferences in (%L)))",
                     login,
-                    ["bisexual", "heterosexual"],
-                    ["bisexual", "homosexual"]
-                  )
+                    ['bisexual', 'heterosexual'],
+                    ['bisexual', 'homosexual'],
+                  ),
                 )
               : db.any(
                   format(
                     "SELECT * FROM users WHERE login <> '%s' AND login NOT IN (%L) AND ((gender = 'male' AND preferences IN (%L)) OR (gender = 'female' AND preferences in (%L)))",
                     login,
                     blockedUsers,
-                    ["bisexual", "heterosexual"],
-                    ["bisexual", "homosexual"]
-                  )
+                    ['bisexual', 'heterosexual'],
+                    ['bisexual', 'homosexual'],
+                  ),
                 );
           });
       });
@@ -104,17 +104,17 @@ module.exports = {
 
   getChatDataFromDB(login, db) {
     return db
-      .any("SELECT likee FROM likes WHERE liker = ${login}", {
-        login
+      .any('SELECT likee FROM likes WHERE liker = ${login}', {
+        login,
       })
       .then(data => {
         if (data.length > 0) {
           data = data.map(record => record.likee);
 
           const query = format(
-            "SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L",
+            'SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L',
             data,
-            login
+            login,
           );
 
           return db.any(query).then(data => {
@@ -122,8 +122,8 @@ module.exports = {
               data = data.map(record => record.liker);
 
               const query = format(
-                "SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)",
-                data
+                'SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)',
+                data,
               );
               return db.any(query).then(data => {
                 let chatData = {};
@@ -134,8 +134,8 @@ module.exports = {
                       online: record.online,
                       gallery: record.gallery,
                       avatarid: record.avatarid,
-                      log: []
-                    })
+                      log: [],
+                    }),
                 );
                 data = data.map(record => record.login);
 
@@ -144,7 +144,7 @@ module.exports = {
                   data,
                   login,
                   login,
-                  data
+                  data,
                 );
 
                 return db.any(query).then(data => {
@@ -164,5 +164,5 @@ module.exports = {
         }
         return [];
       });
-  }
+  },
 };

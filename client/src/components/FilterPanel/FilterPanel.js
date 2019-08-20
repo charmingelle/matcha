@@ -1,91 +1,15 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import MenuItem from "@material-ui/core/MenuItem";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import ListItemText from "@material-ui/core/ListItemText";
-import Select from "@material-ui/core/Select";
-import Checkbox from "@material-ui/core/Checkbox";
-
-const styles = {
-  root: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    padding: 8,
-    backgroundColor: "#ffffff",
-    transform: "translate(0px, 0px)",
-    transition: "transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms"
-  },
-  hidden: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    padding: 8,
-    backgroundColor: "#ffffff",
-    transform: "translate(0, -430px)",
-    transition: "transform 300ms cubic-bezier(0, 0, 0.2, 1) 0ms"
-  },
-  ageFilter: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    marginBottom: 8
-  },
-  ageInputBlock: {
-    display: "flex",
-    alignItems: "center",
-    width: 300,
-    height: 40
-  },
-  filter: {
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: 8
-  },
-  formControl: {
-    marginBottom: 8
-  },
-  slider: {
-    WebkitAppearance: "none",
-    width: "100%",
-    background: "transparent",
-    "&:focus": {
-      outline: "none"
-    },
-    "&::-webkit-slider-thumb": {
-      WebkitAppearance: "none",
-      height: "36px",
-      width: "16px",
-      borderRadius: "4px",
-      background: "#ffffff",
-      cursor: "pointer",
-      marginTop: "-14px",
-      boxShadow:
-        "1px 1px 1px rgba(0, 0, 0, 0.7), 0px 0px 1px rgba(0, 0, 0, 0.7)"
-    },
-    "&::-webkit-slider-runnable-track": {
-      width: "100%",
-      height: "8.4px",
-      cursor: "pointer",
-      background: "#3f51b5",
-      borderRadius: "4px"
-    }
-  },
-  labelAll: {
-    fontSize: "12px",
-    color: "rgba(0, 0, 0, 0.54)"
-  },
-  spanAll: {
-    color: "rgba(0, 0, 0, 0.54)"
-  },
-  spanSpecial: {
-    color: "#3f51b5"
-  }
-};
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import ListItemText from '@material-ui/core/ListItemText';
+import Select from '@material-ui/core/Select';
+import Checkbox from '@material-ui/core/Checkbox';
+import { styles } from './FilterPanel.styles';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -93,9 +17,9 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
+      width: 250,
+    },
+  },
 };
 
 class FilterPanel extends React.Component {
@@ -105,17 +29,17 @@ class FilterPanel extends React.Component {
       endAge: 100,
       distance: 5,
       minFameRating: 0,
-      maxFameRating: "",
+      maxFameRating: '',
       amountOfCommonInterests: 0,
       selectedInterests: [],
-      expanded: false
+      expanded: false,
     });
   };
 
   changeParam = (param, min, max, event) => {
     if (event.target.value >= min && (!max || event.target.value <= max)) {
       this.setState({
-        [param]: event.target.value
+        [param]: event.target.value,
       });
     }
   };
@@ -125,7 +49,7 @@ class FilterPanel extends React.Component {
       this.props.setFilterParams(this.state);
     }
     this.setState({
-      expanded: !this.state.expanded
+      expanded: !this.state.expanded,
     });
     this.props.move();
   };
@@ -147,7 +71,7 @@ class FilterPanel extends React.Component {
       maxFameRating,
       amountOfCommonInterests,
       selectedInterests,
-      expanded
+      expanded,
     } = this.state;
 
     return (
@@ -168,7 +92,7 @@ class FilterPanel extends React.Component {
               max="100"
               step="1"
               value={startAge}
-              onChange={this.changeParam.bind(this, "startAge", 18, 100)}
+              onChange={this.changeParam.bind(this, 'startAge', 18, 100)}
             />
             <span className={classes.spanAll}>100</span>
           </div>
@@ -187,7 +111,7 @@ class FilterPanel extends React.Component {
               max="100"
               step="1"
               value={endAge}
-              onChange={this.changeParam.bind(this, "endAge", 18, 100)}
+              onChange={this.changeParam.bind(this, 'endAge', 18, 100)}
             />
             <span className={classes.spanAll}>100</span>
           </div>
@@ -200,7 +124,7 @@ class FilterPanel extends React.Component {
             name="distance"
             type="number"
             value={distance}
-            onChange={this.changeParam.bind(this, "distance", 0, null)}
+            onChange={this.changeParam.bind(this, 'distance', 0, null)}
           />
         </div>
         <div className={classes.filter}>
@@ -211,7 +135,7 @@ class FilterPanel extends React.Component {
             name="minFame"
             type="number"
             value={minFameRating}
-            onChange={this.changeParam.bind(this, "minFameRating", 0, null)}
+            onChange={this.changeParam.bind(this, 'minFameRating', 0, null)}
           />
         </div>
         <div className={classes.filter}>
@@ -222,7 +146,7 @@ class FilterPanel extends React.Component {
             name="maxFame"
             type="number"
             value={maxFameRating}
-            onChange={this.changeParam.bind(this, "maxFameRating", 0, null)}
+            onChange={this.changeParam.bind(this, 'maxFameRating', 0, null)}
           />
         </div>
         <div className={classes.filter}>
@@ -235,9 +159,9 @@ class FilterPanel extends React.Component {
             value={amountOfCommonInterests}
             onChange={this.changeParam.bind(
               this,
-              "amountOfCommonInterests",
+              'amountOfCommonInterests',
               0,
-              null
+              null,
             )}
           />
         </div>
@@ -250,7 +174,7 @@ class FilterPanel extends React.Component {
             value={selectedInterests}
             onChange={this.handleInterestsChange}
             input={<Input id="select-multiple-checkbox" />}
-            renderValue={selected => selected.join(", ")}
+            renderValue={selected => selected.join(', ')}
             MenuProps={MenuProps}
           >
             {interests.map(name => (
@@ -270,7 +194,7 @@ class FilterPanel extends React.Component {
 }
 
 FilterPanel.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(FilterPanel);

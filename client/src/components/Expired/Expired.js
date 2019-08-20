@@ -1,23 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
-
-const styles = theme => ({
-  root: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100vw",
-    height: "100vh"
-  },
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "fit-content"
-  }
-});
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import { Link } from 'react-router-dom';
+import { styles } from './Expired.styles';
 
 class Expired extends React.Component {
   render = () => {
@@ -39,7 +24,7 @@ class Expired extends React.Component {
 }
 
 Expired.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Expired);
