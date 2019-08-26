@@ -17,8 +17,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "initiate": "npm --loglevel=error i material-ui @material-ui/core @material-ui/icons downshift react react-dom react-router-dom react-scripts socket.io-client"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"

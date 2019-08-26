@@ -11,8 +11,8 @@
     "dev": "concurrently 'npm run client' 'npm run server_dev'",
     "create_db": "./create_db.sh",
     "initiate_db": "npm run create_db && node initiateDB.js",
-    "initiate_client": "(cd client && npm run initiate && npm run build)",
-    "initiate": "npm run initiate_client && npm --loglevel=error i concurrently express pg-promise client-sessions pg-format express-validator random-hash sendmail socket.io bcrypt@2",
+    "initiate_client": "(cd client && npm i && npm run build)",
+    "initiate": "npm run initiate_client && npm i",
     "start": "npm run initiate && npm run initiate_db && npm run server",
     "pg_start": "pg_ctl -D /usr/local/var/postgres start",
     "pg_stop": "pg_ctl -D /usr/local/var/postgres stop"
