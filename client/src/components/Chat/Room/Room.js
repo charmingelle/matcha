@@ -34,16 +34,16 @@ class Room extends React.Component {
     });
   };
 
-  componentWillReceiveProps = () => {
-    this.props.context.socket.emit('stoppedTyping', {
-      sender: this.props.context.profile.login,
-      receiver: this.props.receiver,
-    });
-    this.setState({
-      message: '',
-      typing: '',
-    });
-  };
+  // componentWillReceiveProps = () => {
+  //   this.props.context.socket.emit('stoppedTyping', {
+  //     sender: this.props.context.profile.login,
+  //     receiver: this.props.receiver,
+  //   });
+  //   this.setState({
+  //     message: '',
+  //     typing: '',
+  //   });
+  // };
 
   changeHandler = event => {
     this.props.context.socket.emit('typing', {

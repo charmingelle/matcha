@@ -5,7 +5,7 @@ import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import { getResetPasswordEmail } from '../../api/api.js';
+import { getResetPasswordEmail } from '../../api/api';
 import { styles } from './ForgotPassword.styles';
 
 class ForgotPassword extends React.Component {

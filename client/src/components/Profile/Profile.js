@@ -1,18 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import ProfileSelect from './ProfileSelect/ProfileSelect.js';
-import ProfileTextField from './ProfileTextField/ProfileTextField.js';
-import InterestsInput from './InterestsInput/InterestsInput.js';
-import ChangeStatusInput from './ChangeStatusInput/ChangeStatusInput.js';
-import ProfilePhotos from './ProfilePhotos/ProfilePhotos.js';
-import SmallUsers from './../SmallUsers/SmallUsers.js';
+import ProfileSelect from './ProfileSelect/ProfileSelect';
+import ProfileTextField from './ProfileTextField/ProfileTextField';
+import InterestsInput from './InterestsInput/InterestsInput';
+import ChangeStatusInput from './ChangeStatusInput/ChangeStatusInput';
+import ProfilePhotos from './ProfilePhotos/ProfilePhotos';
+import SmallUsers from '../SmallUsers/SmallUsers';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
-import { saveUserProfile, getLikedBy, getCheckedBy } from './../../api/api.js';
-import { isEmailValid } from './../../utils/utils.js';
+import { saveUserProfile, getLikedBy, getCheckedBy } from '../../api/api';
 import { styles } from './Profile.styles';
-import { withContext } from '../../utils/utils';
+import { isEmailValid, withContext } from '../../utils/utils';
 
 class Profile extends React.Component {
   componentDidMount = () => this.setState(this.props.context.profile);

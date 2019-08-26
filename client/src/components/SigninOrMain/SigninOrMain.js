@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { signinOrMain } from './../../api/api.js';
-import Signin from '../Signin/Signin.js';
-import Main from '../Main/Main.js';
+import { signinOrMain } from '../../api/api';
+import Signin from '../Signin/Signin';
+import Main from '../Main/Main';
 
 export default class SigninOrMain extends Component {
   state = {
@@ -20,7 +20,5 @@ export default class SigninOrMain extends Component {
       ) : (
         <Main />
       )
-    ) : (
-      <span>Loading...</span>
-    );
+    ) : null;
 }

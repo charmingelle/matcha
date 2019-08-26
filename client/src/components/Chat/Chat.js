@@ -7,7 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
-import Room from './Room/Room.js';
+import Room from './Room/Room';
 import { styles } from './Chat.styles';
 import { withContext } from '../../utils/utils';
 

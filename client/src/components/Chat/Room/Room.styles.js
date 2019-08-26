@@ -6,6 +6,7 @@ export const styles = {
     width: '80%',
   },
   chatWindow: {
+    height: '80vh',
     flexGrow: 1,
     overflow: 'auto',
     borderBottom: '1px solid #e9e9e9',

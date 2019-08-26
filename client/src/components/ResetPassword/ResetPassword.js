@@ -5,8 +5,8 @@ import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import { isPasswordValid } from './../../utils/utils.js';
-import { resetPassword } from './../../api/api.js';
+import { isPasswordValid } from '../../utils/utils';
+import { resetPassword } from '../../api/api';
 import { styles } from './ResetPassword.styles';
 
 class ResetPassword extends React.Component {

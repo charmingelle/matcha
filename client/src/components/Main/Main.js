@@ -19,13 +19,13 @@ import CheckIcon from '@material-ui/icons/Check';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import MenuIcon from '@material-ui/icons/Menu';
-import Suggestions from './../Suggestions/Suggestions.js';
-import Profile from './../Profile/Profile.js';
-import User from './../User/User.js';
-import Signin from '../Signin/Signin.js';
-import Visited from './../Visited/Visited.js';
-import Chat from './../Chat/Chat.js';
-import Notifications from './../Notifications/Notifications.js';
+import Suggestions from '../Suggestions/Suggestions';
+import Profile from '../Profile/Profile';
+import User from '../User/User';
+import Signin from '../Signin/Signin';
+import Visited from '../Visited/Visited';
+import Chat from '../Chat/Chat';
+import Notifications from '../Notifications/Notifications';
 import {
   getUserProfile,
   saveLocation,
@@ -33,8 +33,7 @@ import {
   getChatData,
   getSuggestions,
   getVisited,
-  saveVisited,
-} from './../../api/api.js';
+} from '../../api/api';
 import { styles } from './Main.styles';
 import { withContext } from '../../utils/utils';
 
@@ -85,6 +84,12 @@ class Main extends React.Component {
     });
   };
 
+  chatIsVisible = user => {
+    const urlParts = window.location.pathname.split('/');
+
+    return urlParts[1] === 'chat' && urlParts[2] === user;
+  };
+
   addSocketEventListeners = () => {
     this.props.context.socket.on('like', data =>
       this.addNotification(`${data.sender} has just liked you`),
@@ -98,7 +103,9 @@ class Main extends React.Component {
 
       if (data.sender !== this.props.context.profile.login) {
         user = data.sender;
-        this.addNotification(`${user} has sent you a message`);
+        if (!this.chatIsVisible(user)) {
+          this.addNotification(`${user} has sent you a message`);
+        }
       } else {
         user = data.receiver;
       }
@@ -181,22 +188,6 @@ class Main extends React.Component {
 
   signout = () =>
     signout().then(() => this.props.context.set('profile', 'signin'));
-
-  updateVisited = visitedLogin => {
-    if (
-      !this.props.context.visited
-        .map(profile => profile.login)
-        .includes(visitedLogin)
-    ) {
-      saveVisited(visitedLogin).then(visited => {
-        this.props.context.socket.emit('check', {
-          sender: this.props.context.profile.login,
-          receiver: visitedLogin,
-        });
-        this.props.context.set('visited', visited);
-      });
-    }
-  };
 
   closeNotification = index => {
     let newNotifications = this.state.notifications;
@@ -411,9 +402,7 @@ class Main extends React.Component {
           {this.renderRoutes()}
         </div>
       )
-    ) : (
-      <span>Loading...</span>
-    );
+    ) : null;
 }
 
 Main.propTypes = {

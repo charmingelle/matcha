@@ -9,7 +9,7 @@ export const styles = {
   userList: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'baseline',
     flexWrap: 'wrap',
     margin: 0,
     padding: 0,
@@ -20,7 +20,7 @@ export const styles = {
   moved: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'baseline',
     flexWrap: 'wrap',
     margin: 0,
     padding: 0,

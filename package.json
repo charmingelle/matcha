@@ -10,7 +10,7 @@
     "server": "node server/server.js",
     "dev": "concurrently 'npm run client' 'npm run server_dev'",
     "create_db": "./create_db.sh",
-    "initiate_db": "npm run create_db && node server/db.js",
+    "initiate_db": "npm run create_db && node initiateDB.js",
     "initiate_client": "(cd client && npm run initiate && npm run build)",
     "initiate": "npm run initiate_client && npm --loglevel=error i concurrently express pg-promise client-sessions pg-format express-validator random-hash sendmail socket.io bcrypt@2",
     "start": "npm run initiate && npm run initiate_db && npm run server",
@@ -30,15 +30,15 @@
   "dependencies": {
     "bcrypt": "^2.0.1",
     "client-sessions": "^0.8.0",
-    "concurrently": "^4.1.0",
+    "concurrently": "^4.1.2",
     "express": "^4.17.1",
     "express-validator": "^5.3.1",
     "ip": "^1.1.5",
     "nodemon": "^1.18.9",
     "pg-format": "^1.0.4",
-    "pg-promise": "^8.7.2",
+    "pg-promise": "^8.7.5",
     "random-hash": "^4.0.1",
-    "sendmail": "^1.4.1",
+    "sendmail": "^1.6.1",
     "socket.io": "^2.2.0"
   }
 }

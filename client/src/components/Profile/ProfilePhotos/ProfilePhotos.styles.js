@@ -11,6 +11,10 @@ export const styles = {
     display: 'none',
   },
   photoList: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
     margin: 0,
     padding: 0,
     listStyleType: 'none',
@@ -25,11 +29,11 @@ export const styles = {
     marginTop: '50px',
   },
   card: {
-    margin: 50,
-    width: 500,
+    margin: 30,
+    width: 300,
   },
   content: {
-    height: 500,
+    height: 300,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

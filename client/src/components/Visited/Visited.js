@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import User from './../User/User.js';
+import User from '../User/User';
 import { styles } from './Visited.styles';
 import { withContext } from '../../utils/utils';
 

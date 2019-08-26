@@ -10,8 +10,8 @@ import {
   isLoginValid,
   isPasswordValid,
   isFirstLastNameValid,
-} from './../../utils/utils.js';
-import { signup } from './../../api/api.js';
+} from '../../utils/utils';
+import { signup } from '../../api/api';
 import { styles } from './Signup.styles';
 
 class Signup extends React.Component {

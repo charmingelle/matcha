@@ -20,9 +20,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import LeftIcon from '@material-ui/icons/ChevronLeft';
 import RightIcon from '@material-ui/icons/ChevronRight';
-import LikeButton from './LikeButton/LikeButton.js';
-import BlockButton from './BlockButton/BlockButton.js';
-import { reportFake } from './../../api/api.js';
+import LikeButton from './LikeButton/LikeButton';
+import BlockButton from './BlockButton/BlockButton';
+import { reportFake } from '../../api/api';
 import { styles } from './User.styles';
 import { withContext } from '../../utils/utils';
 
@@ -63,8 +63,14 @@ class User extends React.Component {
       }),
     );
 
-  handleExpandClick = () =>
-    this.setState(state => ({ expanded: !state.expanded }));
+  handleExpandClick = () => {
+    this.setState(
+      state => ({ expanded: !state.expanded }),
+      () =>
+        this.state.expanded &&
+        this.props.context.updateVisited(this.state.login),
+    );
+  };
 
   handleMenuClose = event => {
     if (this.anchorEl.contains(event.target)) {
@@ -157,9 +163,7 @@ class User extends React.Component {
           }
           title={`${firstname} ${lastname}`}
           subheader={
-            online
-              ? 'Online'
-              : `Last seen on ${new Date(parseInt(time)).toLocaleString()}`
+            online ? 'Online' : new Date(parseInt(time)).toLocaleString()
           }
         />
         <CardContent className={classes.photoContent}>
@@ -181,42 +185,40 @@ class User extends React.Component {
             </IconButton>
           )}
         </div>
-        <CardContent>
-          <Typography component="p">
-            <span className={classes.bold}>Age: </span>
-            {age}
-          </Typography>
-          <Typography component="p">
-            <span className={classes.bold}>Gender: </span>
-            {gender}
-          </Typography>
-          <Typography component="p">
-            <span className={classes.bold}>Sexual preferences: </span>
-            {preferences}
-          </Typography>
-        </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
-          {this.props.context.profile.canRenderLikeButton ? (
-            <LikeButton changeFame={this.changeFame} login={login} />
-          ) : (
-            <div className={classes.fameNote}>Fame:</div>
-          )}
-          <div>{fame}</div>
-          {(interests.length > 0 || bio) && (
-            <IconButton
-              className={classnames(classes.expand, {
-                [classes.expandOpen]: this.state.expanded,
-              })}
-              onClick={this.handleExpandClick}
-              aria-expanded={this.state.expanded}
-              aria-label="Show more"
-            >
-              <ExpandMoreIcon />
-            </IconButton>
-          )}
+          <IconButton
+            className={classnames(classes.expand, {
+              [classes.expandOpen]: this.state.expanded,
+            })}
+            onClick={this.handleExpandClick}
+            aria-expanded={this.state.expanded}
+            aria-label="Show more"
+          >
+            <ExpandMoreIcon />
+          </IconButton>
         </CardActions>
         <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
           <CardContent>
+            <div className={classes.likeBlock}>
+              <LikeButton
+                disabled={!this.props.context.profile.canRenderLikeButton}
+                changeFame={this.changeFame}
+                login={login}
+              />
+              <div>{fame}</div>
+            </div>
+            <Typography component="p">
+              <span className={classes.bold}>Age: </span>
+              {age}
+            </Typography>
+            <Typography component="p">
+              <span className={classes.bold}>Gender: </span>
+              {gender}
+            </Typography>
+            <Typography component="p">
+              <span className={classes.bold}>Sexual preferences: </span>
+              {preferences}
+            </Typography>
             {interests.length > 0 && (
               <Typography component="p">
                 <span className={classes.bold}>Interests: </span>

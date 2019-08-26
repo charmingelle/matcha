@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { Link } from 'react-router-dom';
-import { activateAccount } from './../../api/api.js';
+import { activateAccount } from '../../api/api';
 import { styles } from './ActivateAccount.styles';
 
 class ActivateAccount extends React.Component {

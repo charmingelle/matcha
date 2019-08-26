@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Notification from './Notification/Notification.js';
+import Notification from './Notification/Notification';
 import { styles } from './Notifications.styles';
 
 class Notifications extends React.Component {

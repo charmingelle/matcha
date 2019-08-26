@@ -1,6 +1,6 @@
-const { getChatDataFromDB } = require('./common.js');
+const DB = require('./DB');
 
-module.exports = (app, db) => {
+module.exports = app => {
   const io = require('socket.io')(app.listen(5000));
   const chatUsers = {};
 
@@ -10,28 +10,25 @@ module.exports = (app, db) => {
   });
 
   io.on('connection', socket => {
-    socket.on('chat', async data => {
-      const { time } = await db.one(
-        'INSERT INTO messages (sender, receiver, message, time) VALUES(${sender}, ${receiver}, ${message}, ${time}) RETURNING id, time',
-        {
-          sender: data.sender,
-          receiver: data.receiver,
-          message: data.message,
-          time: Date.now(),
-        },
-      );
-
-      io.to(chatUsers[data.sender]).emit('chat', {
-        sender: data.sender,
-        receiver: data.receiver,
-        message: data.message,
-        time: time,
+    socket.on('chat', async ({ sender, receiver, message }) => {
+      const { time } = await DB.createChatMessage({
+        sender,
+        receiver,
+        message,
+        time: Date.now(),
       });
-      io.to(chatUsers[data.receiver]).emit('chat', {
-        sender: data.sender,
-        receiver: data.receiver,
-        message: data.message,
-        time: time,
+
+      io.to(chatUsers[sender]).emit('chat', {
+        sender,
+        receiver,
+        message,
+        time,
+      });
+      io.to(chatUsers[receiver]).emit('chat', {
+        sender,
+        receiver,
+        message,
+        time,
       });
     });
 
@@ -44,20 +41,16 @@ module.exports = (app, db) => {
     );
 
     socket.on('like', async data => {
-      const { length } = await db.any(
-        'SELECT * FROM likes WHERE liker = ${liker} AND likee = ${likee}',
-        {
-          liker: data.receiver,
-          likee: data.sender,
-        },
-      );
+      const { receiver, sender } = data;
+      const { length } = await DB.getLikes({
+        liker: receiver,
+        likee: sender,
+      });
 
       length === 0
-        ? io.to(chatUsers[data.receiver]).emit('like', data)
-        : getChatDataFromDB(data.receiver, db).then(chatData =>
-            io
-              .to(chatUsers[data.receiver])
-              .emit('likeBack', { data, chatData }),
+        ? io.to(chatUsers[receiver]).emit('like', data)
+        : getChatDataFromDB(receiver).then(chatData =>
+            io.to(chatUsers[receiver]).emit('likeBack', { data, chatData }),
           );
     });
 
@@ -66,17 +59,15 @@ module.exports = (app, db) => {
     );
 
     socket.on('unlike', async data => {
-      const { length } = await db.any(
-        'SELECT * FROM likes WHERE liker = ${liker} AND likee = ${likee}',
-        {
-          liker: data.receiver,
-          likee: data.sender,
-        },
-      );
+      const { receiver, sender } = data;
+      const { length } = await DB.getLikes({
+        liker: receiver,
+        likee: sender,
+      });
 
       if (length !== 0) {
-        getChatDataFromDB(data.receiver, db).then(chatData =>
-          io.to(chatUsers[data.receiver]).emit('unlike', { data, chatData }),
+        getChatDataFromDB(receiver).then(chatData =>
+          io.to(chatUsers[receiver]).emit('unlike', { data, chatData }),
         );
       }
     });

@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import SortingPanel from './../SortingPanel/SortingPanel.js';
-import FilterPanel from './../FilterPanel/FilterPanel.js';
-import User from './../User/User.js';
+import SortingPanel from '../SortingPanel/SortingPanel';
+import FilterPanel from '../FilterPanel/FilterPanel';
+import User from '../User/User';
 import { styles } from './Suggestions.styles';
 import { withContext } from '../../utils/utils';
 

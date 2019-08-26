@@ -8,7 +8,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import EditIcon from '@material-ui/icons/Edit';
-import { saveUserPhoto, setAvatar } from './../../../api/api.js';
+import { saveUserPhoto, setAvatar } from '../../../api/api';
 import { withContext } from '../../../utils/utils';
 import { styles } from './ProfilePhotos.styles';
 

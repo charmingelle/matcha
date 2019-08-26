@@ -1,14 +1,15 @@
 export const styles = theme => ({
   card: {
-    margin: 50,
-    width: 500,
+    margin: 30,
+    width: 300,
     height: '100%',
   },
   photoContent: {
-    height: 500,
+    height: 300,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 0,
   },
   img: {
     maxWidth: '100%',
@@ -30,13 +31,14 @@ export const styles = theme => ({
   expandOpen: {
     transform: 'rotate(180deg)',
   },
-  fameNote: {
-    marginRight: 8,
-    fontWeight: 'bold',
+  likeBlock: {
+    marginLeft: -12,
+    display: 'flex',
+    alignItems: 'center',
   },
   leftRightArea: {
     position: 'relative',
-    height: 30,
+    height: 36,
   },
   right: {
     position: 'absolute',

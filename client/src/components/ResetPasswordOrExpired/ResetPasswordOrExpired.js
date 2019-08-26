@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { resetPasswordOrExpired } from './../../api/api.js';
-import ResetPassword from '../ResetPassword/ResetPassword.js';
-import Expired from '../Expired/Expired.js';
+import { resetPasswordOrExpired } from '../../api/api';
+import ResetPassword from '../ResetPassword/ResetPassword';
+import Expired from '../Expired/Expired';
 
 export default class ResetPasswordOrExpired extends Component {
   state = {

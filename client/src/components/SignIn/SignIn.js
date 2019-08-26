@@ -5,8 +5,8 @@ import { withStyles } from '@material-ui/core/styles';
 import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Main from '../Main/Main.js';
-import { signin } from '../../api/api.js';
+import Main from '../Main/Main';
+import { signin } from '../../api/api';
 import { styles } from './Signin.styles';
 
 class Signin extends React.Component {

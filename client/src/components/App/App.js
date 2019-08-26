@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
-import SigninOrMain from './../SigninOrMain/SigninOrMain.js';
-import Signup from './../Signup/Signup.js';
-import ForgotPassword from './../ForgotPassword/ForgotPassword.js';
-import ResetPasswordOrExpired from './../ResetPasswordOrExpired/ResetPasswordOrExpired.js';
-import ActivateAccount from './../ActivateAccount/ActivateAccount.js';
+import SigninOrMain from '../SigninOrMain/SigninOrMain';
+import Signup from '../Signup/Signup';
+import ForgotPassword from '../ForgotPassword/ForgotPassword';
+import ResetPasswordOrExpired from '../ResetPasswordOrExpired/ResetPasswordOrExpired';
+import ActivateAccount from '../ActivateAccount/ActivateAccount';
 import { Context } from '../../utils/utils';
-import { saveVisited } from './../../api/api.js';
+import { saveVisited } from '../../api/api';
 
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
