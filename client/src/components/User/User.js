@@ -28,8 +28,9 @@ import { withContext } from '../../utils/utils';
 
 class User extends React.Component {
   componentDidMount = () => {
-    this.setState(this.props.user);
+    this.props.full && this.props.context.updateVisited(this.props.user.login);
     this.setState({
+      ...this.props.user,
       currentPhoto: 0,
       expanded: this.props.full,
       isMenuOpen: false,
@@ -83,7 +84,7 @@ class User extends React.Component {
     if (!this.state) {
       return <span>Loading...</span>;
     }
-    const { classes } = this.props;
+    const { classes, full } = this.props;
     const {
       login,
       firstname,
@@ -107,7 +108,7 @@ class User extends React.Component {
       gallery.length > 0 ? gallery[currentPhoto] : 'avatar.png';
 
     return (
-      <Card className={classes.card}>
+      <Card className={full ? classes.cardFull : classes.card}>
         <CardHeader
           avatar={
             <Avatar
@@ -163,10 +164,16 @@ class User extends React.Component {
           }
           title={`${firstname} ${lastname}`}
           subheader={
-            online ? 'Online' : new Date(parseInt(time)).toLocaleString()
+            online
+              ? 'Online'
+              : parseInt(time) === 0
+              ? null
+              : new Date(parseInt(time)).toLocaleString()
           }
         />
-        <CardContent className={classes.photoContent}>
+        <CardContent
+          className={full ? classes.photoContentFull : classes.photoContent}
+        >
           <img
             className={classes.img}
             src={`/${currentPhotoFile}`}
@@ -185,18 +192,20 @@ class User extends React.Component {
             </IconButton>
           )}
         </div>
-        <CardActions className={classes.actions} disableActionSpacing>
-          <IconButton
-            className={classnames(classes.expand, {
-              [classes.expandOpen]: this.state.expanded,
-            })}
-            onClick={this.handleExpandClick}
-            aria-expanded={this.state.expanded}
-            aria-label="Show more"
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </CardActions>
+        {!full && (
+          <CardActions className={classes.actions} disableActionSpacing>
+            <IconButton
+              className={classnames(classes.expand, {
+                [classes.expandOpen]: this.state.expanded,
+              })}
+              onClick={this.handleExpandClick}
+              aria-expanded={this.state.expanded}
+              aria-label="Show more"
+            >
+              <ExpandMoreIcon />
+            </IconButton>
+          </CardActions>
+        )}
         <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <div className={classes.likeBlock}>

@@ -4,10 +4,10 @@ import { withStyles } from '@material-ui/core/styles';
 import SortingPanel from '../SortingPanel/SortingPanel';
 import FilterPanel from '../FilterPanel/FilterPanel';
 import User from '../User/User';
-import { styles } from './Suggestions.styles';
+import { styles } from './UserList.styles';
 import { withContext } from '../../utils/utils';
 
-class Suggestions extends React.Component {
+class UserList extends React.Component {
   constructor(props) {
     super(props);
     this.users = null;
@@ -23,7 +23,7 @@ class Suggestions extends React.Component {
   }
 
   componentDidMount = () => {
-    this.props.context.suggestions.forEach(user => {
+    this.props.users.forEach(user => {
       user.distance = this.getDistance(
         this.props.context.profile.location,
         user.location,
@@ -32,9 +32,9 @@ class Suggestions extends React.Component {
         value => -1 !== this.props.context.profile.interests.indexOf(value),
       ).length;
     });
-    this.users = this.props.context.suggestions;
+    this.users = this.props.users;
     this.setState({
-      filteredUsers: this.sort(this.filter(this.props.context.suggestions)),
+      filteredUsers: this.sort(this.filter(this.users)),
       moved: false,
     });
   };
@@ -109,8 +109,7 @@ class Suggestions extends React.Component {
     const {
       classes,
       context: {
-        profile: { allInterests, login, canRenderLikeButton },
-        visited,
+        profile: { allInterests },
       },
     } = this.props;
     const { filteredUsers, moved } = this.state;
@@ -126,13 +125,7 @@ class Suggestions extends React.Component {
         <ul className={moved ? classes.userList : classes.moved}>
           {filteredUsers.map(user => (
             <li key={user.login}>
-              <User
-                user={user}
-                full={false}
-                sender={login}
-                visited={visited}
-                canRenderLikeButton={canRenderLikeButton}
-              />
+              <User user={user} />
             </li>
           ))}
         </ul>
@@ -141,8 +134,8 @@ class Suggestions extends React.Component {
   };
 }
 
-Suggestions.propTypes = {
+UserList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(withContext(Suggestions));
+export default withStyles(styles)(withContext(UserList));

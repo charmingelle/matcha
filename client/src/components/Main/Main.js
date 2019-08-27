@@ -19,11 +19,10 @@ import CheckIcon from '@material-ui/icons/Check';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import MenuIcon from '@material-ui/icons/Menu';
-import Suggestions from '../Suggestions/Suggestions';
+import UserList from '../UserList/UserList';
 import Profile from '../Profile/Profile';
 import User from '../User/User';
 import Signin from '../Signin/Signin';
-import Visited from '../Visited/Visited';
 import Chat from '../Chat/Chat';
 import Notifications from '../Notifications/Notifications';
 import {
@@ -308,13 +307,13 @@ class Main extends React.Component {
     );
   };
 
-  renderRoute = (path, Component) => (
+  renderRoute = (path, Component, props) => (
     <Route
       exact
       path={path}
       render={() => (
         <TabContainer>
-          <Component />
+          <Component {...props} />
         </TabContainer>
       )}
     />
@@ -346,7 +345,9 @@ class Main extends React.Component {
               <Chat receiver={match.params.receiver} />
             </TabContainer>
           ) : (
-            <span>Chat user not found</span>
+            <div className={this.props.classes.routeErrorContainer}>
+              User not found or unavailable for chatting.
+            </div>
           )
         }
       />
@@ -369,11 +370,13 @@ class Main extends React.Component {
         return index !== -1 ? (
           <TabContainer>
             <div className={this.props.classes.singleUserContainer}>
-              <User user={this.props.context.suggestions[index]} full={true} />
+              <User user={this.props.context.suggestions[index]} full />
             </div>
           </TabContainer>
         ) : (
-          <span>User not found</span>
+          <div className={this.props.classes.routeErrorContainer}>
+            User not found or unavailable due to sexual preferences.
+          </div>
         );
       }}
     />
@@ -381,12 +384,16 @@ class Main extends React.Component {
 
   renderRoutes = () => (
     <div className={this.props.classes.appContent}>
-      {this.renderRoute('/', Suggestions)}
+      {this.renderRoute('/', UserList, {
+        users: this.props.context.suggestions,
+      })}
       {this.renderRoute('/profile', Profile)}
       {this.renderChatRoute()}
       {this.renderChatReceiverRoute()}
       {this.renderUserRoute()}
-      {this.renderRoute('/visited', Visited)}
+      {this.renderRoute('/visited', UserList, {
+        users: this.props.context.visited,
+      })}
     </div>
   );
 

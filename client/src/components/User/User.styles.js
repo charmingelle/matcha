@@ -4,8 +4,20 @@ export const styles = theme => ({
     width: 300,
     height: '100%',
   },
+  cardFull: {
+    margin: 30,
+    width: 500,
+    height: '100%',
+  },
   photoContent: {
     height: 300,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
+  },
+  photoContentFull: {
+    height: 500,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

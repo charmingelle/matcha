@@ -42,6 +42,9 @@ export const styles = {
   singleUserContainer: {
     display: 'flex',
     justifyContent: 'center',
-    overflow: 'auto',
+  },
+  routeErrorContainer: {
+    padding: 24,
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   },
 };
