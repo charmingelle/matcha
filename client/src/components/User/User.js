@@ -27,27 +27,31 @@ import { styles } from './User.styles';
 import { withContext } from '../../utils/utils';
 
 class User extends React.Component {
-  componentDidMount = () => {
-    this.props.full && this.props.context.updateVisited(this.props.user.login);
-    this.setState({
-      ...this.props.user,
-      currentPhoto: 0,
-      expanded: this.props.full,
-      isMenuOpen: false,
-    });
-  };
+  componentDidMount = () =>
+    this.setState(
+      {
+        ...this.props.user,
+        currentPhoto: 0,
+        expanded: this.props.full,
+        isMenuOpen: false,
+      },
+      () =>
+        this.props.full &&
+        this.props.context.updateVisited(this.props.user.login),
+    );
 
   showPreviousPhoto = () =>
     this.setState({
       currentPhoto: this.state.currentPhoto - 1,
     });
 
-  showNextPhoto = () => {
-    this.props.context.updateVisited(this.state.login);
-    this.setState({
-      currentPhoto: this.state.currentPhoto + 1,
-    });
-  };
+  showNextPhoto = () =>
+    this.setState(
+      {
+        currentPhoto: this.state.currentPhoto + 1,
+      },
+      () => this.props.context.updateVisited(this.state.login),
+    );
 
   toggleMenu = () =>
     this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
@@ -64,187 +68,227 @@ class User extends React.Component {
       }),
     );
 
-  handleExpandClick = () => {
+  handleExpandClick = () =>
     this.setState(
       state => ({ expanded: !state.expanded }),
       () =>
         this.state.expanded &&
         this.props.context.updateVisited(this.state.login),
     );
-  };
 
-  handleMenuClose = event => {
-    if (this.anchorEl.contains(event.target)) {
-      return;
-    }
+  handleMenuClose = event =>
+    !this.anchorEl.contains(event.target) &&
     this.setState({ isMenuOpen: false });
+
+  renderActionMenu = () => {
+    const { login, fake, isMenuOpen } = this.state;
+
+    return (
+      <div>
+        <IconButton
+          buttonRef={node => (this.anchorEl = node)}
+          onClick={this.toggleMenu}
+        >
+          <MoreVertIcon />
+        </IconButton>
+        <Popper
+          open={isMenuOpen}
+          anchorEl={this.anchorEl}
+          transition
+          disablePortal
+        >
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              id="menu-list-grow"
+              style={{
+                transformOrigin:
+                  placement === 'bottom' ? 'center top' : 'center bottom',
+              }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={this.handleMenuClose}>
+                  <MenuList>
+                    <MenuItem>
+                      <BlockButton login={login} />
+                    </MenuItem>
+                    {!fake && (
+                      <MenuItem>
+                        <div onClick={this.reportFake}>Report Fake</div>
+                      </MenuItem>
+                    )}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </div>
+    );
   };
 
-  render = () => {
-    if (!this.state) {
-      return <span>Loading...</span>;
-    }
+  getName = (firstname, lastname) => `${firstname} ${lastname}`;
+
+  getAvatarSrc = (gallery, avatarid) =>
+    gallery.length > 0 ? `/${gallery[avatarid]}` : '/avatar.png';
+
+  getOnlineTime = (online, time) =>
+    online
+      ? 'Online'
+      : parseInt(time) === 0
+      ? null
+      : new Date(parseInt(time)).toLocaleString();
+
+  renderHeader = () => {
+    const { classes } = this.props;
+    const { firstname, lastname, online, time, gallery, avatarid } = this.state;
+    const name = this.getName(firstname, lastname);
+
+    return (
+      <CardHeader
+        avatar={
+          <Avatar
+            aria-label="Recipe"
+            className={classes.avatar}
+            alt={name}
+            src={this.getAvatarSrc(gallery, avatarid)}
+          />
+        }
+        action={this.renderActionMenu()}
+        title={name}
+        subheader={this.getOnlineTime(online, time)}
+      />
+    );
+  };
+
+  getCurrentPhoto = (gallery, currentPhoto) =>
+    gallery.length > 0 ? gallery[currentPhoto] : 'avatar.png';
+
+  renderPhoto = () => {
     const { classes, full } = this.props;
+    const { currentPhoto, gallery } = this.state;
+    const currentPhotoFile = this.getCurrentPhoto(gallery, currentPhoto);
+
+    return (
+      <CardContent
+        className={full ? classes.photoContentFull : classes.photoContent}
+      >
+        <img
+          className={classes.img}
+          src={`/${currentPhotoFile}`}
+          alt={currentPhotoFile}
+        />
+      </CardContent>
+    );
+  };
+
+  renderPhotoButtons = () => {
+    const { classes } = this.props;
+    const { currentPhoto, gallery } = this.state;
+
+    return (
+      <div className={classes.leftRightArea}>
+        {currentPhoto > 0 && (
+          <IconButton onClick={this.showPreviousPhoto}>
+            <LeftIcon />
+          </IconButton>
+        )}
+        {currentPhoto < gallery.length - 1 && (
+          <IconButton className={classes.right} onClick={this.showNextPhoto}>
+            <RightIcon />
+          </IconButton>
+        )}
+      </div>
+    );
+  };
+
+  renderShowMore = () => {
+    const { classes, full } = this.props;
+
+    return full ? null : (
+      <CardActions className={classes.actions} disableActionSpacing>
+        <IconButton
+          className={classnames(classes.expand, {
+            [classes.expandOpen]: this.state.expanded,
+          })}
+          onClick={this.handleExpandClick}
+          aria-expanded={this.state.expanded}
+          aria-label="Show more"
+        >
+          <ExpandMoreIcon />
+        </IconButton>
+      </CardActions>
+    );
+  };
+
+  renderInfo = () => {
+    const { classes } = this.props;
     const {
       login,
-      firstname,
-      lastname,
-      online,
-      time,
-      currentPhoto,
-      gallery,
-      avatarid,
       fame,
       age,
       gender,
       preferences,
       bio,
       interests,
-      fake,
-      isMenuOpen,
     } = this.state;
-    const avatar = gallery.length > 0 ? gallery[avatarid] : 'avatar.png';
-    const currentPhotoFile =
-      gallery.length > 0 ? gallery[currentPhoto] : 'avatar.png';
 
     return (
-      <Card className={full ? classes.cardFull : classes.card}>
-        <CardHeader
-          avatar={
-            <Avatar
-              aria-label="Recipe"
-              className={classes.avatar}
-              alt={`${firstname} ${lastname}`}
-              src={`/${avatar}`}
+      <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <div className={classes.likeBlock}>
+            <LikeButton
+              disabled={!this.props.context.profile.canRenderLikeButton}
+              changeFame={this.changeFame}
+              login={login}
             />
-          }
-          action={
-            <div>
-              <IconButton
-                buttonRef={node => {
-                  this.anchorEl = node;
-                }}
-                onClick={this.toggleMenu}
-              >
-                <MoreVertIcon />
-              </IconButton>
-              <Popper
-                open={isMenuOpen}
-                anchorEl={this.anchorEl}
-                transition
-                disablePortal
-              >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    id="menu-list-grow"
-                    style={{
-                      transformOrigin:
-                        placement === 'bottom' ? 'center top' : 'center bottom',
-                    }}
-                  >
-                    <Paper>
-                      <ClickAwayListener onClickAway={this.handleMenuClose}>
-                        <MenuList>
-                          <MenuItem>
-                            <BlockButton login={login} />
-                          </MenuItem>
-                          {!fake && (
-                            <MenuItem>
-                              <div onClick={this.reportFake}>Report Fake</div>
-                            </MenuItem>
-                          )}
-                        </MenuList>
-                      </ClickAwayListener>
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
-            </div>
-          }
-          title={`${firstname} ${lastname}`}
-          subheader={
-            online
-              ? 'Online'
-              : parseInt(time) === 0
-              ? null
-              : new Date(parseInt(time)).toLocaleString()
-          }
-        />
-        <CardContent
-          className={full ? classes.photoContentFull : classes.photoContent}
-        >
-          <img
-            className={classes.img}
-            src={`/${currentPhotoFile}`}
-            alt={`${currentPhotoFile}`}
-          />
+            <div>{fame}</div>
+          </div>
+          <Typography component="p">
+            <span className={classes.bold}>Age: </span>
+            {age}
+          </Typography>
+          <Typography component="p">
+            <span className={classes.bold}>Gender: </span>
+            {gender}
+          </Typography>
+          <Typography component="p">
+            <span className={classes.bold}>Sexual preferences: </span>
+            {preferences}
+          </Typography>
+          {interests.length > 0 && (
+            <Typography component="p">
+              <span className={classes.bold}>Interests: </span>
+              {interests.join(', ')}
+            </Typography>
+          )}
+          {bio && (
+            <Typography component="p">
+              <span className={classes.bold}>Biography: </span>
+              {bio}
+            </Typography>
+          )}
         </CardContent>
-        <div className={classes.leftRightArea}>
-          {currentPhoto > 0 && (
-            <IconButton onClick={this.showPreviousPhoto}>
-              <LeftIcon />
-            </IconButton>
-          )}
-          {currentPhoto < gallery.length - 1 && (
-            <IconButton className={classes.right} onClick={this.showNextPhoto}>
-              <RightIcon />
-            </IconButton>
-          )}
-        </div>
-        {!full && (
-          <CardActions className={classes.actions} disableActionSpacing>
-            <IconButton
-              className={classnames(classes.expand, {
-                [classes.expandOpen]: this.state.expanded,
-              })}
-              onClick={this.handleExpandClick}
-              aria-expanded={this.state.expanded}
-              aria-label="Show more"
-            >
-              <ExpandMoreIcon />
-            </IconButton>
-          </CardActions>
-        )}
-        <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
-          <CardContent>
-            <div className={classes.likeBlock}>
-              <LikeButton
-                disabled={!this.props.context.profile.canRenderLikeButton}
-                changeFame={this.changeFame}
-                login={login}
-              />
-              <div>{fame}</div>
-            </div>
-            <Typography component="p">
-              <span className={classes.bold}>Age: </span>
-              {age}
-            </Typography>
-            <Typography component="p">
-              <span className={classes.bold}>Gender: </span>
-              {gender}
-            </Typography>
-            <Typography component="p">
-              <span className={classes.bold}>Sexual preferences: </span>
-              {preferences}
-            </Typography>
-            {interests.length > 0 && (
-              <Typography component="p">
-                <span className={classes.bold}>Interests: </span>
-                {interests.join(', ')}
-              </Typography>
-            )}
-            {bio && (
-              <Typography component="p">
-                <span className={classes.bold}>Biography: </span>
-                {bio}
-              </Typography>
-            )}
-          </CardContent>
-        </Collapse>
-      </Card>
+      </Collapse>
     );
   };
+
+  render = () =>
+    this.state ? (
+      <Card
+        className={
+          this.props.full
+            ? this.props.classes.cardFull
+            : this.props.classes.card
+        }
+      >
+        {this.renderHeader()}
+        {this.renderPhoto()}
+        {this.renderPhotoButtons()}
+        {this.renderShowMore()}
+        {this.renderInfo()}
+      </Card>
+    ) : null;
 }
 
 User.propTypes = {

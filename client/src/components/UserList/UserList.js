@@ -102,36 +102,41 @@ class UserList extends React.Component {
       moved: !this.state.moved,
     });
 
-  render = () => {
-    if (!this.state) {
-      return <span>Loading...</span>;
-    }
-    const {
-      classes,
-      context: {
-        profile: { allInterests },
-      },
-    } = this.props;
+  renderFilterPanel = () => (
+    <FilterPanel
+      setFilterParams={this.setFilterParams}
+      interests={this.props.context.profile.allInterests}
+      move={this.move}
+    />
+  );
+
+  renderSortingPanel = () => (
+    <SortingPanel setSortParams={this.setSortParams} moved={this.state.moved} />
+  );
+
+  renderList = () => {
+    const { classes } = this.props;
     const { filteredUsers, moved } = this.state;
 
     return (
-      <div className={classes.root}>
-        <FilterPanel
-          setFilterParams={this.setFilterParams}
-          interests={allInterests}
-          move={this.move}
-        />
-        <SortingPanel setSortParams={this.setSortParams} moved={moved} />
-        <ul className={moved ? classes.userList : classes.moved}>
-          {filteredUsers.map(user => (
-            <li key={user.login}>
-              <User user={user} />
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ul className={moved ? classes.userList : classes.moved}>
+        {filteredUsers.map(user => (
+          <li key={user.login}>
+            <User user={user} />
+          </li>
+        ))}
+      </ul>
     );
   };
+
+  render = () =>
+    this.state ? (
+      <div className={this.props.classes.root}>
+        {this.renderFilterPanel()}
+        {this.renderSortingPanel()}
+        {this.renderList()}
+      </div>
+    ) : null;
 }
 
 UserList.propTypes = {
