@@ -11,13 +11,13 @@ class SmallUser extends React.Component {
       classes,
       user: { login, firstname, lastname, gallery, avatarid },
     } = this.props;
-    const avatar = gallery.length > 0 ? gallery[avatarid] : 'avatar.png';
+    const avatar = gallery[avatarid];
 
     return (
       <Link
         className={classes.link}
         to={`/users/${login}`}
-        onClick={() => this.props.context.updateVisited(this.props.user.login)}
+        onClick={() => this.props.context.updateVisited(login)}
       >
         <div className={classes.root}>
           <Avatar

@@ -47,28 +47,7 @@ class Signup extends React.Component {
       message,
     });
 
-  signup = async () => {
-    if (this.anyFieldIsEmpty()) {
-      return this.setError('Please fill all the fields in');
-    }
-    if (!isEmailValid(this.state.email)) {
-      return this.setError('Invalid email address');
-    }
-    if (!isLoginValid(this.state.login)) {
-      return this.setError('Invalid login');
-    }
-    if (!isPasswordValid(this.state.password)) {
-      return this.setError('Invalid password');
-    }
-    if (this.state.password !== this.state.passwordConfirm) {
-      return this.setError('Invalid password confirm');
-    }
-    if (!isFirstLastNameValid(this.state.firstname)) {
-      return this.setError('Invalid first name');
-    }
-    if (!isFirstLastNameValid(this.state.lastname)) {
-      return this.setError('Invalid last name');
-    }
+  makeSignupRequest = async () => {
     const { status, result } = await signup(
       this.state.email,
       this.state.login,
@@ -81,6 +60,40 @@ class Signup extends React.Component {
       error: status === 'error',
       message: result,
     });
+  };
+
+  signup = async () => {
+    const {
+      email,
+      login,
+      password,
+      passwordConfirm,
+      firstname,
+      lastname,
+    } = this.state;
+
+    if (this.anyFieldIsEmpty()) {
+      return this.setError('Please fill all the fields in');
+    }
+    if (!isEmailValid(email)) {
+      return this.setError('Invalid email address');
+    }
+    if (!isLoginValid(login)) {
+      return this.setError('Invalid login');
+    }
+    if (!isPasswordValid(password)) {
+      return this.setError('Invalid password');
+    }
+    if (password !== passwordConfirm) {
+      return this.setError('Invalid password confirm');
+    }
+    if (!isFirstLastNameValid(firstname)) {
+      return this.setError('Invalid first name');
+    }
+    if (!isFirstLastNameValid(lastname)) {
+      return this.setError('Invalid last name');
+    }
+    this.makeSignupRequest();
   };
 
   renderMessage = () =>

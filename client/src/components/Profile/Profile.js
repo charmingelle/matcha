@@ -14,7 +14,7 @@ import { styles } from './Profile.styles';
 import { isEmailValid, withContext } from '../../utils/utils';
 
 class Profile extends React.Component {
-  componentDidMount = () => this.setState(this.props.context.profile);
+  state = this.props.context.profile;
 
   isEmailValid = email => {
     const validStatus = isEmailValid(email);
@@ -39,149 +39,169 @@ class Profile extends React.Component {
     return true;
   };
 
-  isAllValid = () => {
-    let res = true;
+  isAllValid = () =>
+    this.validateEmpty(this.state.firstname) &&
+    this.validateEmpty(this.state.lastname) &&
+    this.validateEmpty(this.state.email) &&
+    this.isEmailValid(this.state.email);
 
-    res = res && this.validateEmpty(this.state.firstname);
-    res = res && this.validateEmpty(this.state.lastname);
-    res = res && this.validateEmpty(this.state.email);
-    res = res && this.isEmailValid(this.state.email);
-    return res;
-  };
-
-  onSubmit = event => {
+  onSubmit = async event => {
     event.preventDefault();
     if (this.isAllValid()) {
-      saveUserProfile(this.state).then(
-        data => {
-          this.setState({
-            error: data.status === 'error',
-            changeStatus: data.result,
-          });
-          if (data.suggestions) {
-            this.props.context.set('suggestions', data.suggestions);
-          }
-          this.props.context.set('profile', this.state);
-        },
-        error => console.error(error),
-      );
+      const { status, result, suggestions } = await saveUserProfile(this.state);
+
+      this.setState({
+        error: status === 'error',
+        changeStatus: result,
+      });
+      suggestions && this.props.context.set('suggestions', suggestions);
+      this.props.context.set('profile', this.state);
     }
   };
 
   onChange = target => this.setState(target);
 
-  onAgeChange = event => {
-    if (event.target.value >= 18 && event.target.value <= 100) {
-      this.setState({
-        age: event.target.value,
-      });
-    }
-  };
+  onAgeChange = event =>
+    event.target.value >= 18 &&
+    event.target.value <= 100 &&
+    this.setState({
+      age: event.target.value,
+    });
 
-  renderChangeStatus = () => {
-    if (this.state.changeStatus) {
-      return (
-        <ChangeStatusInput
-          value={this.state.changeStatus}
-          error={this.state.error}
-        />
-      );
-    }
-  };
+  renderLikedBy = () => (
+    <SmallUsers title="Liked by" icon="&#9829;" getUserList={getLikedBy} />
+  );
 
-  render() {
-    if (!this.state) {
-      return <span>Loading...</span>;
-    }
-    const {
-      firstname,
-      lastname,
-      email,
-      gender,
-      preferences,
-      bio,
-      age,
-      interests,
-      gallery,
-      avatarid,
-    } = this.state;
-    const { classes } = this.props;
+  renderCheckedBy = () => (
+    <SmallUsers title="Checked by" icon="&#10004;" getUserList={getCheckedBy} />
+  );
 
-    return (
-      <div className={classes.root}>
-        <SmallUsers title="Liked by" icon="&#9829;" getUserList={getLikedBy} />
-        <SmallUsers
-          title="Checked by"
-          icon="&#10004;"
-          getUserList={getCheckedBy}
-        />
-        <div className={classes.profileDetails}>
-          {this.renderChangeStatus()}
-          <ProfileTextField
-            label="First name"
-            name="firstname"
-            value={firstname}
-            onChange={this.onChange}
-          />
-          <ProfileTextField
-            label="Last name"
-            name="lastname"
-            value={lastname}
-            onChange={this.onChange}
-          />
-          <ProfileTextField
-            label="Email address"
-            name="email"
-            value={email}
-            validate={this.isEmailValid}
-            onChange={this.onChange}
-          />
-          <div className={classes.ageInput}>
-            <label className={classes.ageLabel} htmlFor="age">
-              Age
-            </label>
-            <Input
-              name="age"
-              type="number"
-              value={age}
-              onChange={this.onAgeChange}
-            />
-          </div>
-          <ProfileSelect
-            title="Gender"
-            items={['male', 'female']}
-            name="gender"
-            value={gender}
-            onChange={this.onChange}
-          />
-          <ProfileSelect
-            title="Preferences"
-            items={['heterosexual', 'homosexual', 'bisexual']}
-            name="preferences"
-            value={preferences}
-            onChange={this.onChange}
-          />
-          <ProfileTextField
-            label="Biography"
-            placeholder="Tell us a few words about yourself"
-            name="bio"
-            value={bio}
-            onChange={this.onChange}
-          />
-          <InterestsInput
-            name="interests"
-            value={interests}
-            all={this.state.allInterests}
-            onChange={this.onChange}
-          />
-          <Button variant="contained" color="primary" onClick={this.onSubmit}>
-            Save changes
-          </Button>
-        </div>
-        <ProfilePhotos gallery={gallery} avatarid={avatarid} />
+  renderChangeStatus = () =>
+    this.state.changeStatus && (
+      <ChangeStatusInput
+        value={this.state.changeStatus}
+        error={this.state.error}
+      />
+    );
+
+  renderFirstName = () => (
+    <ProfileTextField
+      label="First name"
+      name="firstname"
+      value={this.state.firstname}
+      onChange={this.onChange}
+    />
+  );
+
+  renderLastName = () => (
+    <ProfileTextField
+      label="Last name"
+      name="lastname"
+      value={this.state.lastname}
+      onChange={this.onChange}
+    />
+  );
+
+  renderEmail = () => (
+    <ProfileTextField
+      label="Email address"
+      name="email"
+      value={this.state.email}
+      validate={this.isEmailValid}
+      onChange={this.onChange}
+    />
+  );
+
+  renderAge = () => (
+    <div className={this.props.classes.ageInput}>
+      <label className={this.props.classes.ageLabel} htmlFor="age">
+        Age
+      </label>
+      <Input
+        name="age"
+        type="number"
+        value={this.state.age}
+        onChange={this.onAgeChange}
+      />
+    </div>
+  );
+
+  renderGender = () => (
+    <ProfileSelect
+      title="Gender"
+      items={['male', 'female']}
+      name="gender"
+      value={this.state.gender}
+      onChange={this.onChange}
+    />
+  );
+
+  renderPreferences = () => (
+    <ProfileSelect
+      title="Preferences"
+      items={['heterosexual', 'homosexual', 'bisexual']}
+      name="preferences"
+      value={this.state.preferences}
+      onChange={this.onChange}
+    />
+  );
+
+  renderBio = () => (
+    <ProfileTextField
+      label="Biography"
+      placeholder="Tell us a few words about yourself"
+      name="bio"
+      value={this.state.bio}
+      onChange={this.onChange}
+    />
+  );
+
+  renderInterests = () => (
+    <InterestsInput
+      name="interests"
+      value={this.state.interests}
+      all={this.state.allInterests}
+      onChange={this.onChange}
+    />
+  );
+
+  renderSaveButton = () => (
+    <Button variant="contained" color="primary" onClick={this.onSubmit}>
+      Save changes
+    </Button>
+  );
+
+  renderProfileDetails = () => (
+    <div className={this.props.classes.profileDetails}>
+      {this.renderChangeStatus()}
+      {this.renderFirstName()}
+      {this.renderLastName()}
+      {this.renderEmail()}
+      {this.renderAge()}
+      {this.renderGender()}
+      {this.renderPreferences()}
+      {this.renderBio()}
+      {this.renderInterests()}
+      {this.renderSaveButton()}
+    </div>
+  );
+
+  renderProfilePhotos = () => (
+    <ProfilePhotos
+      gallery={this.state.gallery}
+      avatarid={this.state.avatarid}
+    />
+  );
+
+  render = () =>
+    this.state && (
+      <div className={this.props.classes.root}>
+        {this.renderLikedBy()}
+        {this.renderCheckedBy()}
+        {this.renderProfileDetails()}
+        {this.renderProfilePhotos()}
       </div>
     );
-  }
 }
 
 Profile.propTypes = {

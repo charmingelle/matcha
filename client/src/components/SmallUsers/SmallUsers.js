@@ -6,43 +6,34 @@ import { styles } from './SmallUsers.styles';
 
 class SmallUsers extends React.Component {
   componentDidMount = () =>
-    this.props
-      .getUserList()
-      .then(response => response.json())
-      .then(data =>
-        this.setState({
-          users: data,
-        }),
-      );
+    this.props.getUserList().then(users => this.setState({ users }));
 
-  render() {
-    if (!this.state) {
-      return <span>Loading...</span>;
-    }
-    const { classes, title, icon } = this.props;
-    const { users } = this.state;
+  renderUserList = () => (
+    <ul className={this.props.classes.list}>
+      {this.state.users.map((user, index) => (
+        <li key={index}>
+          <SmallUser user={user} updateVisited={this.props.updateVisited} />
+        </li>
+      ))}
+    </ul>
+  );
 
-    if (users.length > 0) {
-      return (
-        <div className={classes.root}>
-          <h1 className={classes.title}>
-            <span className={classes.icon}>{icon}</span> {title}
-          </h1>
-          <ul className={classes.list}>
-            {users.map((user, index) => (
-              <li key={index}>
-                <SmallUser
-                  user={user}
-                  updateVisited={this.props.updateVisited}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-    return <div />;
-  }
+  renderSmallUsers = () => (
+    <div className={this.props.classes.root}>
+      <h1 className={this.props.classes.title}>
+        <span className={this.props.classes.icon}>{this.props.icon}</span>{' '}
+        {this.props.title}
+      </h1>
+      {this.renderUserList()}
+    </div>
+  );
+
+  render = () =>
+    !this.state
+      ? null
+      : this.state.users.length
+      ? this.renderSmallUsers()
+      : null;
 }
 
 SmallUsers.propTypes = {

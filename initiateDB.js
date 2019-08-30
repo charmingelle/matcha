@@ -102,7 +102,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         preferences character varying(12) DEFAULT 'bisexual'::text NOT NULL,
         bio text DEFAULT ''::text NOT NULL,
         interests text[] DEFAULT ARRAY[]::text[] NOT NULL,
-        gallery text[] DEFAULT ARRAY[]::text[] NOT NULL,
+        gallery text[] DEFAULT ARRAY['avatar.png']::text[] NOT NULL,
         id integer NOT NULL,
         avatarid integer DEFAULT 0 NOT NULL,
         firstname text DEFAULT 'John'::text NOT NULL,

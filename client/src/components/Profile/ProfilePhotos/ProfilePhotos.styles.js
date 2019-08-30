@@ -26,7 +26,13 @@ export const styles = {
     color: '#3f51b5',
   },
   customFileUpload: {
-    marginTop: '50px',
+    marginTop: 50,
+    padding: 0,
+  },
+  customFileUploadLabel: {
+    display: 'flex',
+    padding: '6px 16px',
+    cursor: 'pointer',
   },
   card: {
     margin: 30,

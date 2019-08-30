@@ -13,44 +13,43 @@ class LikeButton extends React.Component {
       this.setState({ canLike }),
     );
 
-  changeLikeStatus = () =>
-    changeLikeStatus(this.props.login, this.state.canLike).then(
-      ({ step, chatData }) => {
-        this.state.canLike
-          ? this.props.context.socket.emit('like', {
-              sender: this.props.context.profile.login,
-              receiver: this.props.login,
-            })
-          : this.props.context.socket.emit('unlike', {
-              sender: this.props.context.profile.login,
-              receiver: this.props.login,
-            });
-        this.props.changeFame(step);
-        this.props.context.set('chatData', chatData);
-        this.setState({
-          canLike: !this.state.canLike,
-        });
+  changeLikeStatus = async () => {
+    const {
+      context: {
+        socket,
+        profile: { login: sender },
+        set,
       },
-    );
+      login: receiver,
+      changeFame,
+    } = this.props;
+    const { canLike } = this.state;
+    const { step, chatData } = await changeLikeStatus(receiver, canLike);
 
-  render = () => {
-    if (!this.state) {
-      return null;
-    }
-    const { disabled, classes } = this.props;
+    canLike
+      ? socket.emit('like', { sender, receiver })
+      : socket.emit('unlike', { sender, receiver });
+    changeFame(step);
+    set('chatData', chatData);
+    this.setState({ canLike: !canLike });
+  };
 
-    return (
+  render = () =>
+    this.state ? (
       <IconButton
-        disabled={disabled}
+        disabled={this.props.disabled}
         aria-label="Like"
         onClick={this.changeLikeStatus}
       >
         <FavoriteIcon
-          className={this.state.canLike ? classes.unset : classes.red}
+          className={
+            this.state.canLike
+              ? this.props.classes.unset
+              : this.props.classes.red
+          }
         />
       </IconButton>
-    );
-  };
+    ) : null;
 }
 
 LikeButton.propTypes = {

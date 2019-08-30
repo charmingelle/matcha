@@ -26,16 +26,9 @@ class Signin extends React.Component {
 
   anyFieldIsEmpty = () => this.state.login === '' || this.state.password === '';
 
-  signin = async () => {
-    if (this.anyFieldIsEmpty()) {
-      return this.setState({
-        message: 'Please fill all the fields in',
-      });
-    }
-    const { status, result } = await signin(
-      this.state.login,
-      this.state.password,
-    );
+  makeSigninRequest = async () => {
+    const { login, password } = this.state;
+    const { status, result } = await signin(login, password);
 
     status === 'success'
       ? this.setState({
@@ -45,6 +38,13 @@ class Signin extends React.Component {
           message: result,
         });
   };
+
+  signin = async () =>
+    this.anyFieldIsEmpty()
+      ? this.setState({
+          message: 'Please fill all the fields in',
+        })
+      : this.makeSigninRequest();
 
   renderMessage = () =>
     this.state.message !== '' && (
@@ -56,13 +56,11 @@ class Signin extends React.Component {
       />
     );
 
-  render = () => {
+  renderSignin = () => {
     const { classes } = this.props;
-    const { main, login, password } = this.state;
+    const { login, password } = this.state;
 
-    return main ? (
-      <Main />
-    ) : (
+    return (
       <div className={classes.root}>
         <form className={classes.container} noValidate autoComplete="off">
           {this.renderMessage()}
@@ -92,6 +90,8 @@ class Signin extends React.Component {
       </div>
     );
   };
+
+  render = () => (this.state.main ? <Main /> : this.renderSignin());
 }
 
 Signin.propTypes = {

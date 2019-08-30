@@ -12,6 +12,32 @@ import { styles } from './Chat.styles';
 import { withContext } from '../../utils/utils';
 
 class Chat extends React.Component {
+  getAvatarSrc = (chatData, login) =>
+    `/${chatData[login].gallery[chatData[login].avatarid]}`;
+
+  renderRoomLink = (login, index) => {
+    const {
+      classes,
+      receiver,
+      context: { chatData },
+    } = this.props;
+    const avatar = this.getAvatarSrc(chatData, login);
+
+    return (
+      <Link className={classes.link} key={index} to={`/chat/${login}`}>
+        <ListItem
+          button
+          className={login === receiver ? classes.selectedUser : classes.user}
+        >
+          <Avatar alt={login} src={avatar} />
+          <ListItemText primary={login} />
+          {chatData[login].online && <div className={classes.onlineDot} />}
+        </ListItem>
+        <Divider light />
+      </Link>
+    );
+  };
+
   render = () => {
     const {
       classes,
@@ -22,30 +48,7 @@ class Chat extends React.Component {
     return (
       <div className={classes.root}>
         <List component="nav" className={classes.users}>
-          {Object.keys(chatData).map((login, index) => {
-            const avatar =
-              chatData[login].gallery.length > 0
-                ? chatData[login].gallery[chatData[login].avatarid]
-                : 'avatar.png';
-
-            return (
-              <Link className={classes.link} key={index} to={`/chat/${login}`}>
-                <ListItem
-                  button
-                  className={
-                    login === receiver ? classes.selectedUser : classes.user
-                  }
-                >
-                  <Avatar alt={login} src={`/${avatar}`} />
-                  <ListItemText primary={login} />
-                  {chatData[login].online && (
-                    <div className={classes.onlineDot} />
-                  )}
-                </ListItem>
-                <Divider light />
-              </Link>
-            );
-          })}
+          {Object.keys(chatData).map(this.renderRoomLink)}
         </List>
         <Room
           receiver={receiver}

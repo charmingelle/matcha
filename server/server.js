@@ -187,10 +187,7 @@ app.post(
 
 app.post('/activateAccount', isAccountExisting, async (req, res) => {
   await DB.updateActiveClearHashByEmail(req.body.email);
-  res.json({
-    status: 'success',
-    result: 'Your account has been activated',
-  });
+  res.json({ result: 'Your account has been activated' });
 });
 
 app.post(

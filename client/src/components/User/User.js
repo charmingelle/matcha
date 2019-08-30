@@ -27,18 +27,15 @@ import { styles } from './User.styles';
 import { withContext } from '../../utils/utils';
 
 class User extends React.Component {
+  state = {
+    ...this.props.user,
+    currentPhoto: 0,
+    expanded: this.props.full,
+    isMenuOpen: false,
+  };
+
   componentDidMount = () =>
-    this.setState(
-      {
-        ...this.props.user,
-        currentPhoto: 0,
-        expanded: this.props.full,
-        isMenuOpen: false,
-      },
-      () =>
-        this.props.full &&
-        this.props.context.updateVisited(this.props.user.login),
-    );
+    this.props.full && this.props.context.updateVisited(this.props.user.login);
 
   showPreviousPhoto = () =>
     this.setState({
@@ -129,8 +126,7 @@ class User extends React.Component {
 
   getName = (firstname, lastname) => `${firstname} ${lastname}`;
 
-  getAvatarSrc = (gallery, avatarid) =>
-    gallery.length > 0 ? `/${gallery[avatarid]}` : '/avatar.png';
+  getAvatarSrc = (gallery, avatarid) => `/${gallery[avatarid]}`;
 
   getOnlineTime = (online, time) =>
     online
@@ -161,13 +157,9 @@ class User extends React.Component {
     );
   };
 
-  getCurrentPhoto = (gallery, currentPhoto) =>
-    gallery.length > 0 ? gallery[currentPhoto] : 'avatar.png';
-
   renderPhoto = () => {
     const { classes, full } = this.props;
     const { currentPhoto, gallery } = this.state;
-    const currentPhotoFile = this.getCurrentPhoto(gallery, currentPhoto);
 
     return (
       <CardContent
@@ -175,8 +167,8 @@ class User extends React.Component {
       >
         <img
           className={classes.img}
-          src={`/${currentPhotoFile}`}
-          alt={currentPhotoFile}
+          src={`/${gallery[currentPhoto]}`}
+          alt={gallery[currentPhoto]}
         />
       </CardContent>
     );

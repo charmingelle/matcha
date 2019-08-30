@@ -12,9 +12,7 @@ const Inputs = props => {
       <Input
         className={classes.input}
         error={error}
-        inputProps={{
-          'aria-label': 'Description',
-        }}
+        inputProps={{ 'aria-label': 'Save changes status' }}
         value={props.value}
       />
     </div>

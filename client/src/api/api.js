@@ -47,7 +47,7 @@ export const signinOrMain = () =>
   fetch('/signinOrMain', {
     method: 'POST',
     credentials: 'include',
-  });
+  }).then(res => returnResOrError(res, 'signinOrMain error'));
 
 export const signin = (login, password) =>
   fetch('/signin', {
@@ -85,7 +85,7 @@ export const resetPassword = (password, email) =>
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ password, email }),
-  });
+  }).then(res => returnResOrError(res, 'resetPassword error'));
 
 export const resetPasswordOrExpired = (email, hash) =>
   fetch('/resetPasswordOrExpired', {
@@ -93,7 +93,7 @@ export const resetPasswordOrExpired = (email, hash) =>
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ email, hash }),
-  });
+  }).then(res => returnResOrError(res, 'resetPasswordOrExpired error'));
 
 export const getLikeStatus = login =>
   fetch('/getLikeStatus', {
@@ -159,13 +159,13 @@ export const getCheckedBy = () =>
   fetch('/getCheckedBy', {
     method: 'POST',
     credentials: 'include',
-  });
+  }).then(res => returnResOrError(res, 'getCheckedBy error'));
 
 export const getLikedBy = () =>
   fetch('/getLikedBy', {
     method: 'POST',
     credentials: 'include',
-  });
+  }).then(res => returnResOrError(res, 'getLikedBy error'));
 
 export const getSuggestions = () =>
   fetch('/getSuggestions', {

@@ -15,64 +15,55 @@ class ResetPassword extends React.Component {
     passwordConfirm: '',
     error: false,
     message: '',
+    email: this.props.email,
   };
 
-  componentDidMount = () => {
-    this.setState({
-      email: this.props.email,
-    });
-  };
+  handleKeyPress = event => keycode(event) === 'enter' && this.resetPassword();
 
-  handleKeyPress = event => {
-    if (keycode(event) === 'enter') {
-      this.resetPassword();
-    }
-  };
-
-  handleChange = name => event => {
+  handleChange = name => event =>
     this.setState({
       [name]: event.target.value,
     });
-  };
 
-  resetPassword = () => {
-    if (this.state.password === '' || this.state.passwordConfirm === '') {
-      this.setState({
+  resetPassword = async () => {
+    const { password, passwordConfirm, email } = this.state;
+
+    if (password === '' || passwordConfirm === '') {
+      return this.setState({
         error: true,
         message: 'Please fill all the fields in',
       });
-    } else if (!isPasswordValid(this.state.password)) {
-      this.setState({
+    }
+    if (!isPasswordValid(password)) {
+      return this.setState({
         error: true,
         message: 'Invalid password',
       });
-    } else if (this.state.password !== this.state.passwordConfirm) {
-      this.setState({
+    }
+    if (password !== passwordConfirm) {
+      return this.setState({
         error: true,
         message: 'Invalid password confirm',
       });
-    } else {
-      resetPassword(this.state.password, this.state.email)
-        .then(response => response.json())
-        .then(data => this.setState({ error: false, message: data.result }));
     }
+    const { result } = await resetPassword(password, email);
+
+    this.setState({ error: false, message: result });
   };
 
-  renderMessage = () => {
-    if (this.state.message !== '') {
-      return (
-        <TextField
-          className={this.props.classes.textField}
-          error={this.state.error}
-          disabled
-          value={this.state.message}
-        />
-      );
-    }
-  };
+  renderMessage = () =>
+    this.state.message !== '' && (
+      <TextField
+        className={this.props.classes.textField}
+        error={this.state.error}
+        disabled
+        value={this.state.message}
+      />
+    );
 
   render = () => {
     const { classes } = this.props;
+    const { password, passwordConfirm } = this.state;
 
     return (
       <div className={classes.root}>
@@ -84,7 +75,7 @@ class ResetPassword extends React.Component {
             onChange={this.handleChange('password')}
             onKeyPress={this.handleKeyPress}
             margin="normal"
-            value={this.state.password}
+            value={password}
             type="password"
           />
           <TextField
@@ -93,7 +84,7 @@ class ResetPassword extends React.Component {
             onChange={this.handleChange('passwordConfirm')}
             onKeyPress={this.handleKeyPress}
             margin="normal"
-            value={this.state.passwordConfirm}
+            value={passwordConfirm}
             type="password"
           />
           <Button className={classes.button} onClick={this.resetPassword}>

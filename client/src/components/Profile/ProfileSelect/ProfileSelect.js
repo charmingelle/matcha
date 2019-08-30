@@ -10,14 +10,8 @@ import { styles } from './ProfileSelect.styles';
 
 class ProfileSelect extends React.Component {
   state = {
-    [this.props.name]: '',
+    [this.props.name]: this.props.value,
   };
-
-  componentDidMount() {
-    this.setState({
-      [this.props.name]: this.props.value,
-    });
-  }
 
   handleChange = event => {
     this.setState({ [this.props.name]: event.target.value });
@@ -30,9 +24,7 @@ class ProfileSelect extends React.Component {
     return (
       <FormControl className={classes.formControl}>
         <InputLabel
-          ref={ref => {
-            this.InputLabelRef = ref;
-          }}
+          ref={ref => (this.InputLabelRef = ref)}
           htmlFor="outlined-age-simple"
         >
           {title}

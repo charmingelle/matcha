@@ -8,37 +8,36 @@ export default class ResetPasswordOrExpired extends Component {
     page: null,
   };
 
-  componentDidMount = () => {
-    if (this.props.location.search === '') {
-      this.props.history.push('/');
-    } else {
-      let params = this.props.location.search.split('&');
+  goHome = () => this.props.history.push('/');
 
-      if (params.length !== 2) {
-        this.props.history.push('/');
-      } else {
-        if (
-          params[0].indexOf('?email=') !== 0 ||
-          params[1].indexOf('hash=') !== 0
-        ) {
-          this.props.history.push('/');
-        }
-        this.setState({ email: params[0].substring(7) });
-        resetPasswordOrExpired(params[0].substring(7), params[1].substring(5))
-          .then(response => response.json())
-          .then(result => this.setState({ page: result.result }));
-      }
-    }
-  };
+  validateEmailAndHash = (email, hash) =>
+    this.setState({ email }, () =>
+      resetPasswordOrExpired(email, hash).then(({ result }) =>
+        this.setState({ page: result }),
+      ),
+    );
 
-  render = () => {
-    if (!this.state.page) {
-      return <span>Loading...</span>;
-    }
-    if (this.state.page === 'reset-password') {
-      return <ResetPassword email={this.state.email} />;
-    } else {
-      return <Expired />;
-    }
-  };
+  parseParams = ([emailParam, hashParam]) =>
+    emailParam.indexOf('?email=') === 0 && hashParam.indexOf('hash=') === 0
+      ? this.goHome()
+      : this.validateEmailAndHash(
+          emailParam.substring(7),
+          hashParam.substring(5),
+        );
+
+  parseUrl = params =>
+    params.length === 2 ? this.parseParams(params) : this.goHome();
+
+  componentDidMount = () =>
+    this.props.location.search === ''
+      ? this.goHome()
+      : this.parseUrl(this.props.location.search.split('&'));
+
+  render = () =>
+    this.state.page &&
+    (this.state.page === 'reset-password' ? (
+      <ResetPassword email={this.state.email} />
+    ) : (
+      <Expired />
+    ));
 }

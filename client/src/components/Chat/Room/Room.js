@@ -18,15 +18,15 @@ class Room extends React.Component {
         typing: '',
       });
     });
-    this.props.context.socket.on('typing', data => {
-      if (this.props.receiver === data.sender) {
+    this.props.context.socket.on('typing', ({ sender }) => {
+      if (this.props.receiver === sender) {
         this.setState({
-          typing: data.sender,
+          typing: sender,
         });
       }
     });
-    this.props.context.socket.on('stoppedTyping', data => {
-      if (this.props.receiver === data.sender) {
+    this.props.context.socket.on('stoppedTyping', ({ sender }) => {
+      if (this.props.receiver === sender) {
         this.setState({
           typing: '',
         });
@@ -61,11 +61,7 @@ class Room extends React.Component {
     });
   };
 
-  keyPressHandler = event => {
-    if (event.key === 'Enter') {
-      this.send();
-    }
-  };
+  keyPressHandler = event => event.key === 'Enter' && this.send();
 
   send = () => {
     if (this.state.message !== '') {
@@ -80,53 +76,73 @@ class Room extends React.Component {
     }
   };
 
+  renderTyping = (classes, typing) =>
+    typing ? (
+      <p className={classes.typing}>
+        <em>{this.state.typing} is typing a message...</em>
+      </p>
+    ) : null;
+
+  renderMessage = ({ sender, message, time }, index) => {
+    const {
+      classes,
+      context: {
+        profile: { login },
+      },
+    } = this.props;
+
+    return (
+      <div
+        className={sender === login ? classes.outputMine : classes.outputOther}
+        key={index}
+      >
+        <p className={classes.messageText}>{message}</p>
+        <span className={classes.messageTime}>
+          {new Date(parseInt(time)).toLocaleString()}
+        </span>
+      </div>
+    );
+  };
+
+  renderChatWindow = (classes, log, typing) => (
+    <div className={classes.chatWindow}>
+      {this.renderTyping(classes, typing)}
+      <div className={classes.outputs}>{log.map(this.renderMessage)}</div>
+    </div>
+  );
+
+  renderInput = (classes, message) => (
+    <Input
+      type="text"
+      className={classes.message}
+      value={message}
+      placeholder="Say something..."
+      onChange={this.changeHandler}
+      onKeyPress={this.keyPressHandler}
+      disableUnderline={true}
+    />
+  );
+
+  renderSendButton = classes => (
+    <Button
+      className={classes.send}
+      onClick={this.send}
+      variant="contained"
+      color="primary"
+    >
+      Send
+    </Button>
+  );
+
   render = () => {
     const { message, typing } = this.state;
     const { classes, log } = this.props;
 
     return (
       <div className={classes.chat}>
-        <div className={classes.chatWindow}>
-          {typing && (
-            <p className={classes.typingP}>
-              <em>{typing} is typing a message...</em>
-            </p>
-          )}
-          <div className={classes.outputPs}>
-            {log.map((record, index) => (
-              <div
-                className={
-                  record.sender === this.props.context.profile.login
-                    ? classes.outputPMine
-                    : classes.outputPOther
-                }
-                key={index}
-              >
-                <p className={classes.messageText}>{record.message}</p>
-                <span className={classes.messageTime}>{`${new Date(
-                  parseInt(record.time),
-                ).toLocaleString()} `}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <Input
-          type="text"
-          className={classes.message}
-          value={message}
-          placeholder="Say something..."
-          onChange={this.changeHandler}
-          onKeyPress={this.keyPressHandler}
-          disableUnderline={true}
-        />
-        <Button
-          className={classes.send}
-          onClick={this.send}
-          variant="contained"
-          color="primary"
-        >
-          Send
-        </Button>
+        {this.renderChatWindow(classes, log, typing)}
+        {this.renderInput(classes, message)}
+        {this.renderSendButton(classes)}
       </div>
     );
   };

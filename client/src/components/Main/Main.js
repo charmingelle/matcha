@@ -398,18 +398,17 @@ class Main extends React.Component {
   );
 
   render = () =>
-    this.everythingLoaded() ? (
-      this.props.context.profile === 'signin' ? (
-        <Signin />
-      ) : (
-        <div className={this.props.classes.root}>
-          {this.renderNotifications()}
-          {this.renderAppBar()}
-          {this.renderSideMenu()}
-          {this.renderRoutes()}
-        </div>
-      )
-    ) : null;
+    this.everythingLoaded() &&
+    (this.props.context.profile === 'signin' ? (
+      <Signin />
+    ) : (
+      <div className={this.props.classes.root}>
+        {this.renderNotifications()}
+        {this.renderAppBar()}
+        {this.renderSideMenu()}
+        {this.renderRoutes()}
+      </div>
+    ));
 }
 
 Main.propTypes = {

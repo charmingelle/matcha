@@ -11,12 +11,12 @@ export const styles = {
     overflow: 'auto',
     borderBottom: '1px solid #e9e9e9',
   },
-  outputPs: {
+  outputs: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
-  outputPOther: {
+  outputOther: {
     position: 'relative',
     marginRight: '10%',
     marginTop: 5,
@@ -31,7 +31,7 @@ export const styles = {
       marginBottom: 5,
     },
   },
-  outputPMine: {
+  outputMine: {
     position: 'relative',
     marginLeft: '10%',
     marginTop: 5,
@@ -53,7 +53,7 @@ export const styles = {
     fontSize: 12,
     color: 'rgba(0, 0, 0, 0.54)',
   },
-  typingP: {
+  typing: {
     width: '80%',
     padding: 10,
     borderRadius: 4,

@@ -53,8 +53,8 @@ module.exports = app => {
   const unlikeEventHandler = async data => {
     const { receiver, sender } = data;
     const { length } = await DB.getLikes({
-      liker: receiver,
-      likee: sender,
+      liker: sender,
+      likee: receiver,
     });
 
     if (length !== 0) {

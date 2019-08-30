@@ -7,59 +7,49 @@ import { activateAccount } from '../../api/api';
 import { styles } from './ActivateAccount.styles';
 
 class ActivateAccount extends React.Component {
-  componentDidMount = () => {
-    if (this.props.location.search === '') {
-      this.setState({
-        status: 'error',
-        result: 'Invalid account activation link',
-      });
-    } else {
-      let params = this.props.location.search.split('&');
+  parseParams = params => {
+    const [emailParam, hashParam] = params;
 
-      if (params.length !== 2) {
-        this.setState({
-          status: 'error',
+    emailParam.indexOf('?email=') !== 0 || hashParam.indexOf('hash=') !== 0
+      ? this.setState({
+          error: true,
           result: 'Invalid account activation link',
-        });
-      } else {
-        if (
-          params[0].indexOf('?email=') !== 0 ||
-          params[1].indexOf('hash=') !== 0
-        ) {
-          this.setState({
-            status: 'error',
-            result: 'Invalid account activation link',
-          });
-        }
-        this.setState({ email: params[0].substring(7) });
-        activateAccount(params[0].substring(7), params[1].substring(5)).then(
+        })
+      : activateAccount(emailParam.substring(7), hashParam.substring(5)).then(
           response => this.setState(response),
         );
-      }
-    }
   };
 
-  render = () => {
-    if (!this.state) {
-      return <span>Loading...</span>;
-    }
-    const { classes } = this.props;
-    const { status, result } = this.state;
+  countParams = params =>
+    params.length === 2
+      ? this.parseParams(params)
+      : this.setState({
+          error: true,
+          result: 'Invalid account activation link',
+        });
 
-    return (
-      <div className={classes.root}>
+  componentDidMount = () =>
+    this.props.location.search === ''
+      ? this.setState({
+          error: true,
+          result: 'Invalid account activation link',
+        })
+      : this.countParams(this.props.location.search.split('&'));
+
+  render = () =>
+    this.state ? (
+      <div className={this.props.classes.root}>
         <TextField
-          className={classes.textField}
-          error={status === 'error'}
+          className={this.props.classes.textField}
+          error={this.state.error}
           disabled
-          value={result}
+          value={this.state.result}
         />
-        <Link className={classes.link} to="/">
+        <Link className={this.props.classes.link} to="/">
           Home
         </Link>
       </div>
-    );
-  };
+    ) : null;
 }
 
 ActivateAccount.propTypes = {

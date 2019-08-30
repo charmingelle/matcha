@@ -28,41 +28,46 @@ export class App extends Component {
       profile: { ...this.state.profile, canRenderLikeButton },
     });
 
-  updateVisited = visitedLogin =>
-    !this.state.visited.map(profile => profile.login).includes(visitedLogin) &&
-    saveVisited(visitedLogin).then(visited => {
+  isUserNew = visitedLogin =>
+    !this.state.visited.map(profile => profile.login).includes(visitedLogin);
+
+  notifyVisited = (visited, visitedLogin) =>
+    this.setState({ visited }, () =>
       this.state.socket.emit('check', {
         sender: this.state.profile.login,
         receiver: visitedLogin,
-      });
-      this.setState({ visited });
-    });
-
-  render = () => {
-    return (
-      <Context.Provider
-        value={{
-          ...this.state,
-          get: this.get,
-          set: this.set,
-          updateCanRenderLikeButton: this.updateCanRenderLikeButton,
-          updateVisited: this.updateVisited,
-        }}
-      >
-        <BrowserRouter>
-          <div>
-            <Route exact path="/signup" component={Signup} />
-            <Route exact path="/forgot-password" component={ForgotPassword} />
-            <Route
-              exact
-              path="/reset-password"
-              component={ResetPasswordOrExpired}
-            />
-            <Route exact path="/confirm" component={ActivateAccount} />
-            <Route path="/" component={SigninOrMain} />
-          </div>
-        </BrowserRouter>
-      </Context.Provider>
+      }),
     );
-  };
+
+  updateVisited = visitedLogin =>
+    this.isUserNew(visitedLogin) &&
+    saveVisited(visitedLogin).then(visited =>
+      this.notifyVisited(visited, visitedLogin),
+    );
+
+  render = () => (
+    <Context.Provider
+      value={{
+        ...this.state,
+        get: this.get,
+        set: this.set,
+        updateCanRenderLikeButton: this.updateCanRenderLikeButton,
+        updateVisited: this.updateVisited,
+      }}
+    >
+      <BrowserRouter>
+        <div>
+          <Route exact path="/signup" component={Signup} />
+          <Route exact path="/forgot-password" component={ForgotPassword} />
+          <Route
+            exact
+            path="/reset-password"
+            component={ResetPasswordOrExpired}
+          />
+          <Route exact path="/confirm" component={ActivateAccount} />
+          <Route path="/" component={SigninOrMain} />
+        </div>
+      </BrowserRouter>
+    </Context.Provider>
+  );
 }

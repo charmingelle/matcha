@@ -9,9 +9,7 @@ export default class SigninOrMain extends Component {
   };
 
   componentDidMount = () =>
-    signinOrMain()
-      .then(response => response.json())
-      .then(result => this.setState({ page: result.result }));
+    signinOrMain().then(({ result }) => this.setState({ page: result }));
 
   render = () =>
     this.state.page ? (
