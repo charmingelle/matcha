@@ -245,11 +245,11 @@ app.post('/getLikeStatus', requireLogin, async (req, res) => {
   res.json({ canLike: likes.length === 0 });
 });
 
-app.post('/changeLikeStatus', requireLogin, async (req, res) => {
-  req.body.canLike
-    ? res.json(await MAGIC.like(req.session.login, req.body.login))
-    : res.json(await MAGIC.dislike(req.session.login, req.body.login));
-});
+// app.post('/changeLikeStatus', requireLogin, async (req, res) => {
+//   req.body.canLike
+//     ? res.json(await MAGIC.like(req.session.login, req.body.login))
+//     : res.json(await MAGIC.dislike(req.session.login, req.body.login));
+// });
 
 app.post('/getBlockStatus', requireLogin, async (req, res) => {
   const blocks = await DB.getBlocks(req.session.login, req.body.login);

@@ -90,11 +90,11 @@ class Main extends React.Component {
   };
 
   addSocketEventListeners = () => {
-    this.props.context.socket.on('like', data =>
-      this.addNotification(`${data.sender} has just liked you`),
+    this.props.context.socket.on('like', ({ sender }) =>
+      this.addNotification(`${sender} has just liked you`),
     );
-    this.props.context.socket.on('check', data =>
-      this.addNotification(`${data.sender} has just checked your profile`),
+    this.props.context.socket.on('check', ({ sender }) =>
+      this.addNotification(`${sender} has just checked your profile`),
     );
     this.props.context.socket.on('chat', data => {
       let newChatData = this.props.context.chatData;
@@ -111,17 +111,18 @@ class Main extends React.Component {
       newChatData[user].log.unshift(data);
       this.props.context.set('chatData', newChatData);
     });
-    this.props.context.socket.on(
-      'likeBack',
-      ({ data: { sender }, chatData }) => {
-        this.addNotification(`${sender} has just liked you back!`);
-        this.props.context.set('chatData', chatData);
-      },
+    this.props.context.socket.on('likeBack', ({ sender }) =>
+      this.addNotification(`${sender} has just liked you back!`),
     );
-    this.props.context.socket.on('unlike', ({ data: { sender }, chatData }) => {
-      this.addNotification(`Unfortunately ${sender} has disconnected from you`);
-      this.props.context.set('chatData', chatData);
-    });
+    this.props.context.socket.on('unlike', ({ sender }) =>
+      this.addNotification(`Unfortunately ${sender} has disconnected from you`),
+    );
+    this.props.context.socket.on('chatDataUpdate', chatData =>
+      this.props.context.set('chatData', chatData),
+    );
+    this.props.context.socket.on('fameUpdate', ({ login, fame }) =>
+      this.props.context.updateFame(login, fame),
+    );
   };
 
   loadUserProfile = async () => {

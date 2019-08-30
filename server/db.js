@@ -431,6 +431,10 @@ class DB {
       { blocker, blockee },
     );
   }
+
+  async getUserByLogin(login) {
+    return this.db.any('SELECT * FROM users WHERE login = ${login}', { login });
+  }
 }
 
 module.exports = new DB();

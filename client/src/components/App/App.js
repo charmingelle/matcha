@@ -7,6 +7,7 @@ import ResetPasswordOrExpired from '../ResetPasswordOrExpired/ResetPasswordOrExp
 import ActivateAccount from '../ActivateAccount/ActivateAccount';
 import { Context } from '../../utils/utils';
 import { saveVisited } from '../../api/api';
+import { CardActions } from '@material-ui/core';
 
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
@@ -45,6 +46,29 @@ export class App extends Component {
       this.notifyVisited(visited, visitedLogin),
     );
 
+  updateFameInSuggestions = (login, fame) => {
+    const found = this.state.suggestions.find(user => user.login === login);
+
+    if (found) {
+      found.fame = fame;
+      this.setState({ suggestions: [...this.state.suggestions, found] });
+    }
+  };
+
+  updateFameInVisited = (login, fame) => {
+    const found = this.state.visited.find(user => user.login === login);
+
+    if (found) {
+      found.fame = fame;
+      this.setState({ visited: [...this.state.visited, found] });
+    }
+  };
+
+  updateFame = (login, fame) => {
+    this.updateFameInSuggestions(login, fame);
+    this.updateFameInVisited(login, fame);
+  };
+
   render = () => (
     <Context.Provider
       value={{
@@ -53,6 +77,7 @@ export class App extends Component {
         set: this.set,
         updateCanRenderLikeButton: this.updateCanRenderLikeButton,
         updateVisited: this.updateVisited,
+        updateFame: this.updateFame,
       }}
     >
       <BrowserRouter>

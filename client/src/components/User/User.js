@@ -28,7 +28,7 @@ import { withContext } from '../../utils/utils';
 
 class User extends React.Component {
   state = {
-    ...this.props.user,
+    fake: this.props.user.fake,
     currentPhoto: 0,
     expanded: this.props.full,
     isMenuOpen: false,
@@ -47,19 +47,14 @@ class User extends React.Component {
       {
         currentPhoto: this.state.currentPhoto + 1,
       },
-      () => this.props.context.updateVisited(this.state.login),
+      () => this.props.context.updateVisited(this.props.user.login),
     );
 
   toggleMenu = () =>
     this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
 
-  changeFame = step =>
-    this.setState({
-      fame: this.state.fame + step,
-    });
-
   reportFake = () =>
-    reportFake(this.state.login).then(() =>
+    reportFake(this.props.user.login).then(() =>
       this.setState({
         fake: true,
       }),
@@ -70,7 +65,7 @@ class User extends React.Component {
       state => ({ expanded: !state.expanded }),
       () =>
         this.state.expanded &&
-        this.props.context.updateVisited(this.state.login),
+        this.props.context.updateVisited(this.props.user.login),
     );
 
   handleMenuClose = event =>
@@ -78,7 +73,10 @@ class User extends React.Component {
     this.setState({ isMenuOpen: false });
 
   renderActionMenu = () => {
-    const { login, fake, isMenuOpen } = this.state;
+    const {
+      user: { login },
+    } = this.props;
+    const { fake, isMenuOpen } = this.state;
 
     return (
       <div>
@@ -136,8 +134,10 @@ class User extends React.Component {
       : new Date(parseInt(time)).toLocaleString();
 
   renderHeader = () => {
-    const { classes } = this.props;
-    const { firstname, lastname, online, time, gallery, avatarid } = this.state;
+    const {
+      classes,
+      user: { firstname, lastname, online, time, gallery, avatarid },
+    } = this.props;
     const name = this.getName(firstname, lastname);
 
     return (
@@ -158,8 +158,12 @@ class User extends React.Component {
   };
 
   renderPhoto = () => {
-    const { classes, full } = this.props;
-    const { currentPhoto, gallery } = this.state;
+    const {
+      classes,
+      full,
+      user: { gallery },
+    } = this.props;
+    const { currentPhoto } = this.state;
 
     return (
       <CardContent
@@ -175,8 +179,11 @@ class User extends React.Component {
   };
 
   renderPhotoButtons = () => {
-    const { classes } = this.props;
-    const { currentPhoto, gallery } = this.state;
+    const {
+      classes,
+      user: { gallery },
+    } = this.props;
+    const { currentPhoto } = this.state;
 
     return (
       <div className={classes.leftRightArea}>
@@ -196,15 +203,16 @@ class User extends React.Component {
 
   renderShowMore = () => {
     const { classes, full } = this.props;
+    const { expanded } = this.state;
 
     return full ? null : (
       <CardActions className={classes.actions} disableActionSpacing>
         <IconButton
           className={classnames(classes.expand, {
-            [classes.expandOpen]: this.state.expanded,
+            [classes.expandOpen]: expanded,
           })}
           onClick={this.handleExpandClick}
-          aria-expanded={this.state.expanded}
+          aria-expanded={expanded}
           aria-label="Show more"
         >
           <ExpandMoreIcon />
@@ -214,24 +222,18 @@ class User extends React.Component {
   };
 
   renderInfo = () => {
-    const { classes } = this.props;
     const {
-      login,
-      fame,
-      age,
-      gender,
-      preferences,
-      bio,
-      interests,
-    } = this.state;
+      classes,
+      user: { login, fame, age, gender, preferences, bio, interests },
+    } = this.props;
+    const { expanded } = this.state;
 
     return (
-      <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <div className={classes.likeBlock}>
             <LikeButton
               disabled={!this.props.context.profile.canRenderLikeButton}
-              changeFame={this.changeFame}
               login={login}
             />
             <div>{fame}</div>
@@ -265,22 +267,19 @@ class User extends React.Component {
     );
   };
 
-  render = () =>
-    this.state ? (
-      <Card
-        className={
-          this.props.full
-            ? this.props.classes.cardFull
-            : this.props.classes.card
-        }
-      >
-        {this.renderHeader()}
-        {this.renderPhoto()}
-        {this.renderPhotoButtons()}
-        {this.renderShowMore()}
-        {this.renderInfo()}
-      </Card>
-    ) : null;
+  render = () => (
+    <Card
+      className={
+        this.props.full ? this.props.classes.cardFull : this.props.classes.card
+      }
+    >
+      {this.renderHeader()}
+      {this.renderPhoto()}
+      {this.renderPhotoButtons()}
+      {this.renderShowMore()}
+      {this.renderInfo()}
+    </Card>
+  );
 }
 
 User.propTypes = {

@@ -103,13 +103,13 @@ export const getLikeStatus = login =>
     body: JSON.stringify({ login }),
   }).then(res => returnResOrError(res, 'getLikeStatus error'));
 
-export const changeLikeStatus = (login, canLike) =>
-  fetch('/changeLikeStatus', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ login, canLike }),
-  }).then(res => returnResOrError(res, 'changeLikeStatus error'));
+// export const changeLikeStatus = (login, canLike) =>
+//   fetch('/changeLikeStatus', {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     credentials: 'include',
+//     body: JSON.stringify({ login, canLike }),
+//   }).then(res => returnResOrError(res, 'changeLikeStatus error'));
 
 export const getVisited = () =>
   fetch('/getVisited', {

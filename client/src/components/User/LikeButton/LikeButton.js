@@ -18,19 +18,14 @@ class LikeButton extends React.Component {
       context: {
         socket,
         profile: { login: sender },
-        set,
       },
       login: receiver,
-      changeFame,
     } = this.props;
     const { canLike } = this.state;
-    const { step, chatData } = await changeLikeStatus(receiver, canLike);
 
     canLike
       ? socket.emit('like', { sender, receiver })
       : socket.emit('unlike', { sender, receiver });
-    changeFame(step);
-    set('chatData', chatData);
     this.setState({ canLike: !canLike });
   };
 

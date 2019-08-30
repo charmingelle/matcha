@@ -206,6 +206,12 @@ class Magic {
   async unblock(blocker, blockee) {
     return DB.unblock(blocker, blockee);
   }
+
+  async getFame(login) {
+    const [{ fame }] = await DB.getUserByLogin(login);
+
+    return fame;
+  }
 }
 
 module.exports = new Magic();
