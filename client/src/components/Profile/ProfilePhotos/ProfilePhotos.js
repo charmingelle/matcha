@@ -14,10 +14,6 @@ import { styles } from './ProfilePhotos.styles';
 
 class ProfilePhotos extends React.Component {
   photoid = null;
-  state = {
-    gallery: this.props.gallery,
-    avatarid: this.props.avatarid,
-  };
 
   upload = id => {
     const uploadEl = document.getElementById('file-upload');
@@ -26,35 +22,53 @@ class ProfilePhotos extends React.Component {
     uploadEl.click();
   };
 
-  makeAvatar = id => this.setState({ avatarid: id }, () => setAvatar(id));
+  makeAvatar = id =>
+    setAvatar(id).then(avatarid =>
+      this.props.context.set('profile', {
+        ...this.props.context.profile,
+        avatarid,
+      }),
+    );
 
-  getImageOnloadHandler = (gallery, image, canvas) => async () => {
+  getImageOnloadHandler = (image, canvas) => async () => {
+    const {
+      context: {
+        profile: { gallery },
+      },
+    } = this.props;
+
     canvas.width = image.width;
     canvas.height = image.height;
     canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
     if (this.photoid === null) {
       this.photoid = gallery.length;
     }
-    const { fileName } = await savePhoto(canvas.toDataURL(), this.photoid);
+    const fileName = await savePhoto(canvas.toDataURL(), this.photoid);
 
     gallery[this.photoid] = fileName;
-    this.setState({ gallery });
+    this.props.context.set('profile', {
+      ...this.props.context.profile,
+      gallery,
+    });
     this.photoid = null;
     this.props.context.updateCanRenderLikeButton(true);
   };
 
   uploadPhoto = ({ target }) => {
-    let gallery = JSON.parse(JSON.stringify(this.state.gallery));
     const image = new Image();
     const canvas = document.createElement('canvas');
 
-    image.onload = this.getImageOnloadHandler(gallery, image, canvas);
+    image.onload = this.getImageOnloadHandler(image, canvas);
     image.src = window.URL.createObjectURL(target.files[0]);
   };
 
   renderUploadButton = () => {
-    const { classes } = this.props;
-    const { gallery } = this.state;
+    const {
+      classes,
+      context: {
+        profile: { gallery },
+      },
+    } = this.props;
 
     return (
       <>
@@ -85,8 +99,12 @@ class ProfilePhotos extends React.Component {
   };
 
   renderPhoto = (photo, index) => {
-    const { classes } = this.props;
-    const { avatarid } = this.state;
+    const {
+      classes,
+      context: {
+        profile: { avatarid },
+      },
+    } = this.props;
 
     return (
       <li key={index}>
@@ -125,8 +143,12 @@ class ProfilePhotos extends React.Component {
   };
 
   renderPhotos = () => {
-    const { classes } = this.props;
-    const { gallery } = this.state;
+    const {
+      classes,
+      context: {
+        profile: { gallery },
+      },
+    } = this.props;
 
     return (
       <ul className={classes.photoList}>{gallery.map(this.renderPhoto)}</ul>

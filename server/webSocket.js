@@ -56,7 +56,7 @@ module.exports = app => {
       );
       io.to(chatUsers[receiver]).emit('like', data);
     }
-    const [{ fame }] = await DB.readUser(login);
+    const [{ fame }] = await DB.readUser(receiver);
 
     io.to(chatUsers[sender]).emit('fameUpdate', { login: receiver, fame });
   };
@@ -79,7 +79,7 @@ module.exports = app => {
       io.to(chatUsers[receiver]).emit('chatDataUpdate', chatData),
     );
     wasConnected && io.to(chatUsers[receiver]).emit('unlike', data);
-    const [{ fame }] = await DB.readUser(login);
+    const [{ fame }] = await DB.readUser(receiver);
 
     io.to(chatUsers[sender]).emit('fameUpdate', { login: receiver, fame });
   };

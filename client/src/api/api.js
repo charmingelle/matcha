@@ -5,14 +5,32 @@ const returnResOrError = async res => {
   throw new Error(await res.json());
 };
 
-export const getUserProfile = () =>
+export const getProfile = () =>
   fetch('/profile', {
     method: 'GET',
     credentials: 'include',
   }).then(res => returnResOrError(res));
 
+export const getLikedBy = () =>
+  fetch('/profile/likedBy', {
+    method: 'GET',
+    credentials: 'include',
+  }).then(res => returnResOrError(res));
+
+export const getCheckedBy = () =>
+  fetch('/profile/checkedBy', {
+    method: 'GET',
+    credentials: 'include',
+  }).then(res => returnResOrError(res));
+
+export const getAllinterests = () =>
+  fetch('/app/interests', {
+    method: 'GET',
+    credentials: 'include',
+  }).then(res => returnResOrError(res));
+
 export const saveUserProfile = userInfo =>
-  fetch('/profile/info', {
+  fetch('/profile', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -33,7 +51,7 @@ export const setAvatar = avatarid =>
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ avatarid }),
-  });
+  }).then(res => returnResOrError(res));
 
 export const saveLocation = location =>
   fetch('/profile/location', {
@@ -41,7 +59,7 @@ export const saveLocation = location =>
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ location }),
-  });
+  }).then(res => returnResOrError(res));
 
 export const signin = (login, password) =>
   fetch('/app/signin', {
@@ -121,7 +139,7 @@ export const reportFake = login =>
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-  });
+  }).then(res => returnResOrError(res));
 
 export const getBlockStatus = login =>
   fetch(`/users/${login}/blockStatus`, {

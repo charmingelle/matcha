@@ -3,7 +3,7 @@ import { getBlockStatus, changeBlockStatus } from '../../../api/api';
 
 export default class BlockButton extends React.Component {
   componentDidMount = () =>
-    getBlockStatus(this.props.login).then(({ canBlock }) =>
+    getBlockStatus(this.props.login).then(canBlock =>
       this.setState({ canBlock }),
     );
 

@@ -26,12 +26,15 @@ import Signin from '../Signin/Signin';
 import Chat from '../Chat/Chat';
 import Notifications from '../Notifications/Notifications';
 import {
-  getUserProfile,
+  getProfile,
   saveLocation,
   signout,
   getChatData,
   getSuggestions,
   getVisited,
+  getAllinterests,
+  getLikedBy,
+  getCheckedBy,
 } from '../../api/api';
 import { styles } from './Main.styles';
 import { withContext } from '../../utils/utils';
@@ -57,21 +60,30 @@ class Main extends React.Component {
     tabName: 'Suggestions',
   };
 
-  ipLookUp = () => {
-    fetch('http://ip-api.com/json', {
-      method: 'POST',
-    })
-      .then(response => response.json())
-      .then(data => saveLocation([data.lat, data.lon]))
-      .catch(error => console.error(error.message));
-  };
-
-  getLocation = userid => {
-    navigator.geolocation.getCurrentPosition(
-      position =>
-        saveLocation([position.coords.latitude, position.coords.longitude]),
-      () => this.ipLookUp(userid),
+  getNavigatorPosition = () =>
+    new Promise((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject),
     );
+
+  getLocation = async () => {
+    try {
+      const position = await this.getNavigatorPosition();
+
+      return await saveLocation([
+        position.coords.latitude,
+        position.coords.longitude,
+      ]);
+    } catch (navigatorError) {
+      try {
+        let location = await fetch('http://ip-api.com/json', {
+          method: 'POST',
+        }).then(res => res.json());
+
+        return await saveLocation([location.lat, location.lon]);
+      } catch (thirdPartyServiceError) {
+        return null;
+      }
+    }
   };
 
   addNotification = message => {
@@ -127,44 +139,66 @@ class Main extends React.Component {
 
   loadUserProfile = async () => {
     try {
-      const { user, allInterests } = await getUserProfile();
+      const profile = await getProfile();
+      const newLocation = await this.getLocation();
 
+      console.log({
+        newLocation,
+      });
+
+      this.props.context.set('profile', {
+        ...profile,
+        location: newLocation ? newLocation : profile.location,
+        changeStatus: null,
+        error: false,
+        canRenderLikeButton: profile.gallery.length > 0,
+      });
       this.props.context.set(
         'socket',
         socketIOClient({
-          query: `login=${user.login}`,
+          query: `login=${profile.login}`,
         }),
       );
       this.addSocketEventListeners();
-      this.props.context.set('profile', {
-        ...user,
-        allInterests: allInterests,
-        changeStatus: null,
-        error: false,
-        canRenderLikeButton: user.gallery.length > 0,
-      });
-      this.getLocation(user.id);
     } catch (error) {
-      this.props.context.set('profile', 'signin');
+      this.props.context.set('profile', null);
     }
   };
 
   loadChatData = () =>
     getChatData().then(
       chatData => this.props.context.set('chatData', chatData),
-      console.error,
+      () => this.props.context.set('profile', null),
     );
 
   loadSuggestions = () =>
     getSuggestions().then(
       suggestions => this.props.context.set('suggestions', suggestions),
-      console.error,
+      () => this.props.context.set('profile', null),
     );
 
   loadVisited = () =>
     getVisited().then(
       visited => this.props.context.set('visited', visited),
-      console.error,
+      () => this.props.context.set('profile', null),
+    );
+
+  loadInterests = () =>
+    getAllinterests().then(
+      interests => this.props.context.set('interests', interests),
+      () => this.props.context.set('profile', null),
+    );
+
+  loadLikedBy = () =>
+    getLikedBy().then(
+      likedBy => this.props.context.set('likedBy', likedBy),
+      () => this.props.context.set('profile', null),
+    );
+
+  loadCheckedBy = () =>
+    getCheckedBy().then(
+      checkedBy => this.props.context.set('checkedBy', checkedBy),
+      () => this.props.context.set('profile', null),
     );
 
   componentDidMount = () =>
@@ -173,10 +207,12 @@ class Main extends React.Component {
       this.loadChatData(),
       this.loadSuggestions(),
       this.loadVisited(),
+      this.loadInterests(),
+      this.loadLikedBy(),
+      this.loadCheckedBy(),
     ]);
 
-  signout = () =>
-    signout().then(() => this.props.context.set('profile', 'signin'));
+  signout = () => signout().then(() => this.props.context.set('profile', null));
 
   closeNotification = index => {
     let newNotifications = this.state.notifications;
@@ -201,11 +237,29 @@ class Main extends React.Component {
   handleMenuClose = event =>
     !this.anchorEl.contains(event.target) && this.setState({ showMenu: false });
 
-  everythingLoaded = () =>
-    this.props.context.profile &&
-    this.props.context.chatData &&
-    this.props.context.suggestions &&
-    this.props.context.visited;
+  everythingLoaded = () => {
+    console.log(
+      'everythingLoaded',
+      this.props.context.profile !== null &&
+        this.props.context.chatData !== null &&
+        this.props.context.suggestions !== null &&
+        this.props.context.visited !== null &&
+        this.props.context.interests !== null &&
+        this.props.context.likedBy !== null &&
+        this.props.context.checkedBy !== null,
+    );
+    console.log('profile', this.props.context.profile);
+
+    return (
+      this.props.context.profile !== null &&
+      this.props.context.chatData !== null &&
+      this.props.context.suggestions !== null &&
+      this.props.context.visited !== null &&
+      this.props.context.interests !== null &&
+      this.props.context.likedBy !== null &&
+      this.props.context.checkedBy !== null
+    );
+  };
 
   getTabName = () => {
     let tabName = window.location.pathname.split('/')[1];
@@ -388,16 +442,16 @@ class Main extends React.Component {
   );
 
   render = () =>
-    this.props.context.profile === 'signin' ? (
-      <Signin />
-    ) : this.everythingLoaded() ? (
+    this.everythingLoaded() ? (
       <div className={this.props.classes.root}>
         {this.renderNotifications()}
         {this.renderAppBar()}
         {this.renderSideMenu()}
         {this.renderRoutes()}
       </div>
-    ) : null;
+    ) : (
+      <Signin />
+    );
 }
 
 Main.propTypes = {

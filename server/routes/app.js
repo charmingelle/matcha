@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { isSignedIn } = require('../middleware');
 const { gethash, transport } = require('../utils');
 const { NO_REPLY_EMAIL, HOST } = require('../constants');
 const DB = require('../DB');
@@ -70,7 +71,7 @@ router.post(
   async (req, res) => {
     req.session.login = req.body.login;
     await DB.updateUserOnline(req.body.login);
-    res.json({ status: 'success' });
+    res.json({ result: 'OK' });
   },
 );
 
@@ -91,7 +92,7 @@ router.post(
     await DB.updateUserHashByEmail(hash, email);
     transport.sendMail(message, error =>
       error
-        ? res.status(500).json('Something went wrong. Please try again')
+        ? res.status(500).json('Please try again')
         : res.json({ result: 'OK' }),
     );
   },
@@ -111,6 +112,12 @@ router.post('/password/reset', (req, res, next) => {
       res.json({ result: 'Your password has been changed' });
     });
   });
+});
+
+router.get('/interests', isSignedIn, async (req, res) => {
+  const interests = await DB.readInterests();
+
+  res.json(interests.map(({ interest }) => interest));
 });
 
 module.exports = router;

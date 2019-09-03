@@ -9,7 +9,11 @@ import ProfilePhotos from './ProfilePhotos/ProfilePhotos';
 import SmallUsers from '../SmallUsers/SmallUsers';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
-import { saveUserProfile } from '../../api/api';
+import {
+  saveUserProfile,
+  getSuggestions,
+  getAllinterests,
+} from '../../api/api';
 import { styles } from './Profile.styles';
 import { isEmailValid, withContext } from '../../utils/utils';
 
@@ -49,14 +53,13 @@ class Profile extends React.Component {
     event.preventDefault();
     if (this.isAllValid()) {
       try {
-        const { suggestions } = await saveUserProfile(this.state);
-
+        this.props.context.set('profile', await saveUserProfile(this.state));
+        this.props.context.set('suggestions', await getSuggestions());
+        this.props.context.set('interests', await getAllinterests());
         this.setState({
           error: false,
           changeStatus: 'Your data has been changed',
         });
-        this.props.context.set('suggestions', suggestions);
-        this.props.context.set('profile', this.state);
       } catch ({ message }) {
         this.setState({
           error: true,
@@ -76,14 +79,18 @@ class Profile extends React.Component {
     });
 
   renderLikedBy = () => (
-    <SmallUsers title="Liked by" icon="&#9829;" users={this.state.likedBy} />
+    <SmallUsers
+      title="Liked by"
+      icon="&#9829;"
+      users={this.props.context.likedBy}
+    />
   );
 
   renderCheckedBy = () => (
     <SmallUsers
       title="Checked by"
       icon="&#10004;"
-      users={this.state.checkedBy}
+      users={this.props.context.checkedBy}
     />
   );
 
@@ -171,7 +178,7 @@ class Profile extends React.Component {
     <InterestsInput
       name="interests"
       value={this.state.interests}
-      all={this.state.allInterests}
+      all={this.props.context.interests}
       onChange={this.onChange}
     />
   );
@@ -197,12 +204,7 @@ class Profile extends React.Component {
     </div>
   );
 
-  renderProfilePhotos = () => (
-    <ProfilePhotos
-      gallery={this.state.gallery}
-      avatarid={this.state.avatarid}
-    />
-  );
+  renderProfilePhotos = () => <ProfilePhotos />;
 
   render = () =>
     this.state && (

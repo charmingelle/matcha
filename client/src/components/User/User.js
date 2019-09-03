@@ -28,7 +28,6 @@ import { withContext } from '../../utils/utils';
 
 class User extends React.Component {
   state = {
-    fake: this.props.user.fake,
     currentPhoto: 0,
     expanded: this.props.full,
     isMenuOpen: false,
@@ -54,11 +53,9 @@ class User extends React.Component {
     this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
 
   reportFake = () =>
-    reportFake(this.props.user.login).then(() =>
-      this.setState({
-        fake: true,
-      }),
-    );
+    reportFake(this.props.user.login).then(({ login }) => {
+      this.props.context.updateFake(login);
+    });
 
   handleExpandClick = () =>
     this.setState(
@@ -74,9 +71,9 @@ class User extends React.Component {
 
   renderActionMenu = () => {
     const {
-      user: { login },
+      user: { login, fake },
     } = this.props;
-    const { fake, isMenuOpen } = this.state;
+    const { isMenuOpen } = this.state;
 
     return (
       <div>
@@ -224,7 +221,7 @@ class User extends React.Component {
   renderInfo = () => {
     const {
       classes,
-      user: { login, fame, age, gender, preferences, bio, interests },
+      user: { login, fame, age, gender, preferences, bio, interests, fake },
     } = this.props;
     const { expanded } = this.state;
 
@@ -260,6 +257,12 @@ class User extends React.Component {
             <Typography component="p">
               <span className={classes.bold}>Biography: </span>
               {bio}
+            </Typography>
+          )}
+          {fake && (
+            <Typography component="p">
+              <span className={classes.fake}>Fake: </span>
+              This user was reported as fake
             </Typography>
           )}
         </CardContent>

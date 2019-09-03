@@ -1,17 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const { isSignedIn } = require('../middleware');
+const { filterUsersData } = require('../utils');
 const DB = require('../DB');
 
 router.get('/suggestions', isSignedIn, async (req, res) =>
-  res.json(await DB.readSuggestions(req.session.login)),
+  res.json(filterUsersData(await DB.readSuggestions(req.session.login))),
 );
 
 router.get('/visited', isSignedIn, async (req, res) => {
   const [{ visited }] = await DB.readUser(req.session.login);
 
   return visited.length > 0
-    ? res.json(await DB.readUsers(visited))
+    ? res.json(filterUsersData(await DB.readUsers(visited)))
     : res.json([]);
 });
 
@@ -20,19 +21,23 @@ router.patch('/visited', isSignedIn, async (req, res) => {
 
   await DB.updateUserVisited(req.session.login, [...visited, req.body.visited]);
 
-  res.json(await DB.readUsers([...visited, req.body.visited]));
+  const [{ visited: updatedVisited }] = await DB.readUser(req.session.login);
+
+  res.json(await DB.readUsers(updatedVisited));
 });
 
 router.patch('/:login/fake', isSignedIn, async (req, res) => {
   await DB.updateUserFake(req.params.login);
 
-  res.json({ result: 'OK' });
+  const [user] = filterUsersData(await DB.readUser(req.params.login));
+
+  res.json(user);
 });
 
 router.get('/:login/likeStatus', isSignedIn, async (req, res) => {
   const likes = await DB.readLike(req.session.login, req.params.login);
 
-  res.json({ canLike: likes.length === 0 });
+  res.json(likes.length === 0);
 });
 
 router.get('/:login/blockStatus', isSignedIn, async (req, res) => {

@@ -10,8 +10,16 @@ class DB {
 
   async createUser({ email, login, password, firstname, lastname, hash }) {
     return this.db.any(
-      'INSERT INTO users(email, login, password, firstname, lastname, hash) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash})',
-      { email, login, password, firstname, lastname, hash },
+      'INSERT INTO users(email, login, password, firstname, lastname, hash, gallery) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash}, ${gallery})',
+      {
+        email,
+        login,
+        password,
+        firstname,
+        lastname,
+        hash,
+        gallery: ['avatar.png'],
+      },
     );
   }
 
@@ -376,16 +384,16 @@ class DB {
       return {};
     }
 
-    const likees = likes.map(({ likee }) => likee);
+    const likeReceivers = likes.map(({ likee }) => likee);
 
-    likes = await this.readLikesBySendersAndReceiver(likees, login);
+    likes = await this.readLikesBySendersAndReceiver(likeReceivers, login);
 
     if (!likes.length) {
       return {};
     }
 
-    const likers = likes.map(({ liker }) => liker);
-    const users = await this.readUsers(likers);
+    const likeSendersAndReceivers = likes.map(({ liker }) => liker);
+    const users = await this.readUsers(likeSendersAndReceivers);
     const userLogins = users.map(({ login }) => login);
     const messages = await this.readUserMessages(userLogins, login);
     let chats = {};

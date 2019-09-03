@@ -59,4 +59,8 @@ export const styles = theme => ({
   bold: {
     fontWeight: 500,
   },
+  fake: {
+    fontWeight: 500,
+    color: 'red',
+  },
 });

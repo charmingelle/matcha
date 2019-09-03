@@ -8,6 +8,7 @@ const {
   isFirstLastNameValid,
   gethash,
   transport,
+  filterUsersData,
 } = require('../utils');
 const { NO_REPLY_EMAIL, HOST } = require('../constants');
 const DB = require('../DB');
@@ -101,31 +102,48 @@ const updateProfile = async (reqBody, login) => {
 };
 
 router.get('/', isSignedIn, async (req, res) => {
-  const { login } = req.session;
-  const [[user], interests] = await Promise.all([
-    DB.readUser(login),
-    DB.readInterests(),
-  ]);
+  const [user] = filterUsersData(await DB.readUser(req.session.login));
 
-  let likedBy = [];
-  const likes = await DB.readLikesByReceiver(login);
+  res.json(user);
+});
 
-  if (likes.length > 0) {
-    likedBy = await DB.readUsers(likes.map(({ liker }) => liker));
+router.patch('/', isSignedIn, checkIfEmailIsFree, async (req, res) => {
+  await updateProfile(req.body, req.session.login);
+
+  const [user] = filterUsersData(await DB.readUser(req.session.login));
+
+  res.json(user);
+});
+
+router.get('/likedBy', isSignedIn, async (req, res) => {
+  const likes = await DB.readLikesByReceiver(req.session.login);
+
+  if (!likes.length) {
+    return res.json([]);
   }
 
-  const users = await DB.readAllUsers();
-  const checkedBy = users.filter(({ visited }) => visited.includes(login));
+  const users = filterUsersData(
+    await DB.readUsers(likes.map(({ liker }) => liker)),
+  );
 
-  res.json({
-    user: { ...user, likedBy, checkedBy },
-    allInterests: interests.map(interest => interest.interest),
-  });
+  res.json(users);
+});
+
+router.get('/checkedBy', isSignedIn, async (req, res) => {
+  const users = await DB.readAllUsers();
+  const checkedBy = filterUsersData(
+    users.filter(({ visited }) => visited.includes(req.session.login)),
+  );
+
+  res.json(checkedBy);
 });
 
 router.patch('/location', isSignedIn, async (req, res) => {
   await DB.updateUserLocation(req.session.login, req.body.location);
-  res.json({ result: 'OK' });
+
+  const [{ location }] = filterUsersData(await DB.readUser(req.session.login));
+
+  res.json(location);
 });
 
 router.patch('/photo', isSignedIn, async (req, res, next) => {
@@ -145,7 +163,7 @@ router.patch('/photo', isSignedIn, async (req, res, next) => {
       fs.unlink(`photos/${gallery[photoid]}`, async () => {
         gallery[photoid] = `${fileName}.png`;
         await DB.updateUserGallery(login, gallery);
-        res.json({ fileName: `${fileName}.png` });
+        res.json(`${fileName}.png`);
       });
     },
   );
@@ -153,14 +171,10 @@ router.patch('/photo', isSignedIn, async (req, res, next) => {
 
 router.patch('/avatar', isSignedIn, async (req, res) => {
   await DB.updateUserAvatarId(req.session.login, req.body.avatarid);
-  res.json({ result: 'OK' });
-});
 
-router.patch('/info', isSignedIn, checkIfEmailIsFree, async (req, res) => {
-  await updateProfile(req.body, req.session.login);
-  res.json({
-    suggestions: await DB.readSuggestions(req.session.login),
-  });
+  const [{ avatarid }] = await DB.readUser(req.session.login);
+
+  res.json(avatarid);
 });
 
 router.patch('/signout', async (req, res) => {

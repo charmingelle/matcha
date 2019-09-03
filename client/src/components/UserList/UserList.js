@@ -105,7 +105,7 @@ class UserList extends React.Component {
   renderFilterPanel = () => (
     <FilterPanel
       setFilterParams={this.setFilterParams}
-      interests={this.props.context.profile.allInterests}
+      interests={this.props.context.interests}
       move={this.move}
     />
   );

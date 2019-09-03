@@ -9,9 +9,7 @@ import { styles } from './LikeButton.styles';
 
 class LikeButton extends React.Component {
   componentDidMount = () =>
-    getLikeStatus(this.props.login).then(({ canLike }) =>
-      this.setState({ canLike }),
-    );
+    getLikeStatus(this.props.login).then(canLike => this.setState({ canLike }));
 
   changeLikeStatus = async () => {
     const {

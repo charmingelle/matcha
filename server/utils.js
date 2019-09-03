@@ -59,4 +59,44 @@ module.exports = {
   },
 
   transport,
+
+  filterUsersData(users) {
+    return users.map(
+      ({
+        firstname,
+        lastname,
+        email,
+        age,
+        gender,
+        preferences,
+        bio,
+        interests,
+        gallery,
+        avatarid,
+        login,
+        time,
+        online,
+        location,
+        fame,
+        fake,
+      }) => ({
+        firstname,
+        lastname,
+        email,
+        age,
+        gender,
+        preferences,
+        bio,
+        interests,
+        gallery,
+        avatarid,
+        login,
+        time,
+        online,
+        location,
+        fame,
+        fake,
+      }),
+    );
+  },
 };
