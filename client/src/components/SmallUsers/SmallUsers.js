@@ -5,12 +5,9 @@ import SmallUser from './SmallUser/SmallUser';
 import { styles } from './SmallUsers.styles';
 
 class SmallUsers extends React.Component {
-  componentDidMount = () =>
-    this.props.getUserList().then(users => this.setState({ users }));
-
   renderUserList = () => (
     <ul className={this.props.classes.list}>
-      {this.state.users.map((user, index) => (
+      {this.props.users.map((user, index) => (
         <li key={index}>
           <SmallUser user={user} updateVisited={this.props.updateVisited} />
         </li>
@@ -28,12 +25,7 @@ class SmallUsers extends React.Component {
     </div>
   );
 
-  render = () =>
-    !this.state
-      ? null
-      : this.state.users.length
-      ? this.renderSmallUsers()
-      : null;
+  render = () => (this.props.users.length ? this.renderSmallUsers() : null);
 }
 
 SmallUsers.propTypes = {

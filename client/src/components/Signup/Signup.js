@@ -48,18 +48,25 @@ class Signup extends React.Component {
     });
 
   makeSignupRequest = async () => {
-    const { status, result } = await signup(
-      this.state.email,
-      this.state.login,
-      this.state.password,
-      this.state.firstname,
-      this.state.lastname,
-    );
+    try {
+      await signup(
+        this.state.email,
+        this.state.login,
+        this.state.password,
+        this.state.firstname,
+        this.state.lastname,
+      );
 
-    this.setState({
-      error: status === 'error',
-      message: result,
-    });
+      this.setState({
+        error: false,
+        message: 'Check your email',
+      });
+    } catch ({ message }) {
+      this.setState({
+        error: true,
+        message,
+      });
+    }
   };
 
   signup = async () => {

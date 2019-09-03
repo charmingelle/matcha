@@ -1,182 +1,154 @@
-const returnResOrError = (res, errorText) => {
-  if (res.ok) {
+const returnResOrError = async res => {
+  if (res.ok && res.json) {
     return res.json();
   }
-  throw new Error(errorText);
+  throw new Error(await res.json());
 };
 
 export const getUserProfile = () =>
-  fetch('/getUserProfile', {
-    method: 'POST',
+  fetch('/profile', {
+    method: 'GET',
     credentials: 'include',
-  }).then(res => returnResOrError(res, 'getUserProfile error'));
+  }).then(res => returnResOrError(res));
 
 export const saveUserProfile = userInfo =>
-  fetch('/saveUserProfile', {
-    method: 'POST',
+  fetch('/profile/info', {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(userInfo),
-  }).then(res => returnResOrError(res, 'saveUserProfile error'));
+  }).then(res => returnResOrError(res));
 
-export const saveUserPhoto = (photo, photoid) =>
-  fetch('/saveUserPhoto', {
-    method: 'POST',
+export const savePhoto = (photo, photoid) =>
+  fetch('/profile/photo', {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ photo, photoid }),
-  }).then(res => returnResOrError(res, 'saveUserPhoto error'));
+  }).then(res => returnResOrError(res));
 
 export const setAvatar = avatarid =>
-  fetch('/setAvatar', {
-    method: 'POST',
+  fetch('/profile/avatar', {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ avatarid }),
   });
 
 export const saveLocation = location =>
-  fetch('/saveLocation', {
-    method: 'POST',
+  fetch('/profile/location', {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ location }),
   });
 
-export const signinOrMain = () =>
-  fetch('/signinOrMain', {
-    method: 'POST',
-    credentials: 'include',
-  }).then(res => returnResOrError(res, 'signinOrMain error'));
-
 export const signin = (login, password) =>
-  fetch('/signin', {
+  fetch('/app/signin', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ login, password }),
-  }).then(res => returnResOrError(res, 'signin error'));
+  }).then(res => returnResOrError(res));
 
 export const signout = () =>
-  fetch('/signout', {
-    method: 'POST',
+  fetch('/profile/signout', {
+    method: 'PATCH',
     credentials: 'include',
   });
 
 export const signup = (email, login, password, firstname, lastname) =>
-  fetch('/signup', {
+  fetch('/profile/signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ email, login, password, firstname, lastname }),
-  }).then(res => returnResOrError(res, 'signup error'));
+  }).then(res => returnResOrError(res));
 
 export const getResetPasswordEmail = email =>
-  fetch('/getResetPasswordEmail', {
+  fetch('app/password/reset/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ email }),
-  }).then(res => returnResOrError(res, 'getResetPasswordEmail error'));
+  }).then(res => returnResOrError(res));
+
+export const resetPasswordOrExpired = (email, hash) =>
+  fetch('/app/password/reset/link', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, hash }),
+  }).then(res => returnResOrError(res));
 
 export const resetPassword = (password, email) =>
-  fetch('/resetPassword', {
+  fetch('/app/password/reset', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ password, email }),
-  }).then(res => returnResOrError(res, 'resetPassword error'));
-
-export const resetPasswordOrExpired = (email, hash) =>
-  fetch('/resetPasswordOrExpired', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ email, hash }),
-  }).then(res => returnResOrError(res, 'resetPasswordOrExpired error'));
+  }).then(res => returnResOrError(res));
 
 export const getLikeStatus = login =>
-  fetch('/getLikeStatus', {
-    method: 'POST',
+  fetch(`/users/${login}/likeStatus`, {
+    method: 'GET',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ login }),
-  }).then(res => returnResOrError(res, 'getLikeStatus error'));
-
-// export const changeLikeStatus = (login, canLike) =>
-//   fetch('/changeLikeStatus', {
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json' },
-//     credentials: 'include',
-//     body: JSON.stringify({ login, canLike }),
-//   }).then(res => returnResOrError(res, 'changeLikeStatus error'));
+  }).then(res => returnResOrError(res));
 
 export const getVisited = () =>
-  fetch('/getVisited', {
-    method: 'POST',
+  fetch('/users/visited', {
+    method: 'GET',
     credentials: 'include',
-  }).then(res => returnResOrError(res, 'getVisited error'));
+  }).then(res => returnResOrError(res));
 
 export const saveVisited = visited =>
-  fetch('/saveVisited', {
-    method: 'POST',
+  fetch('/users/visited', {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ visited }),
-  }).then(res => returnResOrError(res, 'saveVisited error'));
+  }).then(res => returnResOrError(res));
 
 export const getChatData = () =>
-  fetch('/getChatData', {
-    method: 'POST',
+  fetch('/chats', {
+    method: 'GET',
     credentials: 'include',
-  }).then(res => returnResOrError(res, 'getChatData error'));
+  }).then(res => returnResOrError(res));
 
 export const reportFake = login =>
-  fetch('/reportFake', {
-    method: 'POST',
+  fetch(`/users/${login}/fake`, {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ login }),
   });
 
 export const getBlockStatus = login =>
-  fetch('/getBlockStatus', {
-    method: 'POST',
+  fetch(`/users/${login}/blockStatus`, {
+    method: 'GET',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ login }),
-  }).then(res => returnResOrError(res, 'getBlockStatus error'));
+  }).then(res => returnResOrError(res));
 
 export const changeBlockStatus = (login, canBlock) =>
-  fetch('/changeBlockStatus', {
-    method: 'POST',
+  fetch(`/users/${login}/blockStatus/change`, {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ login, canBlock }),
+    body: JSON.stringify({ canBlock }),
   });
 
-export const getCheckedBy = () =>
-  fetch('/getCheckedBy', {
-    method: 'POST',
-    credentials: 'include',
-  }).then(res => returnResOrError(res, 'getCheckedBy error'));
-
-export const getLikedBy = () =>
-  fetch('/getLikedBy', {
-    method: 'POST',
-    credentials: 'include',
-  }).then(res => returnResOrError(res, 'getLikedBy error'));
-
 export const getSuggestions = () =>
-  fetch('/getSuggestions', {
-    method: 'POST',
+  fetch('/users/suggestions', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-  }).then(res => returnResOrError(res, 'getSuggestions error'));
+  }).then(res => returnResOrError(res));
 
 export const activateAccount = (email, hash) =>
-  fetch('/activateAccount', {
-    method: 'POST',
+  fetch('/profile/activate', {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ email, hash }),
-  }).then(res => returnResOrError(res, 'activateAccount error'));
+  }).then(res => returnResOrError(res));

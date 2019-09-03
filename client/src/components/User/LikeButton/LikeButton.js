@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import { getLikeStatus, changeLikeStatus } from '../../../api/api';
+import { getLikeStatus } from '../../../api/api';
 import { withContext } from '../../../utils/utils';
 import { styles } from './LikeButton.styles';
 

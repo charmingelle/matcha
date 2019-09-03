@@ -1,12 +1,13 @@
 const DB = require('./DB');
-const MAGIC = require('./magic');
 
 module.exports = app => {
-  const io = require('socket.io')(app.listen(5000));
+  const io = require('socket.io')(
+    app.listen(5000, () => console.log('Listening on http://localhost:5000')),
+  );
   const chatUsers = {};
 
   const chatEventHandler = async ({ sender, receiver, message }) => {
-    const { time } = await DB.createChatMessage({
+    const { time } = await DB.createMessage({
       sender,
       receiver,
       message,
@@ -35,27 +36,27 @@ module.exports = app => {
 
   const likeEventHandler = async data => {
     const { receiver, sender } = data;
-    const { length } = await DB.getLikes(receiver, sender);
+    const { length } = await DB.readLike(receiver, sender);
     const isLikeBack = length > 0;
 
-    await DB.addLike(sender, receiver);
-    await DB.increaseFameByLogin(receiver);
+    await DB.createLike(sender, receiver);
+    await DB.increaseUserFame(receiver);
 
     if (isLikeBack) {
-      MAGIC.getChatDataFromDB(sender).then(chatData =>
+      DB.readUserChats(sender).then(chatData =>
         io.to(chatUsers[sender]).emit('chatDataUpdate', chatData),
       );
-      MAGIC.getChatDataFromDB(receiver).then(chatData =>
+      DB.readUserChats(receiver).then(chatData =>
         io.to(chatUsers[receiver]).emit('chatDataUpdate', chatData),
       );
       io.to(chatUsers[receiver]).emit('likeBack', data);
     } else {
-      MAGIC.getChatDataFromDB(sender).then(chatData =>
+      DB.readUserChats(sender).then(chatData =>
         io.to(chatUsers[sender]).emit('chatDataUpdate', chatData),
       );
       io.to(chatUsers[receiver]).emit('like', data);
     }
-    const fame = await MAGIC.getFame(receiver);
+    const [{ fame }] = await DB.readUser(login);
 
     io.to(chatUsers[sender]).emit('fameUpdate', { login: receiver, fame });
   };
@@ -65,20 +66,20 @@ module.exports = app => {
 
   const unlikeEventHandler = async data => {
     const { receiver, sender } = data;
-    const { length } = await DB.getLikes(receiver, sender);
+    const { length } = await DB.readLike(receiver, sender);
     const wasConnected = length > 0;
 
     await DB.deleteLike(sender, receiver);
-    await DB.decreaseFameByLogin(receiver);
+    await DB.decreaseUserFame(receiver);
 
-    MAGIC.getChatDataFromDB(sender).then(chatData =>
+    DB.readUserChats(sender).then(chatData =>
       io.to(chatUsers[sender]).emit('chatDataUpdate', chatData),
     );
-    MAGIC.getChatDataFromDB(receiver).then(chatData =>
+    DB.readUserChats(receiver).then(chatData =>
       io.to(chatUsers[receiver]).emit('chatDataUpdate', chatData),
     );
     wasConnected && io.to(chatUsers[receiver]).emit('unlike', data);
-    const fame = await MAGIC.getFame(receiver);
+    const [{ fame }] = await DB.readUser(login);
 
     io.to(chatUsers[sender]).emit('fameUpdate', { login: receiver, fame });
   };

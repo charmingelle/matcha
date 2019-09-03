@@ -7,6 +7,16 @@ const {
   HASH_LENGTH,
   HASH_CHARSET,
 } = require('./constants');
+const nodemailer = require('nodemailer');
+const transport = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  requireTLS: true,
+  auth: {
+    user: process.env.gmailLogin,
+    pass: process.env.gmailPassword,
+  },
+});
 
 module.exports = {
   shouldSelectWomen(gender, preferences) {
@@ -47,4 +57,6 @@ module.exports = {
       charset: HASH_CHARSET,
     });
   },
+
+  transport,
 };

@@ -1,4 +1,5 @@
 const format = require('pg-format');
+const { shouldSelectWomen, shouldSelectMen } = require('./utils');
 
 class DB {
   constructor() {
@@ -7,29 +8,50 @@ class DB {
     );
   }
 
-  async createChatMessage({ sender, receiver, message, time }) {
-    return this.db.one(
-      'INSERT INTO messages (sender, receiver, message, time) VALUES(${sender}, ${receiver}, ${message}, ${time}) RETURNING id, time',
-      {
-        sender,
-        receiver,
-        message,
-        time,
-      },
-    );
-  }
-
-  async getLikes(liker, likee) {
+  async createUser({ email, login, password, firstname, lastname, hash }) {
     return this.db.any(
-      'SELECT * FROM likes WHERE liker = ${liker} AND likee = ${likee}',
-      {
-        liker,
-        likee,
-      },
+      'INSERT INTO users(email, login, password, firstname, lastname, hash) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash})',
+      { email, login, password, firstname, lastname, hash },
     );
   }
 
-  async getBlockedUsers(blocker) {
+  async readUser(login) {
+    return this.db.any('SELECT * FROM users WHERE login = ${login}', { login });
+  }
+
+  async readUsers(logins) {
+    return this.db.any(
+      format('SELECT * FROM users WHERE login IN (%L)', logins),
+    );
+  }
+
+  async readAllUsers() {
+    return this.db.any(
+      'SELECT login, firstname, lastname, gallery, avatarid, visited from users',
+    );
+  }
+
+  async readUsersByEmail(email) {
+    return this.db.any('SELECT * FROM users WHERE email = ${email}', {
+      email,
+    });
+  }
+
+  async readUsersByEmailAndHash(email, hash) {
+    return this.db.any(
+      'SELECT * FROM users WHERE email = ${email} AND hash = ${hash}',
+      { email, hash },
+    );
+  }
+
+  async readUsersWithUserEmail(email, login) {
+    return this.db.any(
+      'SELECT email FROM users WHERE email = ${email} AND login <> ${login}',
+      { email, login },
+    );
+  }
+
+  async readBlockedUsers(blocker) {
     return this.db.any(
       'SELECT blockee FROM blocks WHERE blocker = ${blocker}',
       {
@@ -38,16 +60,7 @@ class DB {
     );
   }
 
-  async getGenderAndPreferences(login) {
-    return this.db.any(
-      'SELECT gender, preferences FROM users WHERE login = ${login}',
-      {
-        login,
-      },
-    );
-  }
-
-  async getWomenWithMyPreferences(login, preferences, blockedUsers) {
+  async readWomenWithMyPreferences(login, preferences, blockedUsers) {
     return blockedUsers.length
       ? this.db.any(
           format(
@@ -66,7 +79,7 @@ class DB {
         );
   }
 
-  async getMenWithMyPreferences(login, preferences, blockedUsers) {
+  async readMenWithMyPreferences(login, preferences, blockedUsers) {
     return blockedUsers.length
       ? this.db.any(
           format(
@@ -85,7 +98,7 @@ class DB {
         );
   }
 
-  async getPeopleForBiMan(login, blockedUsers) {
+  async readPeopleForBiMan(login, blockedUsers) {
     return blockedUsers.length
       ? this.db.any(
           format(
@@ -106,7 +119,7 @@ class DB {
         );
   }
 
-  async getPeopleForBiWoman(login, blockedUsers) {
+  async readPeopleForBiWoman(login, blockedUsers) {
     return blockedUsers.length
       ? this.db.any(
           format(
@@ -127,93 +140,24 @@ class DB {
         );
   }
 
-  async getMyLikees(login) {
-    return this.db.any('SELECT likee FROM likes WHERE liker = ${login}', {
-      login,
-    });
+  async readSuggestions(login) {
+    const data = await this.readBlockedUsers(login);
+    const blockedUsers = data.map(record => record.blockee);
+    const [{ gender, preferences }] = await this.readUser(login);
+
+    if (shouldSelectWomen(gender, preferences)) {
+      return this.readWomenWithMyPreferences(login, preferences, blockedUsers);
+    }
+    if (shouldSelectMen(gender, preferences)) {
+      return this.readMenWithMyPreferences(login, preferences, blockedUsers);
+    }
+    if (gender === 'male') {
+      return this.readPeopleForBiMan(login, blockedUsers);
+    }
+    return this.readPeopleForBiWoman(login, blockedUsers);
   }
 
-  async getMyLikers(likes, login) {
-    return this.db.any(
-      format(
-        'SELECT liker FROM likes WHERE liker IN (%L) AND likee = %L',
-        likes,
-        login,
-      ),
-    );
-  }
-
-  async getLikersData(likers) {
-    return this.db.any(
-      format(
-        'SELECT login, online, gallery, avatarid FROM users WHERE login IN (%L)',
-        likers,
-      ),
-    );
-  }
-
-  async getChatUserData(likersLogins, login) {
-    return this.db.any(
-      format(
-        "SELECT * FROM messages WHERE (sender IN (%L) AND receiver = '%s') OR (sender = '%s' AND receiver IN (%L)) ORDER BY id DESC",
-        likersLogins,
-        login,
-        login,
-        likersLogins,
-      ),
-    );
-  }
-
-  async getMyVisited(login) {
-    return this.db.any('SELECT visited FROM users WHERE login = ${login}', {
-      login,
-    });
-  }
-
-  async getMyVisitedLogins(visited) {
-    return this.db.any('SELECT * FROM users WHERE login IN ($1:csv)', [
-      visited,
-    ]);
-  }
-
-  async getUserDetails(login) {
-    return this.db.any('SELECT * FROM users WHERE login = ${login}', {
-      login,
-    });
-  }
-
-  async getInterests() {
-    return this.db.any('SELECT interest FROM interests');
-  }
-
-  async saveLocation(location, login) {
-    return this.db.any(
-      'UPDATE users SET location = ${location} WHERE login = ${login}',
-      { location, login },
-    );
-  }
-
-  async saveLastLoginTime(now, login) {
-    return this.db.any(
-      'UPDATE users SET time = ${now}, online = false WHERE login = ${login}',
-      { now, login },
-    );
-  }
-
-  async updateVisited(visited, login) {
-    return this.db.any(
-      'UPDATE users SET visited = ${visited} WHERE login = ${login}',
-      { visited, login },
-    );
-  }
-
-  async updateInterests(interests) {
-    return this.db.any(
-      format('INSERT INTO interests(interest) VALUES %L', interests),
-    );
-  }
-
-  async updateProfile({
+  async updateUser({
     firstname,
     lastname,
     email,
@@ -244,150 +188,132 @@ class DB {
     );
   }
 
-  async getBusyEmail(email, login) {
-    return this.db.any(
-      'SELECT email FROM users WHERE email = ${email} AND login <> ${login}',
-      {
-        email,
-        login,
-      },
-    );
-  }
-
-  async getLikers(likee) {
-    return this.db.any('SELECT liker FROM likes WHERE likee = ${likee}', {
-      likee,
-    });
-  }
-
-  async getLikersDetails(likers) {
-    return this.db.any(
-      format(
-        'SELECT login, firstname, lastname, gallery, avatarid FROM users WHERE login IN (%L)',
-        likers,
-      ),
-    );
-  }
-
-  async getUsersDetails() {
-    return this.db.any(
-      'SELECT login, firstname, lastname, gallery, avatarid, visited from users',
-    );
-  }
-
-  async getMyGallery(login) {
-    return this.db.one('SELECT gallery FROM users WHERE login = ${login}', {
-      login,
-    });
-  }
-
-  async updateMyGallery(gallery, login) {
+  async updateUserGallery(login, gallery) {
     return this.db.any(
       'UPDATE users SET gallery = ${gallery} WHERE login = ${login}',
       { gallery, login },
     );
   }
 
-  async updateMyAvatar(avatarid, login) {
+  async updateUserAvatarId(login, avatarid) {
     return this.db.any(
       'UPDATE users SET avatarid = ${avatarid} WHERE login = ${login}',
       { avatarid, login },
     );
   }
 
-  async getUsersByEmail(email) {
-    return this.db.any('SELECT * FROM users WHERE email = ${email}', {
-      email,
+  async updateUserLocation(login, location) {
+    return this.db.any(
+      'UPDATE users SET location = ${location} WHERE login = ${login}',
+      { location, login },
+    );
+  }
+
+  async updateUserTime(login, now) {
+    return this.db.any(
+      'UPDATE users SET time = ${now}, online = false WHERE login = ${login}',
+      { now, login },
+    );
+  }
+
+  async updateUserOnline(login) {
+    return this.db.any(
+      'UPDATE users SET online = true WHERE login = ${login}',
+      { login },
+    );
+  }
+
+  async updateUserVisited(login, visited) {
+    return this.db.any(
+      'UPDATE users SET visited = ${visited} WHERE login = ${login}',
+      { visited, login },
+    );
+  }
+
+  async updateUserFake(login) {
+    return this.db.any('UPDATE users SET fake = true WHERE login = ${login}', {
+      login,
     });
   }
 
-  async updateHashByEmail(hash, email) {
+  async updateUserHashByEmail(hash, email) {
     return this.db.any(
       'UPDATE users SET hash = ${hash} WHERE email = ${email}',
       { hash, email },
     );
   }
 
-  async updatePasswordByEmail(password, email) {
+  async updateUserActiveByEmail(email) {
+    return this.db.any(
+      'UPDATE users SET active = true WHERE email = ${email}',
+      { email },
+    );
+  }
+
+  async updateUserPasswordByEmail(password, email) {
     return this.db.any(
       'UPDATE users SET password = ${password} WHERE email = ${email}',
       { password, email },
     );
   }
 
-  async getHashByEmail(email) {
-    return this.db.any('SELECT hash FROM users WHERE email = ${email}', {
-      email,
-    });
-  }
-
-  async clearHashByEmail(email) {
-    return this.db.any("UPDATE users SET hash = '' WHERE email = ${email}", {
-      email,
-    });
-  }
-
-  async getLoginByLogin(login) {
-    return this.db.any('SELECT login FROM users WHERE login = ${login}', {
-      login,
-    });
-  }
-
-  async getActiveAndPasswordByLogin(login) {
+  async increaseUserFame(login) {
     return this.db.any(
-      'SELECT active, password FROM users WHERE login = ${login}',
+      'UPDATE users SET fame = fame + 1 WHERE login = ${login}',
       { login },
     );
   }
 
-  async updateOnlineByLogin(login) {
+  async decreaseUserFame(login) {
     return this.db.any(
-      'UPDATE users SET online = true WHERE login = ${login}',
-      {
-        login,
-      },
+      'UPDATE users SET fame = fame - 1 WHERE login = ${login}',
+      { login },
     );
   }
 
-  async getUsersByEmailOrLogin(email, login) {
+  async createInterests(interests) {
     return this.db.any(
-      'SELECT * FROM users WHERE email = ${email} OR login = ${login}',
-      { email, login },
+      format('INSERT INTO interests(interest) VALUES %L', interests),
     );
   }
 
-  async createUser({ email, login, password, firstname, lastname, hash }) {
-    return this.db.any(
-      'INSERT INTO users(email, login, password, firstname, lastname, hash) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash})',
-      { email, login, password, firstname, lastname, hash },
-    );
+  async readInterests() {
+    return this.db.any('SELECT * FROM interests');
   }
 
-  async getUsersByEmailAndHash(email, hash) {
-    return this.db.any(
-      'SELECT * FROM users WHERE email = ${email} AND hash = ${hash}',
-      { email, hash },
-    );
-  }
-
-  async updateActiveClearHashByEmail(email) {
-    return this.db.any(
-      "UPDATE users SET active = true, hash = '' WHERE email = ${email}",
-      { email },
-    );
-  }
-
-  async addLike(liker, likee) {
+  async createLike(liker, likee) {
     return this.db.any(
       'INSERT INTO likes(liker, likee) VALUES (${liker}, ${likee})',
       { liker, likee },
     );
   }
 
-  async increaseFameByLogin(login) {
+  async readLike(liker, likee) {
     return this.db.any(
-      'UPDATE users SET fame = fame + 1 WHERE login = ${login}',
-      { login },
+      'SELECT * FROM likes WHERE liker = ${liker} AND likee = ${likee}',
+      { liker, likee },
+    );
+  }
+
+  async readLikesBySender(login) {
+    return this.db.any('SELECT * FROM likes WHERE liker = ${login}', {
+      login,
+    });
+  }
+
+  async readLikesByReceiver(login) {
+    return this.db.any('SELECT * FROM likes WHERE likee = ${login}', {
+      login,
+    });
+  }
+
+  async readLikesBySendersAndReceiver(senders, login) {
+    return this.db.any(
+      format(
+        'SELECT * FROM likes WHERE liker IN (%L) AND likee = %L',
+        senders,
+        login,
+      ),
     );
   }
 
@@ -398,42 +324,88 @@ class DB {
     );
   }
 
-  async decreaseFameByLogin(login) {
-    return this.db.any(
-      'UPDATE users SET fame = fame - 1 WHERE login = ${login}',
-      { login },
-    );
-  }
-
-  async block(blocker, blockee) {
+  async createBlock(blocker, blockee) {
     return this.db.any(
       'INSERT INTO blocks(blocker, blockee) VALUES (${blocker}, ${blockee})',
       { blocker, blockee },
     );
   }
 
-  async unblock(blocker, blockee) {
-    return this.db.any(
-      'DELETE FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
-      { blocker, blockee },
-    );
-  }
-
-  async markAsFake(login) {
-    return this.db.any('UPDATE users SET fake = true WHERE login = ${login}', {
-      login,
-    });
-  }
-
-  async getBlocks(blocker, blockee) {
+  async readBlock(blocker, blockee) {
     return this.db.any(
       'SELECT * FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
       { blocker, blockee },
     );
   }
 
-  async getUserByLogin(login) {
-    return this.db.any('SELECT * FROM users WHERE login = ${login}', { login });
+  async deleteBlock(blocker, blockee) {
+    return this.db.any(
+      'DELETE FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
+      { blocker, blockee },
+    );
+  }
+
+  async createMessage({ sender, receiver, message, time }) {
+    return this.db.one(
+      'INSERT INTO messages (sender, receiver, message, time) VALUES(${sender}, ${receiver}, ${message}, ${time}) RETURNING id, time',
+      {
+        sender,
+        receiver,
+        message,
+        time,
+      },
+    );
+  }
+
+  async readUserMessages(likersLogins, login) {
+    return this.db.any(
+      format(
+        "SELECT * FROM messages WHERE (sender IN (%L) AND receiver = '%s') OR (sender = '%s' AND receiver IN (%L)) ORDER BY id DESC",
+        likersLogins,
+        login,
+        login,
+        likersLogins,
+      ),
+    );
+  }
+
+  async readUserChats(login) {
+    let likes = await this.readLikesBySender(login);
+
+    if (!likes.length) {
+      return {};
+    }
+
+    const likees = likes.map(({ likee }) => likee);
+
+    likes = await this.readLikesBySendersAndReceiver(likees, login);
+
+    if (!likes.length) {
+      return {};
+    }
+
+    const likers = likes.map(({ liker }) => liker);
+    const users = await this.readUsers(likers);
+    const userLogins = users.map(({ login }) => login);
+    const messages = await this.readUserMessages(userLogins, login);
+    let chats = {};
+
+    users.forEach(
+      ({ login, online, gallery, avatarid }) =>
+        (chats[login] = {
+          online,
+          gallery,
+          avatarid,
+          log: [],
+        }),
+    );
+
+    messages.forEach(message =>
+      message.sender === login
+        ? chats[message.receiver].log.push(message)
+        : chats[message.sender].log.push(message),
+    );
+    return chats;
   }
 }
 

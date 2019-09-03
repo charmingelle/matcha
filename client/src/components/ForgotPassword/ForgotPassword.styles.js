@@ -18,6 +18,6 @@ export const styles = theme => ({
     width: 200,
   },
   button: {
-    margin: '8px',
+    margin: 8,
   },
 });

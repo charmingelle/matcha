@@ -11,19 +11,17 @@ export default class ResetPasswordOrExpired extends Component {
   goHome = () => this.props.history.push('/');
 
   validateEmailAndHash = (email, hash) =>
-    this.setState({ email }, () =>
-      resetPasswordOrExpired(email, hash).then(({ result }) =>
-        this.setState({ page: result }),
-      ),
-    );
+    resetPasswordOrExpired(email, hash)
+      .then(() => this.setState({ page: 'reset-password', email }))
+      .catch(() => this.setState({ page: 'expired' }));
 
   parseParams = ([emailParam, hashParam]) =>
     emailParam.indexOf('?email=') === 0 && hashParam.indexOf('hash=') === 0
-      ? this.goHome()
-      : this.validateEmailAndHash(
+      ? this.validateEmailAndHash(
           emailParam.substring(7),
           hashParam.substring(5),
-        );
+        )
+      : this.goHome();
 
   parseUrl = params =>
     params.length === 2 ? this.parseParams(params) : this.goHome();

@@ -4,10 +4,9 @@
   "description": "## Getting Started",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "client": "cd client && npm start",
-    "server_dev": "export MATCHA_MOD=dev && nodemon server/server.js",
-    "server": "node server/server.js",
+    "server_dev": "export MATCHA_MOD=dev gmailLogin=annar703unit@gmail.com gmailPassword=eiling357unit && nodemon server/server.js",
+    "server": "export gmailLogin=annar703unit@gmail.com gmailPassword=eiling357unit && node server/server.js",
     "dev": "concurrently 'npm run client' 'npm run server_dev'",
     "create_db": "./create_db.sh",
     "initiate_db": "npm run create_db && node initiateDB.js",
@@ -40,5 +39,8 @@
     "random-hash": "^4.0.1",
     "sendmail": "^1.6.1",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "nodemailer": "^6.3.0"
   }
 }

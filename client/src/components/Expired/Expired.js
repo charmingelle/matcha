@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
+import TextField from '@material-ui/core/TextField';
 import { styles } from './Expired.styles';
 
 class Expired extends React.Component {
@@ -11,12 +12,16 @@ class Expired extends React.Component {
     return (
       <div className={classes.root}>
         <div className={classes.container}>
-          <span>
-            Your link for reseting the password has expired. Please re-initiate
-            the process of password reseting.
-          </span>
-          <Link to="/forgot-password">Forgot Password?</Link>
-          <Link to="/">Home</Link>
+          <TextField
+            className={classes.textField}
+            error={true}
+            disabled
+            value="This link has expired"
+          />
+          <div className={classes.linkContainer}>
+            <Link to="/forgot-password">Forgot Password?</Link>
+            <Link to="/">Home</Link>
+          </div>
         </div>
       </div>
     );

@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
-import SigninOrMain from '../SigninOrMain/SigninOrMain';
 import Signup from '../Signup/Signup';
 import ForgotPassword from '../ForgotPassword/ForgotPassword';
 import ResetPasswordOrExpired from '../ResetPasswordOrExpired/ResetPasswordOrExpired';
 import ActivateAccount from '../ActivateAccount/ActivateAccount';
+import Main from '../Main/Main';
 import { Context } from '../../utils/utils';
 import { saveVisited } from '../../api/api';
-import { CardActions } from '@material-ui/core';
 
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
@@ -90,7 +89,7 @@ export class App extends Component {
             component={ResetPasswordOrExpired}
           />
           <Route exact path="/confirm" component={ActivateAccount} />
-          <Route path="/" component={SigninOrMain} />
+          <Route path="/" component={Main} />
         </div>
       </BrowserRouter>
     </Context.Provider>

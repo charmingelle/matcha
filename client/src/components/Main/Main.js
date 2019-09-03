@@ -63,7 +63,7 @@ class Main extends React.Component {
     })
       .then(response => response.json())
       .then(data => saveLocation([data.lat, data.lon]))
-      .catch(error => console.error(error));
+      .catch(error => console.error(error.message));
   };
 
   getLocation = userid => {
@@ -137,18 +137,7 @@ class Main extends React.Component {
       );
       this.addSocketEventListeners();
       this.props.context.set('profile', {
-        firstname: user.firstname,
-        lastname: user.lastname,
-        login: user.login,
-        email: user.email,
-        age: user.age,
-        gender: user.gender,
-        preferences: user.preferences,
-        bio: user.bio,
-        interests: user.interests,
-        gallery: user.gallery,
-        avatarid: user.avatarid,
-        location: user.location,
+        ...user,
         allInterests: allInterests,
         changeStatus: null,
         error: false,
@@ -399,17 +388,16 @@ class Main extends React.Component {
   );
 
   render = () =>
-    this.everythingLoaded() &&
-    (this.props.context.profile === 'signin' ? (
+    this.props.context.profile === 'signin' ? (
       <Signin />
-    ) : (
+    ) : this.everythingLoaded() ? (
       <div className={this.props.classes.root}>
         {this.renderNotifications()}
         {this.renderAppBar()}
         {this.renderSideMenu()}
         {this.renderRoutes()}
       </div>
-    ));
+    ) : null;
 }
 
 Main.propTypes = {

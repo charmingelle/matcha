@@ -28,15 +28,17 @@ class Signin extends React.Component {
 
   makeSigninRequest = async () => {
     const { login, password } = this.state;
-    const { status, result } = await signin(login, password);
 
-    status === 'success'
-      ? this.setState({
-          main: true,
-        })
-      : this.setState({
-          message: result,
-        });
+    try {
+      await signin(login, password);
+      this.setState({
+        main: true,
+      });
+    } catch ({ message }) {
+      this.setState({
+        message,
+      });
+    }
   };
 
   signin = async () =>

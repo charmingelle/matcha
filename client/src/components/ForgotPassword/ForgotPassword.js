@@ -11,8 +11,8 @@ import { styles } from './ForgotPassword.styles';
 class ForgotPassword extends React.Component {
   state = {
     email: '',
-    message: '',
     error: false,
+    message: '',
   };
 
   handleKeyPress = event =>
@@ -26,15 +26,22 @@ class ForgotPassword extends React.Component {
   getResetPasswordEmail = () =>
     this.state.email === ''
       ? this.setState({
-          message: 'Please fill in your email',
           error: true,
+          message: 'Please fill in your email',
         })
-      : getResetPasswordEmail(this.state.email).then(({ status, result }) =>
-          this.setState({
-            error: status === 'error',
-            message: result,
-          }),
-        );
+      : getResetPasswordEmail(this.state.email)
+          .then(() =>
+            this.setState({
+              error: false,
+              message: 'Please check your email',
+            }),
+          )
+          .catch(({ message }) =>
+            this.setState({
+              error: true,
+              message: message,
+            }),
+          );
 
   renderMessage = () =>
     this.state.message !== '' && (

@@ -9,7 +9,7 @@ import ProfilePhotos from './ProfilePhotos/ProfilePhotos';
 import SmallUsers from '../SmallUsers/SmallUsers';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
-import { saveUserProfile, getLikedBy, getCheckedBy } from '../../api/api';
+import { saveUserProfile } from '../../api/api';
 import { styles } from './Profile.styles';
 import { isEmailValid, withContext } from '../../utils/utils';
 
@@ -48,14 +48,21 @@ class Profile extends React.Component {
   onSubmit = async event => {
     event.preventDefault();
     if (this.isAllValid()) {
-      const { status, result, suggestions } = await saveUserProfile(this.state);
+      try {
+        const { suggestions } = await saveUserProfile(this.state);
 
-      this.setState({
-        error: status === 'error',
-        changeStatus: result,
-      });
-      suggestions && this.props.context.set('suggestions', suggestions);
-      this.props.context.set('profile', this.state);
+        this.setState({
+          error: false,
+          changeStatus: 'Your data has been changed',
+        });
+        this.props.context.set('suggestions', suggestions);
+        this.props.context.set('profile', this.state);
+      } catch ({ message }) {
+        this.setState({
+          error: true,
+          changeStatus: message,
+        });
+      }
     }
   };
 
@@ -69,11 +76,15 @@ class Profile extends React.Component {
     });
 
   renderLikedBy = () => (
-    <SmallUsers title="Liked by" icon="&#9829;" getUserList={getLikedBy} />
+    <SmallUsers title="Liked by" icon="&#9829;" users={this.state.likedBy} />
   );
 
   renderCheckedBy = () => (
-    <SmallUsers title="Checked by" icon="&#10004;" getUserList={getCheckedBy} />
+    <SmallUsers
+      title="Checked by"
+      icon="&#10004;"
+      users={this.state.checkedBy}
+    />
   );
 
   renderChangeStatus = () =>
