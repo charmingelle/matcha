@@ -4,6 +4,7 @@ const config = {
   dev: 'development',
   prod: 'production',
   port: process.env.PORT || 5000,
+  bodyLimit: '50mb',
   db: {
     url: 'postgres://gannar:postgres@localhost:5432/matcha',
   },

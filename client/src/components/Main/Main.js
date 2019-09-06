@@ -17,7 +17,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import ChatIcon from '@material-ui/icons/Chat';
 import CheckIcon from '@material-ui/icons/Check';
 import PeopleIcon from '@material-ui/icons/People';
-import PersonIcon from '@material-ui/icons/Person';
+import SettingsIcon from '@material-ui/icons/Settings';
 import MenuIcon from '@material-ui/icons/Menu';
 import UserList from '../UserList/UserList';
 import Profile from '../Profile/Profile';
@@ -26,6 +26,12 @@ import Chat from '../Chat/Chat';
 import Notifications from '../Notifications/Notifications';
 import { styles } from './Main.styles';
 import { withContext } from '../../utils/utils';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const TabContainer = props => (
   <Typography
@@ -77,11 +83,13 @@ class Main extends React.Component {
   };
 
   addNotification = message => {
-    let newNotifications = this.state.notifications;
-
-    newNotifications.push(message);
+    setTimeout(() => {
+      this.setState({
+        notifications: [...this.state.notifications].splice(1),
+      });
+    }, 10000);
     this.setState({
-      notifications: newNotifications,
+      notifications: [message, ...this.state.notifications],
     });
   };
 
@@ -92,11 +100,25 @@ class Main extends React.Component {
   };
 
   addSocketEventListeners = () => {
-    this.props.context.socket.on('like', ({ sender }) =>
-      this.addNotification(`${sender} has just liked you`),
+    this.props.context.socket.on('like', ({ sender, senderName }) =>
+      this.addNotification(
+        <Link
+          className={this.props.classes.notificationLink}
+          to={`/users/${sender}`}
+        >
+          {`${senderName} has just liked you`}
+        </Link>,
+      ),
     );
-    this.props.context.socket.on('check', ({ sender }) =>
-      this.addNotification(`${sender} has just checked your profile`),
+    this.props.context.socket.on('check', ({ sender, senderName }) =>
+      this.addNotification(
+        <Link
+          className={this.props.classes.notificationLink}
+          to={`/users/${sender}`}
+        >
+          {`${senderName} has just checked your profile`}
+        </Link>,
+      ),
     );
     this.props.context.socket.on('chat', data => {
       let newChatData = this.props.context.chatData;
@@ -105,7 +127,14 @@ class Main extends React.Component {
       if (data.sender !== this.props.context.profile.login) {
         user = data.sender;
         if (!this.chatIsVisible(user)) {
-          this.addNotification(`${user} has sent you a message`);
+          this.addNotification(
+            <Link
+              className={this.props.classes.notificationLink}
+              to={`/chat/${user}`}
+            >
+              {`${data.senderName} has sent you a message`}
+            </Link>,
+          );
         }
       } else {
         user = data.receiver;
@@ -113,11 +142,20 @@ class Main extends React.Component {
       newChatData[user].log.unshift(data);
       this.props.context.set('chatData', newChatData);
     });
-    this.props.context.socket.on('likeBack', ({ sender }) =>
-      this.addNotification(`${sender} has just liked you back!`),
+    this.props.context.socket.on('likeBack', ({ sender, senderName }) =>
+      this.addNotification(
+        <Link
+          className={this.props.classes.notificationLink}
+          to={`/chat/${sender}`}
+        >
+          {`${senderName} has just liked you back! You can chat now.`}
+        </Link>,
+      ),
     );
-    this.props.context.socket.on('unlike', ({ sender }) =>
-      this.addNotification(`Unfortunately ${sender} has disconnected from you`),
+    this.props.context.socket.on('unlike', ({ senderName }) =>
+      this.addNotification(
+        `Unfortunately ${senderName} has disconnected from you`,
+      ),
     );
     this.props.context.socket.on('chatDataUpdate', chatData =>
       this.props.context.set('chatData', chatData),
@@ -236,7 +274,8 @@ class Main extends React.Component {
   handleMenuClose = event =>
     !this.anchorEl.contains(event.target) && this.setState({ showMenu: false });
 
-  everythingLoaded = () =>
+  everythingIsLoaded = () =>
+    this.props.context.socket !== null &&
     this.props.context.profile !== null &&
     this.props.context.chatData !== null &&
     this.props.context.suggestions !== null &&
@@ -321,14 +360,14 @@ class Main extends React.Component {
         <Paper className={showMenu ? classes.appMenu : classes.appMenuHidden}>
           <MenuList>
             {this.renderMenuItem('/', 'Suggestions', PeopleIcon)}
-            {this.renderMenuItem('/profile', 'Profile', PersonIcon)}
+            {this.renderMenuItem('/settings', 'Settings', SettingsIcon)}
             {Object.keys(chatData).length > 0 &&
               this.renderMenuItem(
                 `/chat/${Object.keys(chatData)[0]}`,
                 'Chat',
                 ChatIcon,
               )}
-            {this.renderMenuItem('/visited', 'Visited', CheckIcon)}
+            {this.renderMenuItem('/checked', 'Checked', CheckIcon)}
           </MenuList>
         </Paper>
       </ClickAwayListener>
@@ -403,7 +442,7 @@ class Main extends React.Component {
           </TabContainer>
         ) : (
           <div className={this.props.classes.routeErrorContainer}>
-            User not found or unavailable due to sexual preferences.
+            User not found or unavailable.
           </div>
         );
       }}
@@ -415,23 +454,64 @@ class Main extends React.Component {
       {this.renderRoute('/', UserList, {
         users: this.props.context.suggestions,
       })}
-      {this.renderRoute('/profile', Profile)}
+      {this.renderRoute('/settings', Profile)}
       {this.renderChatRoute()}
       {this.renderChatReceiverRoute()}
       {this.renderUserRoute()}
-      {this.renderRoute('/visited', UserList, {
+      {this.renderRoute('/checked', UserList, {
         users: this.props.context.visited,
       })}
     </div>
   );
 
+  renderDialog = () => (
+    <Dialog
+      open={this.props.context.isDialogOpen}
+      onClose={() => this.props.context.set('isDialogOpen', false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {`Are you sure you would like to block ${this.props.context.blockName}`}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Blocked users don't appear appear in suggestions. You won't be able to
+          check this user's details and contact him in the future.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => this.props.context.set('isDialogOpen', false)}
+          color="primary"
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={() => {
+            this.api.block(this.props.context.blockLogin);
+            this.loadChatData();
+            this.loadSuggestions();
+            this.loadVisited();
+            this.props.context.set('isDialogOpen', false);
+          }}
+          color="primary"
+          autoFocus
+        >
+          Block User
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   render = () =>
-    this.everythingLoaded() ? (
+    this.everythingIsLoaded() ? (
       <div className={this.props.classes.root}>
         {this.renderNotifications()}
         {this.renderAppBar()}
         {this.renderSideMenu()}
         {this.renderRoutes()}
+        {this.renderDialog()}
       </div>
     ) : null;
 }

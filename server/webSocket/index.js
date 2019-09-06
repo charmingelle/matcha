@@ -5,7 +5,12 @@ module.exports = app => {
   const io = require('socket.io')(app.listen(config.port));
   const chatUsers = {};
 
-  const chatEventHandler = async ({ sender, receiver, message }) => {
+  const chatEventHandler = async ({
+    sender,
+    senderName,
+    receiver,
+    message,
+  }) => {
     const { time } = await DB.createMessage({
       sender,
       receiver,
@@ -15,12 +20,14 @@ module.exports = app => {
 
     io.to(chatUsers[sender]).emit('chat', {
       sender,
+      senderName,
       receiver,
       message,
       time,
     });
     io.to(chatUsers[receiver]).emit('chat', {
       sender,
+      senderName,
       receiver,
       message,
       time,

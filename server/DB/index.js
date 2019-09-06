@@ -338,19 +338,19 @@ class DB {
     );
   }
 
-  async readBlock(blocker, blockee) {
-    return this.db.any(
-      'SELECT * FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
-      { blocker, blockee },
-    );
-  }
+  // async readBlock(blocker, blockee) {
+  //   return this.db.any(
+  //     'SELECT * FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
+  //     { blocker, blockee },
+  //   );
+  // }
 
-  async deleteBlock(blocker, blockee) {
-    return this.db.any(
-      'DELETE FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
-      { blocker, blockee },
-    );
-  }
+  // async deleteBlock(blocker, blockee) {
+  //   return this.db.any(
+  //     'DELETE FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
+  //     { blocker, blockee },
+  //   );
+  // }
 
   async createMessage({ sender, receiver, message, time }) {
     return this.db.one(
@@ -398,8 +398,9 @@ class DB {
     let chats = {};
 
     users.forEach(
-      ({ login, online, gallery, avatarid }) =>
+      ({ login, firstname, lastname, online, gallery, avatarid }) =>
         (chats[login] = {
+          name: `${firstname} ${lastname}`,
           online,
           gallery,
           avatarid,

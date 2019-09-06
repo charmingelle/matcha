@@ -47,4 +47,8 @@ export const styles = {
     padding: 24,
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   },
+  notificationLink: {
+    color: 'unset',
+    textDecoration: 'none',
+  },
 };

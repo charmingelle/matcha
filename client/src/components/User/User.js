@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from './User.styles';
@@ -22,7 +23,6 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import LeftIcon from '@material-ui/icons/ChevronLeft';
 import RightIcon from '@material-ui/icons/ChevronRight';
 import LikeButton from './LikeButton/LikeButton';
-import BlockButton from './BlockButton/BlockButton';
 import { withContext } from '../../utils/utils';
 
 class User extends React.Component {
@@ -53,6 +53,12 @@ class User extends React.Component {
   toggleMenu = () =>
     this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
 
+  block = (blockLogin, blockName) => () => {
+    this.props.context.set('isDialogOpen', true);
+    this.props.context.set('blockLogin', blockLogin);
+    this.props.context.set('blockName', blockName);
+  };
+
   reportFake = () =>
     this.api.reportFake(this.props.user.login).then(({ login }) => {
       this.props.context.updateFake(login);
@@ -72,7 +78,7 @@ class User extends React.Component {
 
   renderActionMenu = () => {
     const {
-      user: { login, fake },
+      user: { login, firstname, lastname, fake },
     } = this.props;
     const { isMenuOpen } = this.state;
 
@@ -102,8 +108,10 @@ class User extends React.Component {
               <Paper>
                 <ClickAwayListener onClickAway={this.handleMenuClose}>
                   <MenuList>
-                    <MenuItem>
-                      <BlockButton login={login} />
+                    <MenuItem
+                      onClick={this.block(login, `${firstname} ${lastname}`)}
+                    >
+                      Block
                     </MenuItem>
                     {!fake && (
                       <MenuItem>
@@ -134,19 +142,21 @@ class User extends React.Component {
   renderHeader = () => {
     const {
       classes,
-      user: { firstname, lastname, online, time, gallery, avatarid },
+      user: { login, firstname, lastname, online, time, gallery, avatarid },
     } = this.props;
     const name = this.getName(firstname, lastname);
 
     return (
       <CardHeader
         avatar={
-          <Avatar
-            aria-label="Recipe"
-            className={classes.avatar}
-            alt={name}
-            src={this.getAvatarSrc(gallery, avatarid)}
-          />
+          <Link to={`/users/${login}`}>
+            <Avatar
+              aria-label="Recipe"
+              className={classes.avatar}
+              alt={name}
+              src={this.getAvatarSrc(gallery, avatarid)}
+            />
+          </Link>
         }
         action={this.renderActionMenu()}
         title={name}

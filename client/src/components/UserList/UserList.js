@@ -22,7 +22,7 @@ class UserList extends React.Component {
     this.selectedInterests = [];
   }
 
-  componentDidMount = () => {
+  UNSAFE_componentWillReceiveProps = () => {
     this.props.users.forEach(user => {
       user.distance = this.getDistance(
         this.props.context.profile.location,

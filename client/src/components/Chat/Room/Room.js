@@ -10,18 +10,21 @@ class Room extends React.Component {
   state = {
     message: '',
     typing: '',
+    senderName: '',
   };
 
   componentDidMount = () => {
     this.props.context.socket.on('chat', () => {
       this.setState({
         typing: '',
+        senderName: '',
       });
     });
-    this.props.context.socket.on('typing', ({ sender }) => {
+    this.props.context.socket.on('typing', ({ sender, senderName }) => {
       if (this.props.receiver === sender) {
         this.setState({
           typing: sender,
+          senderName,
         });
       }
     });
@@ -29,6 +32,7 @@ class Room extends React.Component {
       if (this.props.receiver === sender) {
         this.setState({
           typing: '',
+          senderName: '',
         });
       }
     });
@@ -48,11 +52,13 @@ class Room extends React.Component {
   changeHandler = event => {
     this.props.context.socket.emit('typing', {
       sender: this.props.context.profile.login,
+      senderName: `${this.props.context.profile.firstname} ${this.props.context.profile.lastname}`,
       receiver: this.props.receiver,
     });
     if (event.target.value === '') {
       this.props.context.socket.emit('stoppedTyping', {
         sender: this.props.context.profile.login,
+        senderName: `${this.props.context.profile.firstname} ${this.props.context.profile.lastname}`,
         receiver: this.props.receiver,
       });
     }
@@ -67,6 +73,7 @@ class Room extends React.Component {
     if (this.state.message !== '') {
       this.props.context.socket.emit('chat', {
         sender: this.props.context.profile.login,
+        senderName: `${this.props.context.profile.firstname} ${this.props.context.profile.lastname}`,
         receiver: this.props.receiver,
         message: this.state.message,
       });
@@ -77,9 +84,9 @@ class Room extends React.Component {
   };
 
   renderTyping = (classes, typing) =>
-    typing ? (
+    typing && typing === this.props.receiver ? (
       <p className={classes.typing}>
-        <em>{this.state.typing} is typing a message...</em>
+        <em>{this.state.senderName} is typing a message...</em>
       </p>
     ) : null;
 

@@ -21,6 +21,9 @@ export class App extends Component {
     interests: null,
     likedBy: null,
     checkedBy: null,
+    isDialogOpen: false,
+    blockLogin: null,
+    blockName: null,
   };
 
   get = key => this.state[key];
@@ -39,6 +42,7 @@ export class App extends Component {
     this.setState({ visited }, () =>
       this.state.socket.emit('check', {
         sender: this.state.profile.login,
+        senderName: `${this.state.profile.firstname} ${this.state.profile.lastname}`,
         receiver: visitedLogin,
       }),
     );
@@ -55,7 +59,7 @@ export class App extends Component {
 
     if (found) {
       found.fame = fame;
-      this.setState({ suggestions: [...this.state.suggestions, found] });
+      this.setState({ suggestions: this.state.suggestions });
     }
   };
 
@@ -64,7 +68,7 @@ export class App extends Component {
 
     if (found) {
       found.fame = fame;
-      this.setState({ visited: [...this.state.visited, found] });
+      this.setState({ visited: this.state.visited });
     }
   };
 
@@ -78,7 +82,7 @@ export class App extends Component {
 
     if (found) {
       found.fake = true;
-      this.setState({ suggestions: [...this.state.suggestions, found] });
+      this.setState({ suggestions: this.state.suggestions });
     }
   };
 
@@ -87,7 +91,7 @@ export class App extends Component {
 
     if (found) {
       found.fake = true;
-      this.setState({ visited: [...this.state.visited, found] });
+      this.setState({ visited: this.state.visited });
     }
   };
 
@@ -99,66 +103,64 @@ export class App extends Component {
   componentDidMount = () => this.auth();
 
   render = () => (
-    <Context.Provider
-      value={{
-        ...this.state,
-        get: this.get,
-        set: this.set,
-        updateCanRenderLikeButton: this.updateCanRenderLikeButton,
-        updateVisited: this.updateVisited,
-        updateFame: this.updateFame,
-        updateFake: this.updateFake,
-        api: {
-          auth: this.auth,
-          getProfile: this.getProfile,
-          getLikedBy: this.getLikedBy,
-          getCheckedBy: this.getCheckedBy,
-          getAllinterests: this.getAllinterests,
-          saveUserProfile: this.saveUserProfile,
-          savePhoto: this.savePhoto,
-          setAvatar: this.setAvatar,
-          saveLocation: this.saveLocation,
-          signin: this.signin,
-          signout: this.signout,
-          signup: this.signup,
-          getResetPasswordEmail: this.getResetPasswordEmail,
-          resetPasswordOrExpired: this.resetPasswordOrExpired,
-          resetPassword: this.resetPassword,
-          getLikeStatus: this.getLikeStatus,
-          getVisited: this.getVisited,
-          saveVisited: this.saveVisited,
-          getChatData: this.getChatData,
-          reportFake: this.reportFake,
-          getBlockStatus: this.getBlockStatus,
-          changeBlockStatus: this.changeBlockStatus,
-          getSuggestions: this.getSuggestions,
-          activateAccount: this.activateAccount,
-        },
-      }}
-    >
-      <BrowserRouter>
-        <div>
-          <Route exact path="/signup" component={Signup} />
-          <Route exact path="/forgot-password" component={ForgotPassword} />
-          <Route
-            exact
-            path="/reset-password"
-            component={ResetPasswordOrExpired}
-          />
-          <Route exact path="/confirm" component={ActivateAccount} />
-          <Route
-            path="/"
-            component={
-              this.state.auth === null
-                ? null
-                : this.state.auth === true
-                ? Main
-                : Signin
-            }
-          />
-        </div>
-      </BrowserRouter>
-    </Context.Provider>
+    <BrowserRouter>
+      <Context.Provider
+        value={{
+          ...this.state,
+          get: this.get,
+          set: this.set,
+          updateCanRenderLikeButton: this.updateCanRenderLikeButton,
+          updateVisited: this.updateVisited,
+          updateFame: this.updateFame,
+          updateFake: this.updateFake,
+          api: {
+            auth: this.auth,
+            getProfile: this.getProfile,
+            getLikedBy: this.getLikedBy,
+            getCheckedBy: this.getCheckedBy,
+            getAllinterests: this.getAllinterests,
+            saveUserProfile: this.saveUserProfile,
+            savePhoto: this.savePhoto,
+            setAvatar: this.setAvatar,
+            saveLocation: this.saveLocation,
+            signin: this.signin,
+            signout: this.signout,
+            signup: this.signup,
+            getResetPasswordEmail: this.getResetPasswordEmail,
+            resetPasswordOrExpired: this.resetPasswordOrExpired,
+            resetPassword: this.resetPassword,
+            getLikeStatus: this.getLikeStatus,
+            getVisited: this.getVisited,
+            saveVisited: this.saveVisited,
+            getChatData: this.getChatData,
+            reportFake: this.reportFake,
+            getBlockStatus: this.getBlockStatus,
+            block: this.block,
+            getSuggestions: this.getSuggestions,
+            activateAccount: this.activateAccount,
+          },
+        }}
+      >
+        <Route exact path="/signup" component={Signup} />
+        <Route exact path="/forgot-password" component={ForgotPassword} />
+        <Route
+          exact
+          path="/reset-password"
+          component={ResetPasswordOrExpired}
+        />
+        <Route exact path="/confirm" component={ActivateAccount} />
+        <Route
+          path="/"
+          component={
+            this.state.auth === null
+              ? null
+              : this.state.auth === true
+              ? Main
+              : Signin
+          }
+        />
+      </Context.Provider>
+    </BrowserRouter>
   );
 
   auth = () =>
@@ -322,8 +324,8 @@ export class App extends Component {
       credentials: 'include',
     }).then(res => this.returnResOrError(res));
 
-  changeBlockStatus = (login, canBlock) =>
-    fetch(`/users/${login}/blockStatus/change`, {
+  block = (login, canBlock) =>
+    fetch(`/users/${login}/block`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

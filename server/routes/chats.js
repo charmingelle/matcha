@@ -38,8 +38,9 @@ router.get(
     let chats = {};
 
     users.forEach(
-      ({ login, online, gallery, avatarid }) =>
+      ({ login, firstname, lastname, online, gallery, avatarid }) =>
         (chats[login] = {
+          name: `${firstname} ${lastname}`,
           online,
           gallery,
           avatarid,
