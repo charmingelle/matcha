@@ -1,11 +1,10 @@
+const config = require('../config/config');
 const format = require('pg-format');
-const { shouldSelectWomen, shouldSelectMen } = require('./utils');
+const { shouldSelectWomen, shouldSelectMen } = require('../utils');
 
 class DB {
   constructor() {
-    this.db = require('pg-promise')()(
-      'postgres://gannar:postgres@localhost:5432/matcha',
-    );
+    this.db = require('pg-promise')()(config.db.url);
   }
 
   async createUser({ email, login, password, firstname, lastname, hash }) {

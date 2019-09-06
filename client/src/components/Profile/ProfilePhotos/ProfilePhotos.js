@@ -8,11 +8,12 @@ import CardContent from '@material-ui/core/CardContent';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import EditIcon from '@material-ui/icons/Edit';
-import { savePhoto, setAvatar } from '../../../api/api';
 import { withContext } from '../../../utils/utils';
 import { styles } from './ProfilePhotos.styles';
 
 class ProfilePhotos extends React.Component {
+  api = this.props.context.api;
+
   photoid = null;
 
   upload = id => {
@@ -23,7 +24,7 @@ class ProfilePhotos extends React.Component {
   };
 
   makeAvatar = id =>
-    setAvatar(id).then(avatarid =>
+    this.api.setAvatar(id).then(avatarid =>
       this.props.context.set('profile', {
         ...this.props.context.profile,
         avatarid,
@@ -43,7 +44,7 @@ class ProfilePhotos extends React.Component {
     if (this.photoid === null) {
       this.photoid = gallery.length;
     }
-    const fileName = await savePhoto(canvas.toDataURL(), this.photoid);
+    const fileName = await this.api.savePhoto(canvas.toDataURL(), this.photoid);
 
     gallery[this.photoid] = fileName;
     this.props.context.set('profile', {

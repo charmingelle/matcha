@@ -5,11 +5,12 @@ import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import { isPasswordValid } from '../../utils/utils';
-import { resetPassword } from '../../api/api';
+import { withContext, isPasswordValid } from '../../utils/utils';
 import { styles } from './ResetPassword.styles';
 
 class ResetPassword extends React.Component {
+  api = this.props.context.api;
+
   state = {
     password: '',
     passwordConfirm: '',
@@ -46,7 +47,7 @@ class ResetPassword extends React.Component {
         message: 'Invalid password confirm',
       });
     }
-    const { result } = await resetPassword(password, email);
+    const { result } = await this.api.resetPassword(password, email);
 
     this.setState({ error: false, message: result });
   };
@@ -101,4 +102,4 @@ ResetPassword.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ResetPassword);
+export default withStyles(styles)(withContext(ResetPassword));

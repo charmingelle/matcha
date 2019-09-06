@@ -1,15 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { styles } from './LikeButton.styles';
 import IconButton from '@material-ui/core/IconButton';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import { getLikeStatus } from '../../../api/api';
 import { withContext } from '../../../utils/utils';
-import { styles } from './LikeButton.styles';
 
 class LikeButton extends React.Component {
+  api = this.props.context.api;
+
   componentDidMount = () =>
-    getLikeStatus(this.props.login).then(canLike => this.setState({ canLike }));
+    this.api
+      .getLikeStatus(this.props.login)
+      .then(canLike => this.setState({ canLike }));
 
   changeLikeStatus = async () => {
     const {

@@ -1,9 +1,8 @@
-const DB = require('./DB');
+const config = require('../config/config');
+const DB = require('../DB');
 
 module.exports = app => {
-  const io = require('socket.io')(
-    app.listen(5000, () => console.log('Listening on http://localhost:5000')),
-  );
+  const io = require('socket.io')(app.listen(config.port));
   const chatUsers = {};
 
   const chatEventHandler = async ({ sender, receiver, message }) => {

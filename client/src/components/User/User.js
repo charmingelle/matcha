@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { styles } from './User.styles';
 import classnames from 'classnames';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -22,11 +23,11 @@ import LeftIcon from '@material-ui/icons/ChevronLeft';
 import RightIcon from '@material-ui/icons/ChevronRight';
 import LikeButton from './LikeButton/LikeButton';
 import BlockButton from './BlockButton/BlockButton';
-import { reportFake } from '../../api/api';
-import { styles } from './User.styles';
 import { withContext } from '../../utils/utils';
 
 class User extends React.Component {
+  api = this.props.context.api;
+
   state = {
     currentPhoto: 0,
     expanded: this.props.full,
@@ -53,7 +54,7 @@ class User extends React.Component {
     this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
 
   reportFake = () =>
-    reportFake(this.props.user.login).then(({ login }) => {
+    this.api.reportFake(this.props.user.login).then(({ login }) => {
       this.props.context.updateFake(login);
     });
 

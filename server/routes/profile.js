@@ -1,6 +1,7 @@
+const config = require('../config/config');
 const express = require('express');
 const router = express.Router();
-const { isSignedIn } = require('../middleware');
+const { isSignedIn } = require('../middleware/auth');
 const {
   isEmailValid,
   isLoginValid,
@@ -10,7 +11,7 @@ const {
   transport,
   filterUsersData,
 } = require('../utils');
-const { NO_REPLY_EMAIL, HOST } = require('../constants');
+const { NO_REPLY_EMAIL } = require('../constants');
 const DB = require('../DB');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
@@ -203,7 +204,6 @@ router.post(
       firstname,
       lastname,
     } = req.body;
-    const { host: hostFromHeaders } = req.headers;
 
     bcrypt.genSalt(10, (err, salt) => {
       err && next(err);
@@ -211,7 +211,7 @@ router.post(
         err && next(err);
 
         const hash = gethash();
-        const hostname = HOST ? HOST : hostFromHeaders;
+        const hostname = config.host ? config.host : req.headers.host;
         const message = {
           from: NO_REPLY_EMAIL,
           to: email,

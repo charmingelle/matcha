@@ -7,5 +7,4 @@ module.exports = {
   HASH_CHARSET:
     'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_',
   NO_REPLY_EMAIL: 'noreply@matcha.com',
-  HOST: process.env.MATCHA_MOD == 'dev' ? 'localhost:3000' : null,
 };

@@ -1,8 +1,9 @@
+const config = require('../config/config');
 const express = require('express');
 const router = express.Router();
-const { isSignedIn } = require('../middleware');
+const { isSignedIn } = require('../middleware/auth');
 const { gethash, transport } = require('../utils');
-const { NO_REPLY_EMAIL, HOST } = require('../constants');
+const { NO_REPLY_EMAIL } = require('../constants');
 const DB = require('../DB');
 const bcrypt = require('bcrypt');
 
@@ -59,6 +60,8 @@ const checkUserExistanceByEmail = async (req, res, next) => {
   }
 };
 
+router.post('/auth', isSignedIn, (req, res) => res.json({ result: 'OK' }));
+
 router.post(
   '/signin',
   [
@@ -80,7 +83,7 @@ router.post(
   [checkUserExistanceByEmail, checkIfAccountIsActive],
   async (req, res) => {
     const { email } = req.body;
-    const hostname = HOST ? HOST : req.headers.host;
+    const hostname = config.host ? config.host : req.headers.host;
     const hash = gethash();
     const message = {
       from: NO_REPLY_EMAIL,

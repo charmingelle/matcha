@@ -9,15 +9,12 @@ import ProfilePhotos from './ProfilePhotos/ProfilePhotos';
 import SmallUsers from '../SmallUsers/SmallUsers';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
-import {
-  saveUserProfile,
-  getSuggestions,
-  getAllinterests,
-} from '../../api/api';
 import { styles } from './Profile.styles';
 import { isEmailValid, withContext } from '../../utils/utils';
 
 class Profile extends React.Component {
+  api = this.props.context.api;
+
   state = this.props.context.profile;
 
   isEmailValid = email => {
@@ -53,9 +50,12 @@ class Profile extends React.Component {
     event.preventDefault();
     if (this.isAllValid()) {
       try {
-        this.props.context.set('profile', await saveUserProfile(this.state));
-        this.props.context.set('suggestions', await getSuggestions());
-        this.props.context.set('interests', await getAllinterests());
+        this.props.context.set(
+          'profile',
+          await this.api.saveUserProfile(this.state),
+        );
+        this.props.context.set('suggestions', await this.api.getSuggestions());
+        this.props.context.set('interests', await this.api.getAllinterests());
         this.setState({
           error: false,
           changeStatus: 'Your data has been changed',

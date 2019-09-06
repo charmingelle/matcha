@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isSignedIn } = require('../middleware');
+const { isSignedIn } = require('../middleware/auth');
 const DB = require('../DB');
 
 const getLikeReceivers = async (req, res, next) => {

@@ -22,20 +22,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import UserList from '../UserList/UserList';
 import Profile from '../Profile/Profile';
 import User from '../User/User';
-import Signin from '../Signin/Signin';
 import Chat from '../Chat/Chat';
 import Notifications from '../Notifications/Notifications';
-import {
-  getProfile,
-  saveLocation,
-  signout,
-  getChatData,
-  getSuggestions,
-  getVisited,
-  getAllinterests,
-  getLikedBy,
-  getCheckedBy,
-} from '../../api/api';
 import { styles } from './Main.styles';
 import { withContext } from '../../utils/utils';
 
@@ -53,6 +41,8 @@ TabContainer.propTypes = {
 };
 
 class Main extends React.Component {
+  api = this.props.context.api;
+
   state = {
     tabid: 0,
     notifications: [],
@@ -69,7 +59,7 @@ class Main extends React.Component {
     try {
       const position = await this.getNavigatorPosition();
 
-      return await saveLocation([
+      return await this.api.saveLocation([
         position.coords.latitude,
         position.coords.longitude,
       ]);
@@ -79,7 +69,7 @@ class Main extends React.Component {
           method: 'POST',
         }).then(res => res.json());
 
-        return await saveLocation([location.lat, location.lon]);
+        return await this.api.saveLocation([location.lat, location.lon]);
       } catch (thirdPartyServiceError) {
         return null;
       }
@@ -139,12 +129,8 @@ class Main extends React.Component {
 
   loadUserProfile = async () => {
     try {
-      const profile = await getProfile();
+      const profile = await this.api.getProfile();
       const newLocation = await this.getLocation();
-
-      console.log({
-        newLocation,
-      });
 
       this.props.context.set('profile', {
         ...profile,
@@ -161,45 +147,57 @@ class Main extends React.Component {
       );
       this.addSocketEventListeners();
     } catch (error) {
-      this.props.context.set('profile', null);
+      console.error(error);
     }
   };
 
   loadChatData = () =>
-    getChatData().then(
-      chatData => this.props.context.set('chatData', chatData),
-      () => this.props.context.set('profile', null),
-    );
+    this.api
+      .getChatData()
+      .then(
+        chatData => this.props.context.set('chatData', chatData),
+        console.error,
+      );
 
   loadSuggestions = () =>
-    getSuggestions().then(
-      suggestions => this.props.context.set('suggestions', suggestions),
-      () => this.props.context.set('profile', null),
-    );
+    this.api
+      .getSuggestions()
+      .then(
+        suggestions => this.props.context.set('suggestions', suggestions),
+        console.error,
+      );
 
   loadVisited = () =>
-    getVisited().then(
-      visited => this.props.context.set('visited', visited),
-      () => this.props.context.set('profile', null),
-    );
+    this.api
+      .getVisited()
+      .then(
+        visited => this.props.context.set('visited', visited),
+        console.error,
+      );
 
   loadInterests = () =>
-    getAllinterests().then(
-      interests => this.props.context.set('interests', interests),
-      () => this.props.context.set('profile', null),
-    );
+    this.api
+      .getAllinterests()
+      .then(
+        interests => this.props.context.set('interests', interests),
+        console.error,
+      );
 
   loadLikedBy = () =>
-    getLikedBy().then(
-      likedBy => this.props.context.set('likedBy', likedBy),
-      () => this.props.context.set('profile', null),
-    );
+    this.api
+      .getLikedBy()
+      .then(
+        likedBy => this.props.context.set('likedBy', likedBy),
+        console.error,
+      );
 
   loadCheckedBy = () =>
-    getCheckedBy().then(
-      checkedBy => this.props.context.set('checkedBy', checkedBy),
-      () => this.props.context.set('profile', null),
-    );
+    this.api
+      .getCheckedBy()
+      .then(
+        checkedBy => this.props.context.set('checkedBy', checkedBy),
+        console.error,
+      );
 
   componentDidMount = () =>
     Promise.all([
@@ -212,7 +210,8 @@ class Main extends React.Component {
       this.loadCheckedBy(),
     ]);
 
-  signout = () => signout().then(() => this.props.context.set('profile', null));
+  signout = () =>
+    this.api.signout().then(() => this.props.context.set('auth', false));
 
   closeNotification = index => {
     let newNotifications = this.state.notifications;
@@ -237,29 +236,14 @@ class Main extends React.Component {
   handleMenuClose = event =>
     !this.anchorEl.contains(event.target) && this.setState({ showMenu: false });
 
-  everythingLoaded = () => {
-    console.log(
-      'everythingLoaded',
-      this.props.context.profile !== null &&
-        this.props.context.chatData !== null &&
-        this.props.context.suggestions !== null &&
-        this.props.context.visited !== null &&
-        this.props.context.interests !== null &&
-        this.props.context.likedBy !== null &&
-        this.props.context.checkedBy !== null,
-    );
-    console.log('profile', this.props.context.profile);
-
-    return (
-      this.props.context.profile !== null &&
-      this.props.context.chatData !== null &&
-      this.props.context.suggestions !== null &&
-      this.props.context.visited !== null &&
-      this.props.context.interests !== null &&
-      this.props.context.likedBy !== null &&
-      this.props.context.checkedBy !== null
-    );
-  };
+  everythingLoaded = () =>
+    this.props.context.profile !== null &&
+    this.props.context.chatData !== null &&
+    this.props.context.suggestions !== null &&
+    this.props.context.visited !== null &&
+    this.props.context.interests !== null &&
+    this.props.context.likedBy !== null &&
+    this.props.context.checkedBy !== null;
 
   getTabName = () => {
     let tabName = window.location.pathname.split('/')[1];
@@ -449,9 +433,7 @@ class Main extends React.Component {
         {this.renderSideMenu()}
         {this.renderRoutes()}
       </div>
-    ) : (
-      <Signin />
-    );
+    ) : null;
 }
 
 Main.propTypes = {

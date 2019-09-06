@@ -1,3 +1,4 @@
+const config = require('../config/config');
 const { generateHash } = require('random-hash');
 const {
   MALE,
@@ -6,17 +7,9 @@ const {
   HOMO,
   HASH_LENGTH,
   HASH_CHARSET,
-} = require('./constants');
+} = require('../constants');
 const nodemailer = require('nodemailer');
-const transport = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  requireTLS: true,
-  auth: {
-    user: process.env.gmailLogin,
-    pass: process.env.gmailPassword,
-  },
-});
+const transport = nodemailer.createTransport(config.nodemailerOptions);
 
 module.exports = {
   shouldSelectWomen(gender, preferences) {

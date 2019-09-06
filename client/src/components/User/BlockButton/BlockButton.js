@@ -1,14 +1,16 @@
 import React from 'react';
-import { getBlockStatus, changeBlockStatus } from '../../../api/api';
+import { withContext } from '../../../utils/utils';
 
-export default class BlockButton extends React.Component {
+class BlockButton extends React.Component {
+  api = this.props.context.api;
+
   componentDidMount = () =>
-    getBlockStatus(this.props.login).then(canBlock =>
-      this.setState({ canBlock }),
-    );
+    this.api
+      .getBlockStatus(this.props.login)
+      .then(canBlock => this.setState({ canBlock }));
 
   changeBlockStatus = () =>
-    changeBlockStatus(this.props.login, this.state.canBlock).then(() =>
+    this.api.changeBlockStatus(this.props.login, this.state.canBlock).then(() =>
       this.setState({
         canBlock: !this.state.canBlock,
       }),
@@ -21,3 +23,5 @@ export default class BlockButton extends React.Component {
       </div>
     ) : null;
 }
+
+export default withContext(BlockButton);

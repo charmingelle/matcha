@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "client": "cd client && npm start",
-    "server_dev": "export MATCHA_MOD=dev gmailLogin=annar703unit@gmail.com gmailPassword=eiling357unit && nodemon server/server.js",
-    "server": "export gmailLogin=annar703unit@gmail.com gmailPassword=eiling357unit && node server/server.js",
+    "server_dev": "nodemon server/index.js",
+    "server": "export NODE_ENV=production && node server/index.js",
     "dev": "concurrently 'npm run client' 'npm run server_dev'",
     "create_db": "./create_db.sh",
     "initiate_db": "npm run create_db && node initiateDB.js",
@@ -30,17 +30,16 @@
     "bcrypt": "^2.0.1",
     "client-sessions": "^0.8.0",
     "concurrently": "^4.1.2",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-validator": "^5.3.1",
     "ip": "^1.1.5",
+    "lodash": "^4.17.15",
+    "nodemailer": "^6.3.0",
     "nodemon": "^1.18.9",
     "pg-format": "^1.0.4",
     "pg-promise": "^8.7.5",
     "random-hash": "^4.0.1",
-    "sendmail": "^1.6.1",
     "socket.io": "^2.2.0"
-  },
-  "devDependencies": {
-    "nodemailer": "^6.3.0"
   }
 }

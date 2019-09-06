@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { Link } from 'react-router-dom';
-import { activateAccount } from '../../api/api';
 import { styles } from './ActivateAccount.styles';
+import { withContext } from '../../utils/utils';
 
 class ActivateAccount extends React.Component {
   parseParams = params => {
@@ -15,9 +15,9 @@ class ActivateAccount extends React.Component {
           error: true,
           result: 'Invalid account activation link',
         })
-      : activateAccount(emailParam.substring(7), hashParam.substring(5)).then(
-          response => this.setState(response),
-        );
+      : this.props.context.api
+          .activateAccount(emailParam.substring(7), hashParam.substring(5))
+          .then(response => this.setState(response));
   };
 
   countParams = params =>
@@ -56,4 +56,4 @@ ActivateAccount.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ActivateAccount);
+export default withStyles(styles)(withContext(ActivateAccount));

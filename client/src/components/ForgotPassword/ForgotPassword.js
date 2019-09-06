@@ -5,8 +5,8 @@ import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import { getResetPasswordEmail } from '../../api/api';
 import { styles } from './ForgotPassword.styles';
+import { withContext } from '../../utils/utils';
 
 class ForgotPassword extends React.Component {
   state = {
@@ -29,7 +29,8 @@ class ForgotPassword extends React.Component {
           error: true,
           message: 'Please fill in your email',
         })
-      : getResetPasswordEmail(this.state.email)
+      : this.props.context.api
+          .getResetPasswordEmail(this.state.email)
           .then(() =>
             this.setState({
               error: false,
@@ -85,4 +86,4 @@ ForgotPassword.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ForgotPassword);
+export default withStyles(styles)(withContext(ForgotPassword));

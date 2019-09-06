@@ -5,16 +5,16 @@ import { withStyles } from '@material-ui/core/styles';
 import keycode from 'keycode';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Main from '../Main/Main';
-import { signin } from '../../api/api';
 import { styles } from './Signin.styles';
+import { withContext } from '../../utils/utils';
 
 class Signin extends React.Component {
+  api = this.props.context.api;
+
   state = {
     login: '',
     password: '',
     message: '',
-    main: false,
   };
 
   handleKeyPress = event => keycode(event) === 'enter' && this.signin();
@@ -30,10 +30,8 @@ class Signin extends React.Component {
     const { login, password } = this.state;
 
     try {
-      await signin(login, password);
-      this.setState({
-        main: true,
-      });
+      await this.api.signin(login, password);
+      this.props.context.set('auth', true);
     } catch ({ message }) {
       this.setState({
         message,
@@ -58,7 +56,7 @@ class Signin extends React.Component {
       />
     );
 
-  renderSignin = () => {
+  render = () => {
     const { classes } = this.props;
     const { login, password } = this.state;
 
@@ -92,12 +90,10 @@ class Signin extends React.Component {
       </div>
     );
   };
-
-  render = () => (this.state.main ? <Main /> : this.renderSignin());
 }
 
 Signin.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Signin);
+export default withStyles(styles)(withContext(Signin));

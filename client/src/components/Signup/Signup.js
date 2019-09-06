@@ -11,10 +11,12 @@ import {
   isPasswordValid,
   isFirstLastNameValid,
 } from '../../utils/utils';
-import { signup } from '../../api/api';
 import { styles } from './Signup.styles';
+import { withContext } from '../../utils/utils';
 
 class Signup extends React.Component {
+  api = this.props.context.api;
+
   state = {
     email: '',
     login: '',
@@ -49,7 +51,7 @@ class Signup extends React.Component {
 
   makeSignupRequest = async () => {
     try {
-      await signup(
+      await this.api.signup(
         this.state.email,
         this.state.login,
         this.state.password,
@@ -184,4 +186,4 @@ Signup.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Signup);
+export default withStyles(styles)(withContext(Signup));

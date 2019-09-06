@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { resetPasswordOrExpired } from '../../api/api';
+import { withContext } from '../../utils/utils';
 import ResetPassword from '../ResetPassword/ResetPassword';
 import Expired from '../Expired/Expired';
 
-export default class ResetPasswordOrExpired extends Component {
+class ResetPasswordOrExpired extends Component {
+  api = this.props.context.api;
+
   state = {
     page: null,
   };
@@ -11,7 +13,8 @@ export default class ResetPasswordOrExpired extends Component {
   goHome = () => this.props.history.push('/');
 
   validateEmailAndHash = (email, hash) =>
-    resetPasswordOrExpired(email, hash)
+    this.api
+      .resetPasswordOrExpired(email, hash)
       .then(() => this.setState({ page: 'reset-password', email }))
       .catch(() => this.setState({ page: 'expired' }));
 
@@ -39,3 +42,5 @@ export default class ResetPasswordOrExpired extends Component {
       <Expired />
     ));
 }
+
+export default withContext(ResetPasswordOrExpired);

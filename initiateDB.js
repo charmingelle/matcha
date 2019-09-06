@@ -1,6 +1,5 @@
-const db = require('pg-promise')()(
-  'postgres://gannar:postgres@localhost:5432/matcha',
-);
+const config = require('./server/config/config');
+const db = require('pg-promise')()(config.db.url);
 
 db.any(`
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
