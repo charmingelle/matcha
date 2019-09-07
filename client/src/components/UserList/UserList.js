@@ -8,21 +8,22 @@ import { styles } from './UserList.styles';
 import { withContext } from '../../utils/utils';
 
 class UserList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.users = null;
-    this.sortParam = 'distance';
-    this.sortOrder = 1;
-    this.startAge = 18;
-    this.endAge = 100;
-    this.distance = 5;
-    this.minFameRating = 0;
-    this.maxFameRating = '';
-    this.amountOfCommonInterests = 0;
-    this.selectedInterests = [];
-  }
+  state = {
+    moved: false,
+    filteredUsers: [],
+  };
+  users = null;
+  sortParam = 'distance';
+  sortOrder = 1;
+  startAge = 18;
+  endAge = 100;
+  distance = 5;
+  minFameRating = 0;
+  maxFameRating = '';
+  amountOfCommonInterests = 0;
+  selectedInterests = [];
 
-  UNSAFE_componentWillReceiveProps = () => {
+  prepareComponent = () => {
     this.props.users.forEach(user => {
       user.distance = this.getDistance(
         this.props.context.profile.location,
@@ -35,9 +36,12 @@ class UserList extends React.Component {
     this.users = this.props.users;
     this.setState({
       filteredUsers: this.sort(this.filter(this.users)),
-      moved: false,
     });
   };
+
+  componentDidMount = () => this.prepareComponent();
+
+  UNSAFE_componentWillReceiveProps = () => this.prepareComponent();
 
   getDistance = (pos1, pos2) =>
     Math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2);
