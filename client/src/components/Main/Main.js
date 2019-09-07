@@ -24,14 +24,9 @@ import Profile from '../Profile/Profile';
 import User from '../User/User';
 import Chat from '../Chat/Chat';
 import Notifications from '../Notifications/Notifications';
+import DialogWindow from '../DialogWindow/DialogWindow';
 import { styles } from './Main.styles';
 import { withContext } from '../../utils/utils';
-
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 
 const TabContainer = props => (
   <Typography
@@ -464,44 +459,37 @@ class Main extends React.Component {
     </div>
   );
 
-  renderDialog = () => (
-    <Dialog
-      open={this.props.context.isDialogOpen}
-      onClose={() => this.props.context.set('isDialogOpen', false)}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">
-        {`Are you sure you would like to block ${this.props.context.blockName}`}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          Blocked users don't appear appear in suggestions. You won't be able to
-          check this user's details and contact him in the future.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => this.props.context.set('isDialogOpen', false)}
-          color="primary"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            this.api.block(this.props.context.blockLogin);
-            this.loadChatData();
-            this.loadSuggestions();
-            this.loadVisited();
-            this.props.context.set('isDialogOpen', false);
-          }}
-          color="primary"
-          autoFocus
-        >
-          Block User
-        </Button>
-      </DialogActions>
-    </Dialog>
+  block = () => {
+    this.api.block(this.props.context.dialogLogin);
+    this.loadChatData();
+    this.loadSuggestions();
+    this.loadVisited();
+  };
+
+  renderBlogDialog = () => (
+    <DialogWindow
+      open="isBlockDialogOpen"
+      title={`Are you sure you would like to block ${this.props.context.dialogName}?`}
+      subtitle={`Blocked users don't appear appear in suggestions.
+        You won't be able to check this user's details and contact him in the future.`}
+      confirmButtonText="Block User"
+      confirmCallback={this.block}
+    />
+  );
+
+  reportFake = () => {
+    this.api.reportFake(this.props.context.dialogLogin);
+    this.loadSuggestions();
+    this.loadVisited();
+  };
+
+  renderFakeDialog = () => (
+    <DialogWindow
+      open="isFakeDialogOpen"
+      title={`Are you sure you would like to report ${this.props.context.dialogName} as fake?`}
+      confirmButtonText="Report as Fake"
+      confirmCallback={this.reportFake}
+    />
   );
 
   render = () =>
@@ -511,7 +499,8 @@ class Main extends React.Component {
         {this.renderAppBar()}
         {this.renderSideMenu()}
         {this.renderRoutes()}
-        {this.renderDialog()}
+        {this.renderBlogDialog()}
+        {this.renderFakeDialog()}
       </div>
     ) : null;
 }

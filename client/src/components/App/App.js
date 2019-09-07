@@ -21,9 +21,10 @@ export class App extends Component {
     interests: null,
     likedBy: null,
     checkedBy: null,
-    isDialogOpen: false,
-    blockLogin: null,
-    blockName: null,
+    isBlockDialogOpen: false,
+    isFakeDialogOpen: false,
+    dialogLogin: null,
+    dialogName: null,
   };
 
   get = key => this.state[key];

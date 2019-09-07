@@ -53,16 +53,17 @@ class User extends React.Component {
   toggleMenu = () =>
     this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
 
-  block = (blockLogin, blockName) => () => {
-    this.props.context.set('isDialogOpen', true);
-    this.props.context.set('blockLogin', blockLogin);
-    this.props.context.set('blockName', blockName);
+  block = (dialogLogin, dialogName) => () => {
+    this.props.context.set('isBlockDialogOpen', true);
+    this.props.context.set('dialogLogin', dialogLogin);
+    this.props.context.set('dialogName', dialogName);
   };
 
-  reportFake = () =>
-    this.api.reportFake(this.props.user.login).then(({ login }) => {
-      this.props.context.updateFake(login);
-    });
+  reportFake = (dialogLogin, dialogName) => () => {
+    this.props.context.set('isFakeDialogOpen', true);
+    this.props.context.set('dialogLogin', dialogLogin);
+    this.props.context.set('dialogName', dialogName);
+  };
 
   handleExpandClick = () =>
     this.setState(
@@ -114,8 +115,13 @@ class User extends React.Component {
                       Block
                     </MenuItem>
                     {!fake && (
-                      <MenuItem>
-                        <div onClick={this.reportFake}>Report Fake</div>
+                      <MenuItem
+                        onClick={this.reportFake(
+                          login,
+                          `${firstname} ${lastname}`,
+                        )}
+                      >
+                        Report as Fake
                       </MenuItem>
                     )}
                   </MenuList>

@@ -338,20 +338,6 @@ class DB {
     );
   }
 
-  // async readBlock(blocker, blockee) {
-  //   return this.db.any(
-  //     'SELECT * FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
-  //     { blocker, blockee },
-  //   );
-  // }
-
-  // async deleteBlock(blocker, blockee) {
-  //   return this.db.any(
-  //     'DELETE FROM blocks WHERE blocker = ${blocker} AND blockee = ${blockee}',
-  //     { blocker, blockee },
-  //   );
-  // }
-
   async createMessage({ sender, receiver, message, time }) {
     return this.db.one(
       'INSERT INTO messages (sender, receiver, message, time) VALUES(${sender}, ${receiver}, ${message}, ${time}) RETURNING id, time',
