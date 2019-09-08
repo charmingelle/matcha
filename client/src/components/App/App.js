@@ -31,9 +31,9 @@ export class App extends Component {
 
   set = (key, value) => this.setState({ [key]: value });
 
-  updateCanRenderLikeButton = canRenderLikeButton =>
+  updateCanLike = canLike =>
     this.setState({
-      profile: { ...this.state.profile, canRenderLikeButton },
+      profile: { ...this.state.profile, canLike },
     });
 
   isUserNew = visitedLogin =>
@@ -78,29 +78,6 @@ export class App extends Component {
     this.updateFameInVisited(login, fame);
   };
 
-  updateFakeInSuggestions = login => {
-    const found = this.state.suggestions.find(user => user.login === login);
-
-    if (found) {
-      found.fake = true;
-      this.setState({ suggestions: this.state.suggestions });
-    }
-  };
-
-  updateFakeInVisited = login => {
-    const found = this.state.visited.find(user => user.login === login);
-
-    if (found) {
-      found.fake = true;
-      this.setState({ visited: this.state.visited });
-    }
-  };
-
-  updateFake = login => {
-    this.updateFakeInSuggestions(login);
-    this.updateFakeInVisited(login);
-  };
-
   componentDidMount = () => this.auth();
 
   render = () => (
@@ -110,10 +87,9 @@ export class App extends Component {
           ...this.state,
           get: this.get,
           set: this.set,
-          updateCanRenderLikeButton: this.updateCanRenderLikeButton,
+          updateCanLike: this.updateCanLike,
           updateVisited: this.updateVisited,
           updateFame: this.updateFame,
-          updateFake: this.updateFake,
           api: {
             auth: this.auth,
             getProfile: this.getProfile,

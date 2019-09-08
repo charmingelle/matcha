@@ -15,7 +15,11 @@ import { isEmailValid, withContext } from '../../utils/utils';
 class Profile extends React.Component {
   api = this.props.context.api;
 
-  state = this.props.context.profile;
+  state = {
+    ...this.props.context.profile,
+    changeStatus: '',
+    error: false,
+  };
 
   isEmailValid = email => {
     const validStatus = isEmailValid(email);

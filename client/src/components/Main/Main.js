@@ -134,7 +134,7 @@ class Main extends React.Component {
       } else {
         user = data.receiver;
       }
-      newChatData[user].log.unshift(data);
+      newChatData[user].log.push(data);
       this.props.context.set('chatData', newChatData);
     });
     this.props.context.socket.on('likeBack', ({ sender, senderName }) =>
@@ -168,9 +168,6 @@ class Main extends React.Component {
       this.props.context.set('profile', {
         ...profile,
         location: newLocation ? newLocation : profile.location,
-        changeStatus: null,
-        error: false,
-        canRenderLikeButton: profile.gallery.length > 0,
       });
       this.props.context.set(
         'socket',

@@ -247,7 +247,7 @@ class User extends React.Component {
         <CardContent>
           <div className={classes.likeBlock}>
             <LikeButton
-              disabled={!this.props.context.profile.canRenderLikeButton}
+              disabled={!this.props.context.profile.canLike}
               login={login}
             />
             <div>{fame}</div>

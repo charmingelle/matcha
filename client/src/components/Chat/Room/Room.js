@@ -36,7 +36,10 @@ class Room extends React.Component {
         });
       }
     });
+    this.scrollToBottom();
   };
+
+  componentDidUpdate = () => this.scrollToBottom();
 
   changeHandler = event => {
     this.props.context.socket.emit('typing', {
@@ -100,10 +103,14 @@ class Room extends React.Component {
     );
   };
 
+  scrollToBottom = () =>
+    this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
+
   renderChatWindow = (classes, log, typing) => (
     <div className={classes.chatWindow}>
       {this.renderTyping(classes, typing)}
       <div className={classes.outputs}>{log.map(this.renderMessage)}</div>
+      <div ref={el => (this.messagesEnd = el)}></div>
     </div>
   );
 

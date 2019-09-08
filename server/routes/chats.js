@@ -50,8 +50,8 @@ router.get(
 
     messages.forEach(message =>
       message.sender === req.session.login
-        ? chats[message.receiver].log.push(message)
-        : chats[message.sender].log.push(message),
+        ? chats[message.receiver].log.unshift(message)
+        : chats[message.sender].log.unshift(message),
     );
     res.json(chats);
   },

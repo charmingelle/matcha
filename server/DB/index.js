@@ -1,6 +1,7 @@
 const config = require('../config/config');
 const format = require('pg-format');
 const { shouldSelectWomen, shouldSelectMen } = require('../utils');
+const { DEFAULT_AVATAR } = require('../constants');
 
 class DB {
   constructor() {
@@ -17,7 +18,7 @@ class DB {
         firstname,
         lastname,
         hash,
-        gallery: ['avatar.png'],
+        gallery: [DEFAULT_AVATAR],
       },
     );
   }
@@ -396,8 +397,8 @@ class DB {
 
     messages.forEach(message =>
       message.sender === login
-        ? chats[message.receiver].log.push(message)
-        : chats[message.sender].log.push(message),
+        ? chats[message.receiver].log.unshift(message)
+        : chats[message.sender].log.unshift(message),
     );
     return chats;
   }

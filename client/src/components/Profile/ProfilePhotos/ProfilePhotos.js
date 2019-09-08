@@ -52,7 +52,7 @@ class ProfilePhotos extends React.Component {
       gallery,
     });
     this.photoid = null;
-    this.props.context.updateCanRenderLikeButton(true);
+    this.props.context.updateCanLike(true);
   };
 
   uploadPhoto = ({ target }) => {

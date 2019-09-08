@@ -11,7 +11,7 @@ const {
   transport,
   filterUsersData,
 } = require('../utils');
-const { NO_REPLY_EMAIL } = require('../constants');
+const { NO_REPLY_EMAIL, DEFAULT_AVATAR } = require('../constants');
 const DB = require('../DB');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
@@ -105,6 +105,9 @@ const updateProfile = async (reqBody, login) => {
 router.get('/', isSignedIn, async (req, res) => {
   const [user] = filterUsersData(await DB.readUser(req.session.login));
 
+  user.canLike = !(
+    user.gallery.length === 1 && user.gallery[0] === DEFAULT_AVATAR
+  );
   res.json(user);
 });
 
@@ -160,12 +163,17 @@ router.patch('/photo', isSignedIn, async (req, res, next) => {
       error && next(error);
 
       const [{ gallery }] = await DB.readUser(login);
+      const oldFileName = gallery[photoid];
 
-      fs.unlink(`photos/${gallery[photoid]}`, async () => {
-        gallery[photoid] = `${fileName}.png`;
-        await DB.updateUserGallery(login, gallery);
-        res.json(`${fileName}.png`);
-      });
+      if (oldFileName && oldFileName !== DEFAULT_AVATAR) {
+        fs.unlink(
+          `photos/${oldFileName}`,
+          error => error && console.error(error),
+        );
+      }
+      gallery[photoid] = `${fileName}.png`;
+      await DB.updateUserGallery(login, gallery);
+      res.json(`${fileName}.png`);
     },
   );
 });
