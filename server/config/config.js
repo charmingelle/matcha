@@ -6,7 +6,8 @@ const config = {
   port: process.env.PORT || 5000,
   bodyLimit: '50mb',
   db: {
-    url: 'postgres://gannar:postgres@localhost:5432/matcha',
+    // url: 'postgres://gannar:postgres@localhost:5432/matcha',
+    url: 'postgres://postgres@localhost:5432/matcha',
   },
   nodemailerOptions: {
     host: 'smtp.gmail.com',
@@ -23,7 +24,6 @@ const config = {
     duration: 30 * 60 * 1000,
     activeDuration: 5 * 60 * 1000,
     httpOnly: true,
-    ephemeral: true,
   },
 };
 

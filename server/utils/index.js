@@ -92,4 +92,11 @@ module.exports = {
       }),
     );
   },
+
+  isDomainOriginal(domain) {
+    return (
+      (process.env.NODE_ENV === config.dev && domain === config.host) ||
+      (process.env.NODE_ENV === config.prod && domain === config.domain)
+    );
+  },
 };

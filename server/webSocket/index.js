@@ -1,4 +1,5 @@
 const config = require('../config/config');
+const { isDomainOriginal } = require('../utils/index');
 const DB = require('../DB');
 
 module.exports = app => {
@@ -89,6 +90,15 @@ module.exports = app => {
 
     io.to(chatUsers[sender]).emit('fameUpdate', { login: receiver, fame });
   };
+
+  io.set('authorization', (handshakeData, accept) => {
+    var domain = handshakeData.headers.referer
+      .replace('http://', '')
+      .replace('https://', '')
+      .split(/[/?#]/)[0];
+
+    isDomainOriginal(domain) ? accept(null, true) : accept(null, false);
+  });
 
   io.use((socket, next) => {
     chatUsers[socket.request._query.login] = socket.id;
