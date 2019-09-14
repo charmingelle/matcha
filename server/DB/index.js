@@ -62,9 +62,7 @@ class DB {
   async readBlockedUsers(blocker) {
     return this.db.any(
       'SELECT blockee FROM blocks WHERE blocker = ${blocker}',
-      {
-        blocker,
-      },
+      { blocker },
     );
   }
 
@@ -174,12 +172,10 @@ class DB {
     preferences,
     bio,
     interests,
-    gallery,
-    avatarid,
     login,
   }) {
     return this.db.any(
-      'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, gallery = ${gallery}, avatarid = ${avatarid} WHERE login = ${login}',
+      'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests} WHERE login = ${login}',
       {
         firstname,
         lastname,
@@ -189,8 +185,6 @@ class DB {
         preferences,
         bio,
         interests,
-        gallery,
-        avatarid,
         login,
       },
     );

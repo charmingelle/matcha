@@ -54,9 +54,32 @@ class Profile extends React.Component {
     event.preventDefault();
     if (this.isAllValid()) {
       try {
+        const {
+          firstname,
+          lastname,
+          email,
+          age,
+          gender,
+          preferences,
+          bio,
+          interests,
+          login,
+        } = this.state;
+        const profile = {
+          firstname,
+          lastname,
+          email,
+          age,
+          gender,
+          preferences,
+          bio,
+          interests,
+          login,
+        };
+
         this.props.context.set(
           'profile',
-          await this.api.saveUserProfile(this.state),
+          await this.api.saveUserProfile(profile),
         );
         this.props.context.set('suggestions', await this.api.getSuggestions());
         this.props.context.set('interests', await this.api.getAllinterests());

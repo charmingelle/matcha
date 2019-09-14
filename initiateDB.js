@@ -16,7 +16,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         blockee text NOT NULL
     );
 
-    ALTER TABLE public.blocks OWNER TO gannar;
+    ALTER TABLE public.blocks OWNER TO postgres;
 
     CREATE SEQUENCE IF NOT EXISTS public.blocks_id_seq
         AS integer
@@ -26,7 +26,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         NO MAXVALUE
         CACHE 1;
 
-    ALTER TABLE public.blocks_id_seq OWNER TO gannar;
+    ALTER TABLE public.blocks_id_seq OWNER TO postgres;
 
     ALTER SEQUENCE public.blocks_id_seq OWNED BY public.blocks.id;
 
@@ -35,7 +35,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         id integer NOT NULL
     );
 
-    ALTER TABLE public.interests OWNER TO gannar;
+    ALTER TABLE public.interests OWNER TO postgres;
 
     CREATE SEQUENCE IF NOT EXISTS public.interests_id_seq
         AS integer
@@ -45,7 +45,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         NO MAXVALUE
         CACHE 1;
 
-    ALTER TABLE public.interests_id_seq OWNER TO gannar;
+    ALTER TABLE public.interests_id_seq OWNER TO postgres;
 
     ALTER SEQUENCE public.interests_id_seq OWNED BY public.interests.id;
 
@@ -55,7 +55,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         likee text NOT NULL
     );
 
-    ALTER TABLE public.likes OWNER TO gannar;
+    ALTER TABLE public.likes OWNER TO postgres;
 
     CREATE SEQUENCE IF NOT EXISTS public.likes_id_seq
         AS integer
@@ -65,7 +65,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         NO MAXVALUE
         CACHE 1;
 
-    ALTER TABLE public.likes_id_seq OWNER TO gannar;
+    ALTER TABLE public.likes_id_seq OWNER TO postgres;
 
     ALTER SEQUENCE public.likes_id_seq OWNED BY public.likes.id;
 
@@ -77,7 +77,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         id integer NOT NULL
     );
 
-    ALTER TABLE public.messages OWNER TO gannar;
+    ALTER TABLE public.messages OWNER TO postgres;
 
     CREATE SEQUENCE IF NOT EXISTS public.messages_id_seq
         AS integer
@@ -87,7 +87,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         NO MAXVALUE
         CACHE 1;
 
-    ALTER TABLE public.messages_id_seq OWNER TO gannar;
+    ALTER TABLE public.messages_id_seq OWNER TO postgres;
 
     ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
@@ -117,7 +117,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         CONSTRAINT check_preferences CHECK ((((preferences)::text = 'heterosexual'::text) OR ((preferences)::text = 'homosexual'::text) OR ((preferences)::text = 'bisexual'::text)))
     );
 
-    ALTER TABLE public.users OWNER TO gannar;
+    ALTER TABLE public.users OWNER TO postgres;
 
     CREATE SEQUENCE IF NOT EXISTS public.users_id_seq
         AS integer
@@ -127,7 +127,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         NO MAXVALUE
         CACHE 1;
 
-    ALTER TABLE public.users_id_seq OWNER TO gannar;
+    ALTER TABLE public.users_id_seq OWNER TO postgres;
 
     ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 

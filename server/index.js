@@ -6,7 +6,7 @@ const profileRouter = require('./routes/profile');
 const usersRouter = require('./routes/users');
 const chatsRouter = require('./routes/chats');
 
-require('./middleware/global')(app);
+require('./middleware/global')(express, app);
 
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(express.static(path.join(__dirname, '../photos')));
