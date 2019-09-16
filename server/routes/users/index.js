@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { isSignedIn } = require('../middleware/auth');
-const { filterUsersData } = require('../utils');
-const DB = require('../DB');
+const { isSignedIn } = require('../../middleware/common');
+const { filterUsersData } = require('../../utils');
+const DB = require('../../DB');
 
 router.get('/suggestions', isSignedIn, async (req, res) =>
   res.json(filterUsersData(await DB.readSuggestions(req.session.login))),

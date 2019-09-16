@@ -1,30 +1,21 @@
 const config = require('../../config/config');
 const express = require('express');
 const router = express.Router();
-const { check } = require('express-validator');
-const { isSignedIn } = require('../../middleware/auth');
+const { isSignedIn } = require('../../middleware/common');
+const {
+  checkUserExistanceByEmailAndHash,
+  slashMiddlewareArray,
+  locationMiddlewareArray,
+  phoroMiddlewareArray,
+  avatarMiddlewareArray,
+  signupMiddlewareArray,
+} = require('./middleware');
 const { gethash, transport, filterUsersData } = require('../../utils');
 const { NO_REPLY_EMAIL, DEFAULT_AVATAR } = require('../../constants');
 const DB = require('../../DB');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const fs = require('fs');
-const {
-  checkExpressCheckValidity,
-  checkIfEmailIsFree,
-  checkLoginValidity,
-  checkEmailValidity,
-  checkPasswordValidity,
-  checkFirstNameValidity,
-  checkLastNameValidity,
-  checkLoginAvailability,
-  checkEmailAvailability,
-  checkUserExistanceByEmailAndHash,
-  checkGenderValidity,
-  checkPreferencesValidity,
-  checkInterestsValidity,
-  checkLocationValidity,
-} = require('./middleware');
 
 const saveNewInterests = async reqBody => {
   const data = await DB.readInterests();
@@ -62,49 +53,13 @@ router.get('/', isSignedIn, async (req, res) => {
   res.json(user);
 });
 
-router.patch(
-  '/',
-  [
-    isSignedIn,
-    check('firstname')
-      .trim()
-      .escape(),
-    check('lastname')
-      .trim()
-      .escape(),
-    check('email')
-      .isEmail()
-      .normalizeEmail(),
-    check('age')
-      .isNumeric()
-      .trim()
-      .escape(),
-    check('gender')
-      .trim()
-      .escape(),
-    check('preferences')
-      .trim()
-      .escape(),
-    check('bio')
-      .trim()
-      .escape(),
-    checkExpressCheckValidity,
-    checkEmailValidity,
-    checkFirstNameValidity,
-    checkLastNameValidity,
-    checkGenderValidity,
-    checkPreferencesValidity,
-    checkInterestsValidity,
-    checkIfEmailIsFree,
-  ],
-  async (req, res) => {
-    await updateProfile(req.body, req.session.login);
+router.patch('/', slashMiddlewareArray, async (req, res) => {
+  await updateProfile(req.body, req.session.login);
 
-    const [user] = filterUsersData(await DB.readUser(req.session.login));
+  const [user] = filterUsersData(await DB.readUser(req.session.login));
 
-    res.json(user);
-  },
-);
+  res.json(user);
+});
 
 router.get('/likedBy', isSignedIn, async (req, res) => {
   const likes = await DB.readLikesByReceiver(req.session.login);
@@ -129,78 +84,49 @@ router.get('/checkedBy', isSignedIn, async (req, res) => {
   res.json(checkedBy);
 });
 
-router.patch(
-  '/location',
-  isSignedIn,
-  checkLocationValidity,
-  async (req, res) => {
-    await DB.updateUserLocation(req.session.login, req.body.location);
+router.patch('/location', locationMiddlewareArray, async (req, res) => {
+  await DB.updateUserLocation(req.session.login, req.body.location);
 
-    const [{ location }] = filterUsersData(
-      await DB.readUser(req.session.login),
-    );
+  const [{ location }] = filterUsersData(await DB.readUser(req.session.login));
 
-    res.json(location);
-  },
-);
+  res.json(location);
+});
 
-router.patch(
-  '/photo',
-  [
-    isSignedIn,
-    check('photoid')
-      .isNumeric()
-      .trim()
-      .escape(),
-    checkExpressCheckValidity,
-  ],
-  async (req, res, next) => {
-    const { login } = req.session;
-    const { photo, photoid } = req.body;
-    const fileName = `${crypto.randomBytes(20).toString('hex')}${Date.now()}`;
+router.patch('/photo', phoroMiddlewareArray, async (req, res, next) => {
+  const { login } = req.session;
+  const { photo, photoid } = req.body;
+  const fileName = `${crypto.randomBytes(20).toString('hex')}${Date.now()}`;
 
-    await fs.writeFile(
-      `photos/${fileName}.png`,
-      photo.replace(/^data:image\/png;base64,/, ''),
-      'base64',
-      async error => {
-        error && next(error);
+  await fs.writeFile(
+    `photos/${fileName}.png`,
+    photo.replace(/^data:image\/png;base64,/, ''),
+    'base64',
+    async error => {
+      error && next(error);
 
-        const [{ gallery }] = await DB.readUser(login);
-        const oldFileName = gallery[photoid];
+      const [{ gallery }] = await DB.readUser(login);
+      const oldFileName = gallery[photoid];
 
-        if (oldFileName && oldFileName !== DEFAULT_AVATAR) {
-          fs.unlink(
-            `photos/${oldFileName}`,
-            error => error && console.error(error),
-          );
-        }
-        gallery[photoid] = `${fileName}.png`;
-        await DB.updateUserGallery(login, gallery);
-        res.json(`${fileName}.png`);
-      },
-    );
-  },
-);
+      if (oldFileName && oldFileName !== DEFAULT_AVATAR) {
+        fs.unlink(
+          `photos/${oldFileName}`,
+          error => error && console.error(error),
+        );
+      }
+      gallery[photoid] = `${fileName}.png`;
+      await DB.updateUserGallery(login, gallery);
+      res.json(`${fileName}.png`);
+    },
+  );
+});
 
-router.patch(
-  '/avatar',
-  [
-    isSignedIn,
-    check('avatarid')
-      .isNumeric()
-      .trim()
-      .escape(),
-    checkExpressCheckValidity,
-  ],
-  async (req, res) => {
-    await DB.updateUserAvatarId(req.session.login, req.body.avatarid);
+router.patch('/avatar', avatarMiddlewareArray, async (req, res) => {
+  await DB.updateUserAvatarId(req.session.login, req.body.avatarid);
 
-    const [{ avatarid }] = await DB.readUser(req.session.login);
+  const [{ avatarid }] = await DB.readUser(req.session.login);
 
-    res.json(avatarid);
-  },
-);
+  res.json(avatarid);
+});
 
 router.patch('/signout', async (req, res) => {
   await DB.updateUserTime(req.session.login, Date.now());
@@ -209,72 +135,41 @@ router.patch('/signout', async (req, res) => {
   res.json({ result: 'OK' });
 });
 
-router.post(
-  '/signup',
-  [
-    check('email')
-      .isEmail()
-      .normalizeEmail(),
-    check('login')
-      .trim()
-      .escape(),
-    check('firstname')
-      .trim()
-      .escape(),
-    check('lastname')
-      .trim()
-      .escape(),
-    checkExpressCheckValidity,
-    checkEmailValidity,
-    checkLoginValidity,
-    checkPasswordValidity,
-    checkFirstNameValidity,
-    checkLastNameValidity,
-    checkLoginAvailability,
-    checkEmailAvailability,
-  ],
-  async (req, res, next) => {
-    const {
-      email,
-      login,
-      password: rawPassword,
-      firstname,
-      lastname,
-    } = req.body;
+router.post('/signup', signupMiddlewareArray, async (req, res, next) => {
+  const { email, login, password: rawPassword, firstname, lastname } = req.body;
 
-    bcrypt.genSalt(10, (err, salt) => {
+  bcrypt.genSalt(10, (err, salt) => {
+    err && next(err);
+    bcrypt.hash(rawPassword, salt, (err, password) => {
       err && next(err);
-      bcrypt.hash(rawPassword, salt, (err, password) => {
-        err && next(err);
 
-        const hash = gethash();
-        const hostname = config.host ? config.host : req.headers.host;
-        const message = {
-          from: NO_REPLY_EMAIL,
-          to: email,
-          subject: 'Matcha Registration Confirmation',
-          html: `Please active your Matcha account using the following link: http://${hostname}/confirm?email=${email}&hash=${hash}`,
-        };
+      const hash = gethash();
+      const hostname = config.host ? config.host : req.headers.host;
+      const message = {
+        from: NO_REPLY_EMAIL,
+        to: email,
+        subject: 'Matcha Registration Confirmation',
+        html: `Please active your Matcha account using the following link: http://${hostname}/confirm?email=${email}&hash=${hash}`,
+      };
 
-        transport.sendMail(message, async error => {
-          if (error) {
-            return res.status(500).json('Your email is invalid');
-          } else {
-            await DB.createUser({
-              email,
-              login,
-              password,
-              firstname,
-              lastname,
-              hash,
-            });
-            return res.json({ result: 'OK' });
-          }
-        });
+      transport.sendMail(message, async error => {
+        if (error) {
+          return res.status(400).json('Your email is invalid');
+        } else {
+          await DB.createUser({
+            email,
+            login,
+            password,
+            firstname,
+            lastname,
+            hash,
+          });
+          return res.json({ result: 'OK' });
+        }
       });
     });
-  },
-);
+  });
+});
 
 router.patch(
   '/activate',

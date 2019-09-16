@@ -1,3 +1,5 @@
+const { isSignedIn } = require('../../middleware/common');
+const { check, validationResult } = require('express-validator');
 const {
   isEmailValid,
   isLoginValid,
@@ -7,12 +9,12 @@ const {
 const { MALE, FEMALE, HETERO, HOMO, BI } = require('../../constants');
 const DB = require('../../DB');
 
-exports.checkExpressCheckValidity = (req, res, next) =>
+const checkExpressCheckValidity = (req, res, next) =>
   validationResult(req).isEmpty()
     ? next()
-    : res.status(500).json('Please check that all the fields are valid');
+    : res.status(400).json('Please check that all the fields are valid');
 
-exports.checkIfEmailIsFree = async (req, res, next) => {
+const checkIfEmailIsFree = async (req, res, next) => {
   const users = await DB.readUsersWithUserEmail(
     req.body.email,
     req.session.login,
@@ -20,75 +22,152 @@ exports.checkIfEmailIsFree = async (req, res, next) => {
 
   users.length === 0
     ? next()
-    : res.status(500).json('The email address is busy');
+    : res.status(403).json('The email address is busy');
 };
 
-exports.checkLoginValidity = (req, res, next) =>
+const checkLoginValidity = (req, res, next) =>
   req.body.login && isLoginValid(req.body.login)
     ? next()
-    : res.status(500).json('Login is invalid');
+    : res.status(400).json('Login is invalid');
 
-exports.checkEmailValidity = (req, res, next) =>
+const checkEmailValidity = (req, res, next) =>
   req.body.email && isEmailValid(req.body.email)
     ? next()
-    : res.status(500).json('Email is invalid');
+    : res.status(400).json('Email is invalid');
 
-exports.checkPasswordValidity = (req, res, next) =>
+const checkPasswordValidity = (req, res, next) =>
   req.body.password && isPasswordValid(req.body.password)
     ? next()
-    : res.status(500).json('Password is invalid');
+    : res.status(400).json('Password is invalid');
 
-exports.checkFirstNameValidity = (req, res, next) =>
+const checkFirstNameValidity = (req, res, next) =>
   req.body.firstname && isFirstLastNameValid(req.body.firstname)
     ? next()
-    : res.status(500).json('First name is invalid');
+    : res.status(400).json('First name is invalid');
 
-exports.checkLastNameValidity = (req, res, next) =>
+const checkLastNameValidity = (req, res, next) =>
   req.body.lastname && isFirstLastNameValid(req.body.lastname)
     ? next()
-    : res.status(500).json('One of the fields is invalid');
+    : res.status(400).json('Last name is invalid');
 
-exports.checkLoginAvailability = async (req, res, next) => {
+const checkLoginAvailability = async (req, res, next) => {
   const users = await DB.readUser(req.body.email, req.body.login);
 
-  users.length > 0 ? res.status(500).json('Your login is busy') : next();
+  users.length > 0 ? res.status(403).json('Your login is busy') : next();
 };
 
-exports.checkEmailAvailability = async (req, res, next) => {
+const checkEmailAvailability = async (req, res, next) => {
   const users = await DB.readUsersByEmail(req.body.email, req.body.login);
 
-  users.length > 0 ? res.status(500).json('Your login is busy') : next();
+  users.length > 0 ? res.status(403).json('Your login is busy') : next();
 };
+
+const checkGenderValidity = async (req, res, next) =>
+  req.body.gender === MALE || req.body.gender === FEMALE
+    ? next()
+    : res.status(400).json('Invalid gender');
+
+const checkPreferencesValidity = async (req, res, next) =>
+  req.body.preferences === HETERO ||
+  req.body.preferences === HOMO ||
+  req.body.preferences === BI
+    ? next()
+    : res.status(400).json('Invalid preferences');
+
+const checkInterestsValidity = async (req, res, next) =>
+  Array.isArray(req.body.interests) &&
+  req.body.interests.every(interest => interest === interest.toString())
+    ? next()
+    : res.status(400).json('Invalid interest');
+
+const checkLocationValidity = async (req, res, next) =>
+  Array.isArray(req.body.location) &&
+  req.body.location.length === 2 &&
+  req.body.location.every(coord => coord === parseFloat(coord))
+    ? next()
+    : res.status(400).json('Invalid location');
 
 exports.checkUserExistanceByEmailAndHash = async (req, res, next) => {
   const users = await DB.readUsersByEmailAndHash(req.body.email, req.body.hash);
 
   users.length === 1
     ? next()
-    : res.status(500).json('The account to be activated cannot be found');
+    : res.status(404).json('The account to be activated cannot be found');
 };
 
-exports.checkGenderValidity = async (req, res, next) =>
-  req.body.gender === MALE || req.body.gender === FEMALE
-    ? next()
-    : res.status(500).json('Invalid gender');
+exports.slashMiddlewareArray = [
+  isSignedIn,
+  check('firstname')
+    .trim()
+    .escape(),
+  check('lastname')
+    .trim()
+    .escape(),
+  check('email')
+    .isEmail()
+    .normalizeEmail(),
+  check('age')
+    .isNumeric()
+    .trim()
+    .escape(),
+  check('gender')
+    .trim()
+    .escape(),
+  check('preferences')
+    .trim()
+    .escape(),
+  check('bio')
+    .trim()
+    .escape(),
+  checkExpressCheckValidity,
+  checkEmailValidity,
+  checkFirstNameValidity,
+  checkLastNameValidity,
+  checkGenderValidity,
+  checkPreferencesValidity,
+  checkInterestsValidity,
+  checkIfEmailIsFree,
+];
 
-exports.checkPreferencesValidity = async (req, res, next) =>
-  req.body.preferences === HETERO ||
-  req.body.preferences === HOMO ||
-  req.body.preferences === BI
-    ? next()
-    : res.status(500).json('Invalid preferences');
+exports.locationMiddlewareArray = [isSignedIn, checkLocationValidity];
 
-exports.checkInterestsValidity = async (req, res, next) =>
-  Array.isArray(req.body.interests) &&
-  req.body.interests.every(interest => interest === interest.toString())
-    ? next()
-    : res.status(500).json('Invalid interest');
+exports.phoroMiddlewareArray = [
+  isSignedIn,
+  check('photoid')
+    .isNumeric()
+    .trim()
+    .escape(),
+  checkExpressCheckValidity,
+];
 
-exports.checkLocationValidity = async (req, res, next) =>
-  Array.isArray(req.body.location) &&
-  req.body.location.length === 2 &&
-  req.body.location.every(coord => coord === parseFloat(coord))
-    ? next()
-    : res.status(500).json('Invalid location');
+exports.avatarMiddlewareArray = [
+  isSignedIn,
+  check('avatarid')
+    .isNumeric()
+    .trim()
+    .escape(),
+  checkExpressCheckValidity,
+];
+
+exports.signupMiddlewareArray = [
+  check('email')
+    .isEmail()
+    .normalizeEmail(),
+  check('login')
+    .trim()
+    .escape(),
+  check('firstname')
+    .trim()
+    .escape(),
+  check('lastname')
+    .trim()
+    .escape(),
+  checkExpressCheckValidity,
+  checkEmailValidity,
+  checkLoginValidity,
+  checkPasswordValidity,
+  checkFirstNameValidity,
+  checkLastNameValidity,
+  checkLoginAvailability,
+  checkEmailAvailability,
+];

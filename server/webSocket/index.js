@@ -6,6 +6,15 @@ module.exports = app => {
   const io = require('socket.io')(app.listen(config.port));
   const chatUsers = {};
 
+  const updateSenderReceiverChatData = () => {
+    DB.readUserChats(sender).then(chatData =>
+      io.to(chatUsers[sender]).emit('chatDataUpdate', chatData),
+    );
+    DB.readUserChats(receiver).then(chatData =>
+      io.to(chatUsers[receiver]).emit('chatDataUpdate', chatData),
+    );
+  };
+
   const chatEventHandler = async ({
     sender,
     senderName,
@@ -50,12 +59,7 @@ module.exports = app => {
     await DB.increaseUserFame(receiver);
 
     if (isLikeBack) {
-      DB.readUserChats(sender).then(chatData =>
-        io.to(chatUsers[sender]).emit('chatDataUpdate', chatData),
-      );
-      DB.readUserChats(receiver).then(chatData =>
-        io.to(chatUsers[receiver]).emit('chatDataUpdate', chatData),
-      );
+      updateSenderReceiverChatData();
       io.to(chatUsers[receiver]).emit('likeBack', data);
     } else {
       DB.readUserChats(sender).then(chatData =>
@@ -79,12 +83,7 @@ module.exports = app => {
     await DB.deleteLike(sender, receiver);
     await DB.decreaseUserFame(receiver);
 
-    DB.readUserChats(sender).then(chatData =>
-      io.to(chatUsers[sender]).emit('chatDataUpdate', chatData),
-    );
-    DB.readUserChats(receiver).then(chatData =>
-      io.to(chatUsers[receiver]).emit('chatDataUpdate', chatData),
-    );
+    updateSenderReceiverChatData();
     wasConnected && io.to(chatUsers[receiver]).emit('unlike', data);
     const [{ fame }] = await DB.readUser(receiver);
 
