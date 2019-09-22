@@ -5,10 +5,7 @@ const config = {
   prod: 'production',
   port: process.env.PORT || 5000,
   bodyLimit: '50mb',
-  db: {
-    // url: 'postgres://gannar:postgres@localhost:5432/matcha',
-    url: 'postgres://postgres@localhost:5432/matcha',
-  },
+  db: { url: 'postgres://grevenko:postgres@localhost:5432/matcha' },
   nodemailerOptions: {
     host: 'smtp.gmail.com',
     port: 587,
