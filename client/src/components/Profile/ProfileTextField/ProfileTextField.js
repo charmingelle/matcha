@@ -6,27 +6,23 @@ export default class ProfileTextField extends React.Component {
     [this.props.name]: this.props.value,
   };
 
-  handleChange = event => {
-    this.setState({ [this.props.name]: event.target.value });
-    this.props.onChange({ [this.props.name]: event.target.value });
+  handleChange = ({ target: { value } }) => {
+    this.setState({ [this.props.name]: value });
+    this.props.onChange({ [this.props.name]: value });
   };
 
   render() {
-    const { label, placeholder, disabled } = this.props;
+    const { name, label, placeholder, type, disabled } = this.props;
 
     return (
       <TextField
-        id="outlined-full-width"
         label={label}
         placeholder={placeholder}
-        fullWidth
-        margin="normal"
-        InputLabelProps={{
-          shrink: true,
-        }}
+        value={this.state[name]}
         onChange={this.handleChange}
-        value={this.state[this.props.name]}
+        type={type}
         disabled={disabled}
+        margin="normal"
       />
     );
   }

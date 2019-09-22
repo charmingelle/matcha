@@ -1,5 +1,10 @@
 import React from 'react';
 
+export const MIN_AGE = 18;
+export const MAX_AGE = 100;
+export const LATITUDE_LIMIT = 90;
+export const LONGITUDE_LIMIT = 180;
+
 export const Context = React.createContext();
 
 export const withContext = Component => props => (
@@ -24,4 +29,25 @@ export const isPasswordValid = password => {
 
 export const isFirstLastNameValid = password => {
   return /^[a-zA-Z]+(-[a-zA-Z])?[a-zA-Z]*$/.test(String(password));
+};
+
+export const isAgeValid = ageString => {
+  const intAge = parseInt(ageString);
+  const floatAge = parseFloat(ageString);
+
+  return intAge === floatAge && floatAge >= MIN_AGE && floatAge <= MAX_AGE;
+};
+
+export const isLatitudeValid = latitudeString => {
+  const floatLatidute = parseFloat(latitudeString);
+
+  return floatLatidute >= -LATITUDE_LIMIT && floatLatidute <= LATITUDE_LIMIT;
+};
+
+export const isLongitudeValid = longitudeString => {
+  const floatLongitude = parseFloat(longitudeString);
+
+  return (
+    floatLongitude >= -LONGITUDE_LIMIT && floatLongitude <= LONGITUDE_LIMIT
+  );
 };

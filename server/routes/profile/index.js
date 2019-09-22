@@ -17,10 +17,10 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const fs = require('fs');
 
-const saveNewInterests = async reqBody => {
+const saveNewInterests = async newInterests => {
   const data = await DB.readInterests();
   const interests = data.map(record => record.interest);
-  const toSave = reqBody.interests
+  const toSave = newInterests
     .filter(interest => interests.indexOf(interest) === -1)
     .map(interest => [interest]);
 
@@ -29,19 +29,35 @@ const saveNewInterests = async reqBody => {
   }
 };
 
-const updateProfile = async (reqBody, login) => {
+const updateProfile = async (
+  {
+    firstname,
+    lastname,
+    email,
+    age,
+    gender,
+    preferences,
+    bio,
+    interests,
+    locatable,
+    location,
+  },
+  login,
+) => {
   await DB.updateUser({
-    firstname: reqBody.firstname,
-    lastname: reqBody.lastname,
-    email: reqBody.email,
-    age: reqBody.age,
-    gender: reqBody.gender,
-    preferences: reqBody.preferences,
-    bio: reqBody.bio,
-    interests: reqBody.interests,
-    login: login,
+    firstname,
+    lastname,
+    email,
+    age,
+    gender,
+    preferences,
+    bio,
+    interests,
+    locatable,
+    location,
+    login,
   });
-  await saveNewInterests(reqBody);
+  await saveNewInterests(interests);
 };
 
 router.get('/', isSignedIn, async (req, res) => {

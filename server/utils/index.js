@@ -5,8 +5,13 @@ const {
   FEMALE,
   HETERO,
   HOMO,
+  BI,
   HASH_LENGTH,
   HASH_CHARSET,
+  MIN_AGE,
+  MAX_AGE,
+  LATITUDE_LIMIT,
+  LONGITUDE_LIMIT,
 } = require('../constants');
 const nodemailer = require('nodemailer');
 
@@ -33,6 +38,24 @@ exports.isPasswordValid = password =>
 exports.isFirstLastNameValid = name =>
   /^[a-zA-Z]+(-[a-zA-Z])?[a-zA-Z]*$/.test(String(name));
 
+exports.isAgeValid = age =>
+  parseFloat(age) === parseInt(age) && age >= MIN_AGE && age <= MAX_AGE;
+
+exports.isGenderValid = gender => gender === MALE || gender === FEMALE;
+
+exports.arePreferencesValid = preferences =>
+  preferences === HETERO || preferences === HOMO || preferences === BI;
+
+exports.isLatitudeValid = latitude =>
+  latitude === parseFloat(latitude) &&
+  latitude >= -LATITUDE_LIMIT &&
+  latitude <= LATITUDE_LIMIT;
+
+exports.isLongitudeValid = longitude =>
+  longitude === parseFloat(longitude) &&
+  longitude >= -LONGITUDE_LIMIT &&
+  longitude <= LONGITUDE_LIMIT;
+
 exports.gethash = () =>
   generateHash({
     length: HASH_LENGTH,
@@ -57,6 +80,7 @@ exports.filterUsersData = users =>
       login,
       time,
       online,
+      locatable,
       location,
       fame,
       fake,
@@ -74,6 +98,7 @@ exports.filterUsersData = users =>
       login,
       time,
       online,
+      locatable,
       location,
       fame,
       fake,

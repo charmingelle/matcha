@@ -5,8 +5,12 @@ const {
   isLoginValid,
   isPasswordValid,
   isFirstLastNameValid,
+  isAgeValid,
+  isGenderValid,
+  arePreferencesValid,
+  isLatitudeValid,
+  isLongitudeValid,
 } = require('../../utils');
-const { MALE, FEMALE, HETERO, HOMO, BI } = require('../../constants');
 const DB = require('../../DB');
 
 const checkExpressCheckValidity = (req, res, next) =>
@@ -50,6 +54,9 @@ const checkLastNameValidity = (req, res, next) =>
     ? next()
     : res.status(400).json('Last name is invalid');
 
+const checkAgeValidity = (req, res, next) =>
+  isAgeValid(req.body.age) ? next() : res.status(400).json('Age is invalid');
+
 const checkLoginAvailability = async (req, res, next) => {
   const users = await DB.readUser(req.body.email, req.body.login);
 
@@ -63,14 +70,12 @@ const checkEmailAvailability = async (req, res, next) => {
 };
 
 const checkGenderValidity = async (req, res, next) =>
-  req.body.gender === MALE || req.body.gender === FEMALE
+  isGenderValid(req.body.gender)
     ? next()
     : res.status(400).json('Invalid gender');
 
 const checkPreferencesValidity = async (req, res, next) =>
-  req.body.preferences === HETERO ||
-  req.body.preferences === HOMO ||
-  req.body.preferences === BI
+  arePreferencesValid(req.body.preferences)
     ? next()
     : res.status(400).json('Invalid preferences');
 
@@ -83,7 +88,8 @@ const checkInterestsValidity = async (req, res, next) =>
 const checkLocationValidity = async (req, res, next) =>
   Array.isArray(req.body.location) &&
   req.body.location.length === 2 &&
-  req.body.location.every(coord => coord === parseFloat(coord))
+  isLatitudeValid(req.body.location[0]) &&
+  isLongitudeValid(req.body.location[1])
     ? next()
     : res.status(400).json('Invalid location');
 
@@ -123,10 +129,12 @@ exports.slashMiddlewareArray = [
   checkEmailValidity,
   checkFirstNameValidity,
   checkLastNameValidity,
+  checkAgeValidity,
   checkGenderValidity,
   checkPreferencesValidity,
   checkInterestsValidity,
   checkIfEmailIsFree,
+  checkLocationValidity,
 ];
 
 exports.locationMiddlewareArray = [isSignedIn, checkLocationValidity];

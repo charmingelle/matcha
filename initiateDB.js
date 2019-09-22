@@ -107,6 +107,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
         firstname text DEFAULT 'John'::text NOT NULL,
         lastname text DEFAULT 'Doe'::text NOT NULL,
         fame integer DEFAULT 0 NOT NULL,
+        locatable boolean DEFAULT false NOT NULL,
         location numeric[] DEFAULT ARRAY[0, 0] NOT NULL,
         age integer DEFAULT 18 NOT NULL,
         visited text[] DEFAULT ARRAY[]::text[] NOT NULL,

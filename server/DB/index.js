@@ -10,7 +10,7 @@ class DB {
 
   async createUser({ email, login, password, firstname, lastname, hash }) {
     return this.db.any(
-      'INSERT INTO users(email, login, password, firstname, lastname, hash, gallery) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash}, ${gallery})',
+      'INSERT INTO users(email, login, password, firstname, lastname, hash) VALUES(${email}, ${login}, ${password}, ${firstname}, ${lastname}, ${hash})',
       {
         email,
         login,
@@ -18,7 +18,6 @@ class DB {
         firstname,
         lastname,
         hash,
-        gallery: [DEFAULT_AVATAR],
       },
     );
   }
@@ -172,10 +171,12 @@ class DB {
     preferences,
     bio,
     interests,
+    locatable,
+    location,
     login,
   }) {
     return this.db.any(
-      'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests} WHERE login = ${login}',
+      'UPDATE users SET firstname = ${firstname}, lastname = ${lastname}, email = ${email}, age = ${age}, gender = ${gender}, preferences = ${preferences}, bio = ${bio}, interests = ${interests}, locatable = ${locatable}, location = ${location} WHERE login = ${login}',
       {
         firstname,
         lastname,
@@ -185,6 +186,8 @@ class DB {
         preferences,
         bio,
         interests,
+        locatable,
+        location,
         login,
       },
     );

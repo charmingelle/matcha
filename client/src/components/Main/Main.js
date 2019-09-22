@@ -163,12 +163,18 @@ class Main extends React.Component {
   loadUserProfile = async () => {
     try {
       const profile = await this.api.getProfile();
-      const newLocation = await this.getLocation();
+      const { locatable } = profile;
 
-      this.props.context.set('profile', {
-        ...profile,
-        location: newLocation ? newLocation : profile.location,
-      });
+      if (locatable) {
+        this.props.context.set('profile', profile);
+      } else {
+        const newLocation = await this.getLocation();
+
+        this.props.context.set('profile', {
+          ...profile,
+          ...(newLocation && { location: newLocation }),
+        });
+      }
       this.props.context.set(
         'socket',
         socketIOClient({
