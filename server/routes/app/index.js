@@ -15,6 +15,9 @@ const bcrypt = require('bcrypt');
 router.post('/auth', isSignedIn, (req, res) => res.json({ result: 'OK' }));
 
 router.post('/signin', signinMiddlewareArray, async (req, res) => {
+  if (process.env.NODE_ENV === config.prod) {
+    global.domain = req.headers.host;
+  }
   req.session.login = req.body.login;
   await DB.updateUserOnline(req.body.login);
   res.json({ result: 'OK' });

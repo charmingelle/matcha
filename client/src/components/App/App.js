@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Signup from '../Signup/Signup';
 import ForgotPassword from '../ForgotPassword/ForgotPassword';
 import ResetPasswordOrExpired from '../ResetPasswordOrExpired/ResetPasswordOrExpired';
@@ -118,24 +118,26 @@ export class App extends Component {
           },
         }}
       >
-        <Route exact path="/signup" component={Signup} />
-        <Route exact path="/forgot-password" component={ForgotPassword} />
-        <Route
-          exact
-          path="/reset-password"
-          component={ResetPasswordOrExpired}
-        />
-        <Route exact path="/confirm" component={ActivateAccount} />
-        <Route
-          path="/"
-          component={
-            this.state.auth === null
-              ? null
-              : this.state.auth === true
-              ? Main
-              : Signin
-          }
-        />
+        <Switch>
+          <Route exact path="/signup" component={Signup} />
+          <Route exact path="/forgot-password" component={ForgotPassword} />
+          <Route
+            exact
+            path="/reset-password"
+            component={ResetPasswordOrExpired}
+          />
+          <Route exact path="/confirm" component={ActivateAccount} />
+          <Route
+            path="/"
+            component={
+              this.state.auth === null
+                ? null
+                : this.state.auth === true
+                ? Main
+                : Signin
+            }
+          />
+        </Switch>
       </Context.Provider>
     </BrowserRouter>
   );

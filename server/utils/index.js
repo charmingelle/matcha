@@ -107,4 +107,4 @@ exports.filterUsersData = users =>
 
 exports.isDomainOriginal = domain =>
   (process.env.NODE_ENV === config.dev && domain === config.host) ||
-  (process.env.NODE_ENV === config.prod && domain === config.domain);
+  (process.env.NODE_ENV === config.prod && domain === global.domain);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Switch, Route, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import socketIOClient from 'socket.io-client';
 import { withStyles } from '@material-ui/core/styles';
@@ -282,13 +282,6 @@ class Main extends React.Component {
     this.props.context.likedBy !== null &&
     this.props.context.checkedBy !== null;
 
-  getTabName = () => {
-    let tabName = window.location.pathname.split('/')[1];
-
-    tabName = tabName.charAt(0).toUpperCase() + tabName.slice(1);
-    return tabName === '' ? 'Suggestions' : tabName;
-  };
-
   renderNotifications = () => (
     <Notifications
       messages={this.state.notifications}
@@ -296,7 +289,7 @@ class Main extends React.Component {
     />
   );
 
-  renderAppBar = () => {
+  renderAppBar = tabName => {
     const { classes } = this.props;
 
     return (
@@ -314,7 +307,7 @@ class Main extends React.Component {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" color="inherit" className={classes.grow}>
-            {this.getTabName()}
+            {tabName}
           </Typography>
           <Button color="inherit" onClick={this.signout}>
             Log out
@@ -372,14 +365,21 @@ class Main extends React.Component {
     );
   };
 
-  renderRoute = (path, Component, props) => (
+  renderErrorMessageComponent = message => this.renderAppBar(message);
+
+  renderRoute = (appBarName, path, Component, props, notExact) => (
     <Route
-      exact
+      exact={!notExact}
       path={path}
       render={() => (
-        <TabContainer>
-          <Component {...props} />
-        </TabContainer>
+        <>
+          {this.renderAppBar(appBarName)}
+          {Component && (
+            <TabContainer>
+              <Component {...props} />
+            </TabContainer>
+          )}
+        </>
       )}
     />
   );
@@ -390,9 +390,12 @@ class Main extends React.Component {
         exact
         path="/chat"
         render={() => (
-          <TabContainer>
-            <Chat receiver={Object.keys(this.props.context.chatData)[0]} />
-          </TabContainer>
+          <>
+            {this.renderAppBar('Chat')}
+            <TabContainer>
+              <Chat receiver={Object.keys(this.props.context.chatData)[0]} />
+            </TabContainer>
+          </>
         )}
       />
     );
@@ -406,13 +409,16 @@ class Main extends React.Component {
           Object.keys(this.props.context.chatData).includes(
             match.params.receiver,
           ) ? (
-            <TabContainer>
-              <Chat receiver={match.params.receiver} />
-            </TabContainer>
+            <>
+              {this.renderAppBar('Chat')}
+              <TabContainer>
+                <Chat receiver={match.params.receiver} />
+              </TabContainer>
+            </>
           ) : (
-            <div className={this.props.classes.routeErrorContainer}>
-              User not found or unavailable for chatting.
-            </div>
+            this.renderErrorMessageComponent(
+              'User not found or unavailable for chatting.',
+            )
           )
         }
       />
@@ -433,15 +439,16 @@ class Main extends React.Component {
         const index = this.getUserIndex(match);
 
         return index !== -1 ? (
-          <TabContainer>
-            <div className={this.props.classes.singleUserContainer}>
-              <User user={this.props.context.suggestions[index]} full />
-            </div>
-          </TabContainer>
+          <>
+            {this.renderAppBar('User')}
+            <TabContainer>
+              <div className={this.props.classes.singleUserContainer}>
+                <User user={this.props.context.suggestions[index]} full />
+              </div>
+            </TabContainer>
+          </>
         ) : (
-          <div className={this.props.classes.routeErrorContainer}>
-            User not found or unavailable.
-          </div>
+          this.renderErrorMessageComponent('User not found or unavailable.')
         );
       }}
     />
@@ -449,16 +456,19 @@ class Main extends React.Component {
 
   renderRoutes = () => (
     <div className={this.props.classes.appContent}>
-      {this.renderRoute('/', UserList, {
-        users: this.props.context.suggestions,
-      })}
-      {this.renderRoute('/settings', Profile)}
-      {this.renderChatRoute()}
-      {this.renderChatReceiverRoute()}
-      {this.renderUserRoute()}
-      {this.renderRoute('/checked', UserList, {
-        users: this.props.context.visited,
-      })}
+      <Switch>
+        {this.renderRoute('Suggestions', '/', UserList, {
+          users: this.props.context.suggestions,
+        })}
+        {this.renderRoute('Settings', '/settings', Profile)}
+        {this.renderChatRoute()}
+        {this.renderChatReceiverRoute()}
+        {this.renderUserRoute()}
+        {this.renderRoute('Checked', '/checked', UserList, {
+          users: this.props.context.visited,
+        })}
+        {this.renderRoute('404: Not found', '/', undefined, undefined, true)}
+      </Switch>
     </div>
   );
 
@@ -499,7 +509,6 @@ class Main extends React.Component {
     this.everythingIsLoaded() ? (
       <div className={this.props.classes.root}>
         {this.renderNotifications()}
-        {this.renderAppBar()}
         {this.renderSideMenu()}
         {this.renderRoutes()}
         {this.renderBlogDialog()}
