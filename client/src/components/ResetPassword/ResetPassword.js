@@ -1,101 +1,70 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import keycode from "keycode";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import { Link } from "react-router-dom";
-import { isPasswordValid } from "./../../utils/utils.js";
-import { resetPassword } from "./../../api/api.js";
-
-const styles = theme => ({
-  root: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100vw",
-    height: "100vh"
-  },
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "fit-content"
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: 200
-  },
-  button: {
-    margin: "8px"
-  }
-});
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import keycode from 'keycode';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
+import { withContext, isPasswordValid } from '../../utils/utils';
+import { styles } from './ResetPassword.styles';
 
 class ResetPassword extends React.Component {
+  api = this.props.context.api;
+
   state = {
-    password: "",
-    passwordConfirm: "",
+    password: '',
+    passwordConfirm: '',
     error: false,
-    message: ""
+    message: '',
+    email: this.props.email,
   };
 
-  componentDidMount = () => {
+  handleKeyPress = event => keycode(event) === 'enter' && this.resetPassword();
+
+  handleChange = name => event =>
     this.setState({
-      email: this.props.email
+      [name]: event.target.value,
     });
-  };
 
-  handleKeyPress = event => {
-    if (keycode(event) === "enter") {
-      this.resetPassword();
-    }
-  };
+  resetPassword = async () => {
+    const { password, passwordConfirm, email } = this.state;
 
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value
-    });
-  };
-
-  resetPassword = () => {
-    if (this.state.password === "" || this.state.passwordConfirm === "") {
-      this.setState({
+    if (password === '' || passwordConfirm === '') {
+      return this.setState({
         error: true,
-        message: "Please fill all the fields in"
+        message: 'Please fill all the fields in',
       });
-    } else if (!isPasswordValid(this.state.password)) {
-      this.setState({
-        error: true,
-        message: "Invalid password"
-      });
-    } else if (this.state.password !== this.state.passwordConfirm) {
-      this.setState({
-        error: true,
-        message: "Invalid password confirm"
-      });
-    } else {
-      resetPassword(this.state.password, this.state.email)
-        .then(response => response.json())
-        .then(data => this.setState({ error: false, message: data.result }));
     }
+    if (!isPasswordValid(password)) {
+      return this.setState({
+        error: true,
+        message: 'Invalid password',
+      });
+    }
+    if (password !== passwordConfirm) {
+      return this.setState({
+        error: true,
+        message: 'Invalid password confirm',
+      });
+    }
+    const { result } = await this.api.resetPassword(password, email);
+
+    this.setState({ error: false, message: result });
   };
 
-  renderMessage = () => {
-    if (this.state.message !== "") {
-      return (
-        <TextField
-          className={this.props.classes.textField}
-          error={this.state.error}
-          disabled
-          value={this.state.message}
-        />
-      );
-    }
-  };
+  renderMessage = () =>
+    this.state.message !== '' && (
+      <TextField
+        className={this.props.classes.textField}
+        error={this.state.error}
+        disabled
+        value={this.state.message}
+      />
+    );
 
   render = () => {
     const { classes } = this.props;
+    const { password, passwordConfirm } = this.state;
 
     return (
       <div className={classes.root}>
@@ -104,19 +73,19 @@ class ResetPassword extends React.Component {
           <TextField
             label="Password"
             className={classes.textField}
-            onChange={this.handleChange("password")}
+            onChange={this.handleChange('password')}
             onKeyPress={this.handleKeyPress}
             margin="normal"
-            value={this.state.password}
+            value={password}
             type="password"
           />
           <TextField
             label="Confirm your password"
             className={classes.textField}
-            onChange={this.handleChange("passwordConfirm")}
+            onChange={this.handleChange('passwordConfirm')}
             onKeyPress={this.handleKeyPress}
             margin="normal"
-            value={this.state.passwordConfirm}
+            value={passwordConfirm}
             type="password"
           />
           <Button className={classes.button} onClick={this.resetPassword}>
@@ -130,7 +99,7 @@ class ResetPassword extends React.Component {
 }
 
 ResetPassword.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ResetPassword);
+export default withStyles(styles)(withContext(ResetPassword));

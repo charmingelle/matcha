@@ -1,230 +1,338 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import ProfileSelect from "./ProfileSelect/ProfileSelect.js";
-import ProfileTextField from "./ProfileTextField/ProfileTextField.js";
-import InterestsInput from "./InterestsInput/InterestsInput.js";
-import ChangeStatusInput from "./ChangeStatusInput/ChangeStatusInput.js";
-import ProfilePhotos from "./ProfilePhotos/ProfilePhotos.js";
-import SmallUsers from "./../SmallUsers/SmallUsers.js";
-import Input from "@material-ui/core/Input";
-import Button from "@material-ui/core/Button";
-import { saveUserProfile, getLikedBy, getCheckedBy } from "./../../api/api.js";
-import { isEmailValid } from "./../../utils/utils.js";
-
-const styles = {
-  root: {
-    overflow: "auto",
-    padding: "10px"
-  },
-  profileDetails: {
-    display: "flex",
-    flexDirection: "column",
-    padding: 8,
-    backgroundColor: "#ffffff"
-  },
-  ageInput: {
-    display: "flex",
-    flexDirection: "column",
-    marginTop: 8,
-    marginBottom: 8
-  },
-  ageLabel: {
-    fontSize: "12px",
-    color: "rgba(0, 0, 0, 0.54)"
-  }
-};
+import React from 'react';
+import PropTypes from 'prop-types';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { Checkbox } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
+import ProfileSelect from './ProfileSelect/ProfileSelect';
+import ProfileTextField from './ProfileTextField/ProfileTextField';
+import InterestsInput from './InterestsInput/InterestsInput';
+import ChangeStatusInput from './ChangeStatusInput/ChangeStatusInput';
+import ProfilePhotos from './ProfilePhotos/ProfilePhotos';
+import SmallUsers from '../SmallUsers/SmallUsers';
+import { styles } from './Profile.styles';
+import {
+  MIN_AGE,
+  MAX_AGE,
+  LATITUDE_LIMIT,
+  LONGITUDE_LIMIT,
+  isEmailValid,
+  isAgeValid,
+  isLatitudeValid,
+  isLongitudeValid,
+  withContext,
+} from '../../utils/utils';
 
 class Profile extends React.Component {
-  componentDidMount = () => this.setState(this.props.value);
+  api = this.props.context.api;
 
-  isEmailValid = email => {
-    const validStatus = isEmailValid(email);
-
-    if (!validStatus) {
-      this.setState({
-        changeStatus: "Please make sure that your email address is correct",
-        error: true
-      });
-    }
-    return validStatus;
+  state = {
+    ...this.props.context.profile,
+    latitude: this.props.context.profile.location[0],
+    longitude: this.props.context.profile.location[1],
+    changeStatus: '',
+    error: false,
   };
 
   validateEmpty = value => {
-    if (value === "") {
+    if (value === '') {
       this.setState({
-        changeStatus: "Please fill all the fields in",
-        error: true
+        changeStatus: 'Please fill all the fields in',
+        error: true,
       });
       return false;
     }
     return true;
   };
 
-  isAllValid = () => {
-    let res = true;
-
-    res = res && this.validateEmpty(this.state.firstname);
-    res = res && this.validateEmpty(this.state.lastname);
-    res = res && this.validateEmpty(this.state.email);
-    res = res && this.isEmailValid(this.state.email);
-    return res;
+  isEmailValid = email => {
+    if (!isEmailValid(email)) {
+      this.setState({
+        changeStatus: 'Please make sure that your email address is correct',
+        error: true,
+      });
+      return false;
+    }
+    return true;
   };
 
-  onSubmit = event => {
+  isAgeValid = age => {
+    if (!isAgeValid(age)) {
+      this.setState({
+        changeStatus: `Please make sure that your age is an integer between ${MIN_AGE} and ${MAX_AGE}`,
+        error: true,
+      });
+      return false;
+    }
+    return true;
+  };
+
+  isLatitudeValid = latitude => {
+    if (!isLatitudeValid(latitude)) {
+      this.setState({
+        changeStatus: `Please make sure that your latitude is between -${LATITUDE_LIMIT} and ${LATITUDE_LIMIT}`,
+        error: true,
+      });
+      return false;
+    }
+    return true;
+  };
+
+  isLongitudeValid = longitude => {
+    if (!isLongitudeValid(longitude)) {
+      this.setState({
+        changeStatus: `Please make sure that your longitude is between -${LONGITUDE_LIMIT} and ${LONGITUDE_LIMIT}`,
+        error: true,
+      });
+      return false;
+    }
+    return true;
+  };
+
+  isAllValid = () =>
+    this.validateEmpty(this.state.firstname) &&
+    this.validateEmpty(this.state.lastname) &&
+    this.validateEmpty(this.state.email) &&
+    this.validateEmpty(this.state.age) &&
+    this.validateEmpty(this.state.latitude) &&
+    this.validateEmpty(this.state.longitude) &&
+    this.isEmailValid(this.state.email) &&
+    this.isAgeValid(this.state.age) &&
+    this.isLatitudeValid(this.state.latitude) &&
+    this.isLongitudeValid(this.state.longitude);
+
+  onSubmit = async event => {
     event.preventDefault();
     if (this.isAllValid()) {
-      saveUserProfile(this.state).then(
-        data => {
-          this.setState({
-            error: data.status === "error",
-            changeStatus: data.result
-          });
-          if (data.suggestions) {
-            this.props.updateSuggestions(data.suggestions);
-          }
-          this.props.onChange(this.state);
-        },
-        error => console.error(error)
-      );
+      try {
+        const {
+          firstname,
+          lastname,
+          email,
+          age: stringAge,
+          gender,
+          preferences,
+          bio,
+          interests,
+          locatable,
+          latitude,
+          longitude,
+          login,
+        } = this.state;
+        const profile = {
+          firstname,
+          lastname,
+          email,
+          age: parseInt(stringAge),
+          gender,
+          preferences,
+          bio,
+          interests,
+          locatable,
+          location: [parseFloat(latitude), parseFloat(longitude)],
+          login,
+        };
+
+        this.props.context.set(
+          'profile',
+          await this.api.saveUserProfile(profile),
+        );
+        this.props.context.set('suggestions', await this.api.getSuggestions());
+        this.props.context.set('interests', await this.api.getAllinterests());
+        this.setState({
+          error: false,
+          changeStatus: 'Your data has been changed',
+        });
+      } catch ({ message }) {
+        this.setState({
+          error: true,
+          changeStatus: message,
+        });
+      }
     }
   };
 
   onChange = target => this.setState(target);
 
-  onAgeChange = event => {
-    if (event.target.value >= 18 && event.target.value <= 100) {
-      this.setState({
-        age: event.target.value
-      });
-    }
-  };
+  onCheckboxChange = ({ target: { checked } }) =>
+    this.setState({
+      locatable: checked,
+    });
 
-  renderChangeStatus = () => {
-    if (this.state.changeStatus) {
-      return (
-        <ChangeStatusInput
-          value={this.state.changeStatus}
-          error={this.state.error}
-        />
-      );
-    }
-  };
+  renderLikedBy = () => (
+    <SmallUsers
+      title="Liked by"
+      icon="&#9829;"
+      users={this.props.context.likedBy}
+    />
+  );
 
-  render() {
-    if (!this.state) {
-      return <span>Loading...</span>;
-    }
-    const {
-      firstname,
-      lastname,
-      email,
-      gender,
-      preferences,
-      bio,
-      age,
-      interests,
-      gallery,
-      avatarid
-    } = this.state;
-    const {
-      classes,
-      visited,
-      updateVisited,
-      updateCanRenderLikeButton
-    } = this.props;
+  renderCheckedBy = () => (
+    <SmallUsers
+      title="Checked by"
+      icon="&#10004;"
+      users={this.props.context.checkedBy}
+    />
+  );
 
-    return (
-      <div className={classes.root}>
-        <SmallUsers
-          title="Liked by"
-          icon="&#9829;"
-          getUserList={getLikedBy}
-          visited={visited}
-          updateVisited={updateVisited}
+  renderChangeStatus = () =>
+    this.state.changeStatus && (
+      <ChangeStatusInput
+        value={this.state.changeStatus}
+        error={this.state.error}
+      />
+    );
+
+  renderFirstName = () => (
+    <ProfileTextField
+      label="First name"
+      name="firstname"
+      value={this.state.firstname}
+      onChange={this.onChange}
+    />
+  );
+
+  renderLastName = () => (
+    <ProfileTextField
+      label="Last name"
+      name="lastname"
+      value={this.state.lastname}
+      onChange={this.onChange}
+    />
+  );
+
+  renderEmail = () => (
+    <ProfileTextField
+      label="Email address"
+      name="email"
+      value={this.state.email}
+      onChange={this.onChange}
+    />
+  );
+
+  renderAge = () => (
+    <ProfileTextField
+      label="Age"
+      name="age"
+      value={this.state.age}
+      onChange={this.onChange}
+      type="number"
+    />
+  );
+
+  renderGender = () => (
+    <ProfileSelect
+      title="Gender"
+      items={['male', 'female']}
+      name="gender"
+      value={this.state.gender}
+      onChange={this.onChange}
+    />
+  );
+
+  renderPreferences = () => (
+    <ProfileSelect
+      title="Preferences"
+      items={['heterosexual', 'homosexual', 'bisexual']}
+      name="preferences"
+      value={this.state.preferences}
+      onChange={this.onChange}
+    />
+  );
+
+  renderBio = () => (
+    <ProfileTextField
+      label="Biography"
+      placeholder="Tell us a few words about yourself"
+      name="bio"
+      value={this.state.bio}
+      onChange={this.onChange}
+    />
+  );
+
+  renderInterests = () => (
+    <InterestsInput
+      name="interests"
+      value={this.state.interests}
+      all={this.props.context.interests}
+      onChange={this.onChange}
+    />
+  );
+
+  renderLocatableCheckbox = () => (
+    <FormControlLabel
+      control={
+        <Checkbox
+          checked={this.state.locatable}
+          onChange={this.onCheckboxChange}
+          color="primary"
         />
-        <SmallUsers
-          title="Checked by"
-          icon="&#10004;"
-          getUserList={getCheckedBy}
-          visited={visited}
-          updateVisited={updateVisited}
-        />
-        <div className={classes.profileDetails}>
-          {this.renderChangeStatus()}
-          <ProfileTextField
-            label="First name"
-            name="firstname"
-            value={firstname}
-            onChange={this.onChange}
-          />
-          <ProfileTextField
-            label="Last name"
-            name="lastname"
-            value={lastname}
-            onChange={this.onChange}
-          />
-          <ProfileTextField
-            label="Email address"
-            name="email"
-            value={email}
-            validate={this.isEmailValid}
-            onChange={this.onChange}
-          />
-          <div className={classes.ageInput}>
-            <label className={classes.ageLabel} htmlFor="age">
-              Age
-            </label>
-            <Input
-              name="age"
-              type="number"
-              value={age}
-              onChange={this.onAgeChange}
-            />
-          </div>
-          <ProfileSelect
-            title="Gender"
-            items={["male", "female"]}
-            name="gender"
-            value={gender}
-            onChange={this.onChange}
-          />
-          <ProfileSelect
-            title="Preferences"
-            items={["heterosexual", "homosexual", "bisexual"]}
-            name="preferences"
-            value={preferences}
-            onChange={this.onChange}
-          />
-          <ProfileTextField
-            label="Biography"
-            placeholder="Tell us a few words about yourself"
-            name="bio"
-            value={bio}
-            onChange={this.onChange}
-          />
-          <InterestsInput
-            name="interests"
-            value={interests}
-            all={this.state.allInterests}
-            onChange={this.onChange}
-          />
-          <Button variant="contained" color="primary" onClick={this.onSubmit}>
-            Save changes
-          </Button>
-        </div>
-        <ProfilePhotos
-          gallery={gallery}
-          avatarid={avatarid}
-          updateCanRenderLikeButton={updateCanRenderLikeButton}
-        />
+      }
+      label="Set location manually"
+    />
+  );
+
+  renderLatitude = () => (
+    <ProfileTextField
+      label="Latitude"
+      name="latitude"
+      value={this.state.latitude}
+      onChange={this.onChange}
+      type="number"
+      disabled={!this.state.locatable}
+    />
+  );
+
+  renderLongitude = () => (
+    <ProfileTextField
+      label="Longitude"
+      name="longitude"
+      value={this.state.longitude}
+      onChange={this.onChange}
+      type="number"
+      disabled={!this.state.locatable}
+    />
+  );
+
+  renderSaveButton = () => (
+    <Button variant="contained" color="primary" onClick={this.onSubmit}>
+      Save changes
+    </Button>
+  );
+
+  renderProfileDetails = () => (
+    <div className={this.props.classes.profileDetails}>
+      {this.renderChangeStatus()}
+      {this.renderFirstName()}
+      {this.renderLastName()}
+      {this.renderEmail()}
+      {this.renderAge()}
+      {this.renderGender()}
+      {this.renderPreferences()}
+      {this.renderBio()}
+      {this.renderInterests()}
+      {this.renderLocatableCheckbox()}
+      {this.renderLatitude()}
+      {this.renderLongitude()}
+      {this.renderSaveButton()}
+    </div>
+  );
+
+  renderProfilePhotos = () => <ProfilePhotos />;
+
+  render = () =>
+    this.state && (
+      <div className={this.props.classes.root}>
+        {this.renderLikedBy()}
+        {this.renderCheckedBy()}
+        {this.renderProfileDetails()}
+        {this.renderProfilePhotos()}
       </div>
     );
-  }
 }
 
 Profile.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Profile);
+export default withStyles(styles)(withContext(Profile));

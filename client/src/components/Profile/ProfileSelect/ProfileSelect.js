@@ -1,30 +1,17 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-
-const styles = theme => ({
-  formControl: {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
-    minWidth: 120
-  }
-});
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { styles } from './ProfileSelect.styles';
 
 class ProfileSelect extends React.Component {
   state = {
-    [this.props.name]: ""
+    [this.props.name]: this.props.value,
   };
-
-  componentDidMount() {
-    this.setState({
-      [this.props.name]: this.props.value
-    });
-  }
 
   handleChange = event => {
     this.setState({ [this.props.name]: event.target.value });
@@ -37,9 +24,7 @@ class ProfileSelect extends React.Component {
     return (
       <FormControl className={classes.formControl}>
         <InputLabel
-          ref={ref => {
-            this.InputLabelRef = ref;
-          }}
+          ref={ref => (this.InputLabelRef = ref)}
           htmlFor="outlined-age-simple"
         >
           {title}
@@ -61,7 +46,7 @@ class ProfileSelect extends React.Component {
 }
 
 ProfileSelect.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(ProfileSelect);

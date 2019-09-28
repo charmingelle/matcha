@@ -1,17 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import Input from "@material-ui/core/Input";
-
-const styles = {
-  container: {
-    display: "flex",
-    flexWrap: "wrap"
-  },
-  input: {
-    width: "100%"
-  }
-};
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Input from '@material-ui/core/Input';
+import { styles } from './ChangeStatusInput.styles';
 
 const Inputs = props => {
   const { classes, error } = props;
@@ -21,9 +12,7 @@ const Inputs = props => {
       <Input
         className={classes.input}
         error={error}
-        inputProps={{
-          "aria-label": "Description"
-        }}
+        inputProps={{ 'aria-label': 'Save changes status' }}
         value={props.value}
       />
     </div>
@@ -31,7 +20,7 @@ const Inputs = props => {
 };
 
 Inputs.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Inputs);

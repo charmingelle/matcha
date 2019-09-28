@@ -1,25 +1,10 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import SnackbarContent from "@material-ui/core/SnackbarContent";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-
-const styles = {
-  notification: {
-    padding: 0,
-    paddingLeft: "20px",
-    paddingRight: "10px",
-    backgroundColor: "#f50057"
-  },
-  message: {
-    display: "flex",
-    alignItems: "center"
-  },
-  close: {
-    padding: "5px"
-  }
-};
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import { styles } from './Notification.styles';
 
 class Notification extends React.Component {
   render = () => {
@@ -43,7 +28,7 @@ class Notification extends React.Component {
             onClick={close.bind(this, index)}
           >
             <CloseIcon className={classes.icon} />
-          </IconButton>
+          </IconButton>,
         ]}
       />
     );
@@ -51,7 +36,7 @@ class Notification extends React.Component {
 }
 
 Notification.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Notification);

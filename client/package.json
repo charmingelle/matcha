@@ -3,22 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^3.9.2",
+    "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
-    "downshift": "^3.2.2",
+    "downshift": "^3.2.12",
+    "lodash.deburr": "^4.1.0",
     "material-ui": "^0.20.2",
-    "react": "^16.8.2",
-    "react-dom": "^16.8.2",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^2.1.5",
+    "react-scripts": "^2.1.8",
     "socket.io-client": "^2.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "initiate": "npm --loglevel=error i material-ui @material-ui/core @material-ui/icons downshift react react-dom react-router-dom react-scripts socket.io-client"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"

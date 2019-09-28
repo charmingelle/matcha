@@ -2,28 +2,34 @@
 
 ## Getting Started
 
-To start PostgreSQL server, cd to the root directory and run the following command in your terminal window:
+To build the project, run
 
 ```
-npm run pg_start
+npm run build
 ```
 
-To initiate the project and start Node.js server, run
+To start the application, run
 
 ```
-npm start
+npm run start
 ```
 
 Now Matcha website is available at [http://localhost:5000](http://localhost:5000) or at http://[eXrXpX].unit.ua:5000
 
-To re-initiate the database, run
+To remove all node modules, run
 
 ```
-npm run initiate_db
+npm run clean
 ```
 
-To start Node.js server separately, run
+To create the database, run
 
 ```
-npm run server
+npm run db-create
+```
+
+To fill the database with initial data, run
+
+```
+npm i && npm run db-initiate
 ```

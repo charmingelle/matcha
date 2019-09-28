@@ -1,90 +1,66 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
-import Avatar from "@material-ui/core/Avatar";
-import Room from "./Room/Room.js";
-
-const styles = theme => ({
-  root: {
-    flexGrow: 1,
-    display: "flex",
-    flexDirection: "row",
-    overflow: "hidden"
-  },
-  link: {
-    textDecoration: "none"
-  },
-  users: {
-    width: "20%",
-    padding: "unset",
-    borderRight: "1px solid rgba(0, 0, 0, 0.08)"
-  },
-  user: {
-    padding: 5
-  },
-  selectedUser: {
-    padding: 5,
-    backgroundColor: "rgba(0, 0, 0, 0.08)"
-  },
-  onlineDot: {
-    marginRight: 5,
-    width: 5,
-    height: 5,
-    borderRadius: "100%",
-    backgroundColor: "#3f51b5"
-  }
-});
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import { styles } from './Chat.styles';
+import { Link } from 'react-router-dom';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import Avatar from '@material-ui/core/Avatar';
+import Room from './Room/Room';
+import { withContext } from '../../utils/utils';
 
 class Chat extends React.Component {
+  getAvatarSrc = (chatData, login) =>
+    `/${chatData[login].gallery[chatData[login].avatarid]}`;
+
+  renderRoomLink = (login, index) => {
+    const {
+      classes,
+      receiver,
+      context: { chatData },
+    } = this.props;
+    const avatar = this.getAvatarSrc(chatData, login);
+
+    return (
+      <Link className={classes.chatLink} key={index} to={`/chat/${login}`}>
+        <ListItem
+          button
+          className={login === receiver ? classes.selectedUser : classes.user}
+        >
+          <Link className={classes.userLink} to={`/users/${login}`}>
+            <Avatar alt={login} src={avatar} />
+          </Link>
+
+          <ListItemText
+            className={classes.userName}
+            primary={chatData[login].name}
+          />
+          <div className={classes.onlineDotContainer}>
+            {chatData[login].online && <div className={classes.onlineDot} />}
+          </div>
+        </ListItem>
+        <Divider light />
+      </Link>
+    );
+  };
+
   render = () => {
     const {
       classes,
-      socket,
-      sender,
       receiver,
-      chatData,
-      updateLog
+      context: { chatData },
     } = this.props;
 
     return (
       <div className={classes.root}>
         <List component="nav" className={classes.users}>
-          {Object.keys(chatData).map((login, index) => {
-            const avatar =
-              chatData[login].gallery.length > 0
-                ? chatData[login].gallery[chatData[login].avatarid]
-                : "avatar.png";
-
-            return (
-              <Link className={classes.link} key={index} to={`/chat/${login}`}>
-                <ListItem
-                  button
-                  className={
-                    login === receiver ? classes.selectedUser : classes.user
-                  }
-                >
-                  <Avatar alt={login} src={`/${avatar}`} />
-                  <ListItemText primary={login} />
-                  {chatData[login].online && (
-                    <div className={classes.onlineDot} />
-                  )}
-                </ListItem>
-                <Divider light />
-              </Link>
-            );
-          })}
+          {Object.keys(chatData).map(this.renderRoomLink)}
         </List>
         <Room
-          socket={socket}
-          sender={sender}
           receiver={receiver}
           log={chatData[receiver].log}
-          updateLog={updateLog}
           updateMessage={this.updateMessage}
         />
       </div>
@@ -93,7 +69,7 @@ class Chat extends React.Component {
 }
 
 Chat.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Chat);
+export default withStyles(styles)(withContext(Chat));
