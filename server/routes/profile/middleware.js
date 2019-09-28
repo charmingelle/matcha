@@ -58,15 +58,15 @@ const checkAgeValidity = (req, res, next) =>
   isAgeValid(req.body.age) ? next() : res.status(400).json('Age is invalid');
 
 const checkLoginAvailability = async (req, res, next) => {
-  const users = await DB.readUser(req.body.email, req.body.login);
+  const users = await DB.readUser(req.body.login);
 
   users.length > 0 ? res.status(403).json('Your login is busy') : next();
 };
 
 const checkEmailAvailability = async (req, res, next) => {
-  const users = await DB.readUsersByEmail(req.body.email, req.body.login);
+  const users = await DB.readUsersByEmail(req.body.email);
 
-  users.length > 0 ? res.status(403).json('Your login is busy') : next();
+  users.length > 0 ? res.status(403).json('Your email is busy') : next();
 };
 
 const checkGenderValidity = async (req, res, next) =>
