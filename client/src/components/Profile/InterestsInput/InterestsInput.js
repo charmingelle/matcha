@@ -156,9 +156,9 @@ class DownshiftMultiple extends React.Component {
         onChange: this.handleInputChange,
         onKeyDown: this.handleKeyDown,
         placeholder: 'Select multiple interests',
+        className: this.props.classes.chipList,
       })}
       label="Interests"
-      className={this.props.classes.textField}
     />
   );
 

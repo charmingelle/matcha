@@ -15,20 +15,11 @@ export const styles = theme => ({
     left: 0,
     right: 0,
   },
-  chip: {
-    margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`,
-  },
-  inputRoot: {
+  chipList: {
+    display: 'flex',
     flexWrap: 'wrap',
   },
-  inputInput: {
-    width: 'auto',
-    flexGrow: 1,
-  },
-  divider: {
-    height: theme.spacing.unit * 2,
-  },
-  textField: {
-    overflow: 'scroll',
+  chip: {
+    margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`,
   },
 });
