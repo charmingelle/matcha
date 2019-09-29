@@ -65,6 +65,14 @@ class DB {
     );
   }
 
+  async getBlockedUsersLogins(blocker) {
+    const blockedUsers = await this.readBlockedUsers(blocker);
+
+    return blockedUsers.length
+      ? blockedUsers.map(({ blockee }) => blockee)
+      : [];
+  }
+
   async readWomenWithMyPreferences(login, preferences, blockedUsers) {
     return blockedUsers.length
       ? this.db.any(

@@ -9,9 +9,12 @@ router.get('/suggestions', isSignedIn, async (req, res) =>
 );
 
 router.get('/visited', isSignedIn, async (req, res) => {
-  const [{ visited }] = await DB.readUser(req.session.login);
+  let [{ visited }] = await DB.readUser(req.session.login);
+  const blockedUsersLogins = await DB.getBlockedUsersLogins(req.session.login);
 
-  return visited.length > 0
+  visited = visited.filter(login => !blockedUsersLogins.includes(login));
+
+  return visited.length
     ? res.json(filterUsersData(await DB.readUsers(visited)))
     : res.json([]);
 });

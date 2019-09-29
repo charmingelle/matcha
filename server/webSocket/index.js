@@ -6,14 +6,6 @@ module.exports = app => {
   const io = require('socket.io')(app.listen(config.port));
   const chatUsers = {};
 
-  const getBlockedUsersLogins = async blocker => {
-    const blockedUsers = await DB.readBlockedUsers(blocker);
-
-    return blockedUsers.length
-      ? blockedUsers.map(({ blockee }) => blockee)
-      : [];
-  };
-
   const updateSenderReceiverChatData = (sender, receiver) => {
     DB.readUserChats(sender).then(chatData =>
       io.to(chatUsers[sender]).emit('chatDataUpdate', chatData),
@@ -62,21 +54,22 @@ module.exports = app => {
     const { sender, receiver } = data;
     const { length } = await DB.readLike(receiver, sender);
     const isLikeBack = length > 0;
-    const blockedUsersLogins = await getBlockedUsersLogins(data.receiver);
+    const blockedUsersLogins = await DB.getBlockedUsersLogins(data.receiver);
+    const notifyReceiver = !blockedUsersLogins.includes(data.sender);
 
     await DB.createLike(sender, receiver);
     await DB.increaseUserFame(receiver);
 
     if (isLikeBack) {
       updateSenderReceiverChatData(sender, receiver);
-      if (!blockedUsersLogins.includes(data.sender)) {
+      if (notifyReceiver) {
         io.to(chatUsers[receiver]).emit('likeBack', data);
       }
     } else {
       DB.readUserChats(sender).then(chatData =>
         io.to(chatUsers[sender]).emit('chatDataUpdate', chatData),
       );
-      if (!blockedUsersLogins.includes(data.sender)) {
+      if (notifyReceiver) {
         io.to(chatUsers[receiver]).emit('like', data);
       }
     }
@@ -86,7 +79,7 @@ module.exports = app => {
   };
 
   const checkEventHandler = async data => {
-    const blockedUsersLogins = await getBlockedUsersLogins(data.receiver);
+    const blockedUsersLogins = await DB.getBlockedUsersLogins(data.receiver);
 
     if (!blockedUsersLogins.includes(data.sender)) {
       io.to(chatUsers[data.receiver]).emit('check', data);

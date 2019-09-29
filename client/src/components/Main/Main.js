@@ -263,9 +263,8 @@ class Main extends React.Component {
       showMenu: !this.state.showMenu,
     });
 
-  changeTabName = tabName => () =>
+  hideMenu = () =>
     this.setState({
-      tabName,
       showMenu: false,
     });
 
@@ -325,7 +324,7 @@ class Main extends React.Component {
         className={classes.menuItem}
         component={Link}
         to={to}
-        onClick={this.changeTabName(tabName)}
+        onClick={this.hideMenu}
       >
         <ListItemIcon className={classes.icon}>
           <Icon />
@@ -375,7 +374,7 @@ class Main extends React.Component {
         <>
           {this.renderAppBar(appBarName)}
           {Component && (
-            <TabContainer>
+            <TabContainer key={appBarName}>
               <Component {...props} />
             </TabContainer>
           )}
@@ -440,7 +439,7 @@ class Main extends React.Component {
 
         return index !== -1 ? (
           <>
-            {this.renderAppBar('User')}
+            {this.renderAppBar(match.params.login)}
             <TabContainer>
               <div className={this.props.classes.singleUserContainer}>
                 <User user={this.props.context.suggestions[index]} full />
@@ -475,11 +474,12 @@ class Main extends React.Component {
   block = async () => {
     this.props.context.socket.emit('unlike', {
       sender: this.props.context.profile.login,
-      senderName: this.props.context.dialogName,
+      senderName: `${this.props.context.profile.firstname} ${this.props.context.profile.lastname}`,
       receiver: this.props.context.dialogLogin,
     });
     await this.api.block(this.props.context.dialogLogin);
     this.loadSuggestions();
+    this.loadVisited();
   };
 
   renderBlogDialog = () => (
