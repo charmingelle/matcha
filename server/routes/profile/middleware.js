@@ -81,9 +81,15 @@ const checkPreferencesValidity = async (req, res, next) =>
 
 const checkInterestsValidity = async (req, res, next) =>
   Array.isArray(req.body.interests) &&
-  req.body.interests.every(interest => interest === interest.toString())
+  req.body.interests.every(
+    interest => interest === interest.toString() && interest.length <= 30,
+  )
     ? next()
-    : res.status(400).json('Invalid interest');
+    : res
+        .status(400)
+        .json(
+          'Please make sure that each interest is a string taking no longer than 30 symbols',
+        );
 
 const checkLocationValidity = async (req, res, next) =>
   Array.isArray(req.body.location) &&

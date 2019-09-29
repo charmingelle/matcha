@@ -28,4 +28,7 @@ export const styles = theme => ({
   divider: {
     height: theme.spacing.unit * 2,
   },
+  textField: {
+    overflow: 'scroll',
+  },
 });

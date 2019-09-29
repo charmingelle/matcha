@@ -107,7 +107,7 @@ class DownshiftMultiple extends React.Component {
     const { interests } = this.state;
 
     this.setState({
-      inputValue: target.value,
+      inputValue: target.value.substring(0, 30),
       suggestions: [...getSuggestions(interests, target.value)],
     });
   };
@@ -158,6 +158,7 @@ class DownshiftMultiple extends React.Component {
         placeholder: 'Select multiple interests',
       })}
       label="Interests"
+      className={this.props.classes.textField}
     />
   );
 

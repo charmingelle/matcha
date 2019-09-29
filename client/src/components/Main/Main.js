@@ -472,11 +472,14 @@ class Main extends React.Component {
     </div>
   );
 
-  block = () => {
-    this.api.block(this.props.context.dialogLogin);
-    this.loadChatData();
+  block = async () => {
+    this.props.context.socket.emit('unlike', {
+      sender: this.props.context.profile.login,
+      senderName: this.props.context.dialogName,
+      receiver: this.props.context.dialogLogin,
+    });
+    await this.api.block(this.props.context.dialogLogin);
     this.loadSuggestions();
-    this.loadVisited();
   };
 
   renderBlogDialog = () => (
