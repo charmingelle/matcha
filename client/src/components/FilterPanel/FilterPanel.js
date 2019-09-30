@@ -34,11 +34,11 @@ class FilterPanel extends React.Component {
     expanded: false,
   };
 
-  changeParam = (param, min, max) => event =>
-    event.target.value >= min &&
-    (!max || event.target.value <= max) &&
+  changeParam = (param, intMin, intMax) => ({ target: { value } }) =>
+    value >= intMin &&
+    (!intMax || value <= intMax) &&
     this.setState({
-      [param]: event.target.value,
+      [param]: value,
     });
 
   filter = () => {
@@ -75,7 +75,7 @@ class FilterPanel extends React.Component {
             max="100"
             step="1"
             value={startAge}
-            onChange={this.changeParam('startAge', 18, 100)}
+            onChange={this.changeParam('startAge', 18, parseInt(endAge))}
           />
           <span className={classes.spanAll}>100</span>
         </div>
@@ -94,7 +94,7 @@ class FilterPanel extends React.Component {
             max="100"
             step="1"
             value={endAge}
-            onChange={this.changeParam('endAge', 18, 100)}
+            onChange={this.changeParam('endAge', parseInt(startAge), 100)}
           />
           <span className={classes.spanAll}>100</span>
         </div>
