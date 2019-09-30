@@ -2,6 +2,7 @@ import React from 'react';
 
 export const MIN_AGE = 18;
 export const MAX_AGE = 100;
+export const MAX_BIO_SYMBOLS = 300;
 export const LATITUDE_LIMIT = 90;
 export const LONGITUDE_LIMIT = 180;
 

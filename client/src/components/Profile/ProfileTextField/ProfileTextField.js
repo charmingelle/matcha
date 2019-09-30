@@ -23,6 +23,7 @@ export default class ProfileTextField extends React.Component {
         type={type}
         disabled={disabled}
         margin="normal"
+        multiline={true}
       />
     );
   }

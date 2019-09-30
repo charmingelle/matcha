@@ -11,6 +11,7 @@ module.exports = {
   DEFAULT_AVATAR: 'avatar.png',
   MIN_AGE: 18,
   MAX_AGE: 100,
+  MAX_BIO_SYMBOLS: 300,
   LATITUDE_LIMIT: 90,
   LONGITUDE_LIMIT: 180,
 };

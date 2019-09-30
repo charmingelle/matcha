@@ -14,6 +14,7 @@ import { styles } from './Profile.styles';
 import {
   MIN_AGE,
   MAX_AGE,
+  MAX_BIO_SYMBOLS,
   LATITUDE_LIMIT,
   LONGITUDE_LIMIT,
   isEmailValid,
@@ -67,6 +68,17 @@ class Profile extends React.Component {
     return true;
   };
 
+  isBioValid = bio => {
+    if (bio.length > MAX_BIO_SYMBOLS) {
+      this.setState({
+        changeStatus: `Please make sure that your bio contains no more than ${MAX_BIO_SYMBOLS} symbols`,
+        error: true,
+      });
+      return false;
+    }
+    return true;
+  };
+
   isLatitudeValid = latitude => {
     if (!isLatitudeValid(latitude)) {
       this.setState({
@@ -98,6 +110,7 @@ class Profile extends React.Component {
     this.validateEmpty(this.state.longitude) &&
     this.isEmailValid(this.state.email) &&
     this.isAgeValid(this.state.age) &&
+    this.isBioValid(this.state.bio) &&
     this.isLatitudeValid(this.state.latitude) &&
     this.isLongitudeValid(this.state.longitude);
 
@@ -242,7 +255,7 @@ class Profile extends React.Component {
 
   renderBio = () => (
     <ProfileTextField
-      label="Biography"
+      label="Biography (300 symbols)"
       placeholder="Tell us a few words about yourself"
       name="bio"
       value={this.state.bio}

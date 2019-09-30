@@ -1,5 +1,6 @@
 const { isSignedIn } = require('../../middleware/common');
 const { check, validationResult } = require('express-validator');
+const { MAX_BIO_SYMBOLS } = require('../../constants');
 const {
   isEmailValid,
   isLoginValid,
@@ -79,6 +80,11 @@ const checkPreferencesValidity = async (req, res, next) =>
     ? next()
     : res.status(400).json('Invalid preferences');
 
+const checkBioValidity = async (req, res, next) =>
+  req.body.bio.length <= MAX_BIO_SYMBOLS
+    ? next()
+    : res.status(400).json('Invalid bio');
+
 const checkInterestsValidity = async (req, res, next) =>
   Array.isArray(req.body.interests) &&
   req.body.interests.every(
@@ -138,6 +144,7 @@ exports.slashMiddlewareArray = [
   checkAgeValidity,
   checkGenderValidity,
   checkPreferencesValidity,
+  checkBioValidity,
   checkInterestsValidity,
   checkIfEmailIsFree,
   checkLocationValidity,
