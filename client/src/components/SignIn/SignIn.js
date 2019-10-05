@@ -22,6 +22,7 @@ class Signin extends React.Component {
   handleChange = name => event =>
     this.setState({
       [name]: event.target.value,
+      message: '',
     });
 
   anyFieldIsEmpty = () => this.state.login === '' || this.state.password === '';

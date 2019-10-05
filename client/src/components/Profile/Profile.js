@@ -165,7 +165,7 @@ class Profile extends React.Component {
     }
   };
 
-  onChange = target => this.setState(target);
+  onChange = target => this.setState({ ...target, changeStatus: '' });
 
   onCheckboxChange = ({ target: { checked } }) =>
     this.setState({
@@ -260,6 +260,7 @@ class Profile extends React.Component {
       name="bio"
       value={this.state.bio}
       onChange={this.onChange}
+      multiline
     />
   );
 

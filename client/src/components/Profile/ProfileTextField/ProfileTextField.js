@@ -12,7 +12,7 @@ export default class ProfileTextField extends React.Component {
   };
 
   render() {
-    const { name, label, placeholder, type, disabled } = this.props;
+    const { name, label, placeholder, type, disabled, multiline } = this.props;
 
     return (
       <TextField
@@ -22,8 +22,8 @@ export default class ProfileTextField extends React.Component {
         onChange={this.handleChange}
         type={type}
         disabled={disabled}
+        multiline={multiline}
         margin="normal"
-        multiline={true}
       />
     );
   }

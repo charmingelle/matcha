@@ -21,6 +21,7 @@ class ForgotPassword extends React.Component {
   handleChange = event =>
     this.setState({
       email: event.target.value,
+      message: '',
     });
 
   getResetPasswordEmail = () =>
