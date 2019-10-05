@@ -7,33 +7,29 @@ import { styles } from './ActivateAccount.styles';
 import { withContext } from '../../utils/utils';
 
 class ActivateAccount extends React.Component {
+  showError = () =>
+    this.setState({
+      error: true,
+      result: 'Invalid account activation link',
+    });
+
   parseParams = params => {
     const [emailParam, hashParam] = params;
 
     emailParam.indexOf('?email=') !== 0 || hashParam.indexOf('hash=') !== 0
-      ? this.setState({
-          error: true,
-          result: 'Invalid account activation link',
-        })
+      ? this.showError()
       : this.props.context.api
           .activateAccount(emailParam.substring(7), hashParam.substring(5))
-          .then(response => this.setState(response));
+          .then(response => this.setState(response))
+          .catch(this.showError);
   };
 
   countParams = params =>
-    params.length === 2
-      ? this.parseParams(params)
-      : this.setState({
-          error: true,
-          result: 'Invalid account activation link',
-        });
+    params.length === 2 ? this.parseParams(params) : this.showError();
 
   componentDidMount = () =>
     this.props.location.search === ''
-      ? this.setState({
-          error: true,
-          result: 'Invalid account activation link',
-        })
+      ? this.showError()
       : this.countParams(this.props.location.search.split('&'));
 
   render = () =>

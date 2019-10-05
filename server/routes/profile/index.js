@@ -3,12 +3,12 @@ const express = require('express');
 const router = express.Router();
 const { isSignedIn } = require('../../middleware/common');
 const {
-  checkUserExistanceByEmailAndHash,
   slashMiddlewareArray,
   locationMiddlewareArray,
   phoroMiddlewareArray,
   avatarMiddlewareArray,
   signupMiddlewareArray,
+  accountActivationMiddlewareArray,
 } = require('./middleware');
 const { gethash, transport, filterUsersData } = require('../../utils');
 const { NO_REPLY_EMAIL, DEFAULT_AVATAR } = require('../../constants');
@@ -189,7 +189,7 @@ router.post('/signup', signupMiddlewareArray, async (req, res, next) => {
 
 router.patch(
   '/activate',
-  checkUserExistanceByEmailAndHash,
+  accountActivationMiddlewareArray,
   async (req, res) => {
     await DB.updateUserHashByEmail('', req.body.email);
     await DB.updateUserActiveByEmail(req.body.email);

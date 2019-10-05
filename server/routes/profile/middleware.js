@@ -105,13 +105,30 @@ const checkLocationValidity = async (req, res, next) =>
     ? next()
     : res.status(400).json('Invalid location');
 
-exports.checkUserExistanceByEmailAndHash = async (req, res, next) => {
+const checkIfHashIsEmpty = async (req, res, next) =>
+  req.body.hash !== ''
+    ? next()
+    : res.status(400).json('Invalid account activation link');
+
+const checkUserExistanceByEmailAndHash = async (req, res, next) => {
   const users = await DB.readUsersByEmailAndHash(req.body.email, req.body.hash);
 
   users.length === 1
     ? next()
-    : res.status(404).json('The account to be activated cannot be found');
+    : res.status(404).json('Invalid account activation link');
 };
+
+exports.accountActivationMiddlewareArray = [
+  check('hash')
+    .trim()
+    .escape(),
+  check('email')
+    .isEmail()
+    .normalizeEmail(),
+  checkExpressCheckValidity,
+  checkIfHashIsEmpty,
+  checkUserExistanceByEmailAndHash,
+];
 
 exports.slashMiddlewareArray = [
   isSignedIn,
