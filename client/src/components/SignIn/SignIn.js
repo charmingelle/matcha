@@ -85,7 +85,9 @@ class Signin extends React.Component {
             Sign In
           </Button>
           <Link to="/signup">Sign Up</Link>
-          <Link to="/forgot-password">Forgot Password?</Link>
+          <Link className={classes.resetPasswordLink} to="/forgot-password">
+            Forgot Password?
+          </Link>
         </form>
       </div>
     );

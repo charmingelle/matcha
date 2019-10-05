@@ -17,6 +17,7 @@ class ResetPassword extends React.Component {
     error: false,
     message: '',
     email: this.props.email,
+    areControlsDisplayed: true,
   };
 
   handleKeyPress = event => keycode(event) === 'enter' && this.resetPassword();
@@ -26,7 +27,7 @@ class ResetPassword extends React.Component {
       [name]: event.target.value,
     });
 
-  resetPassword = async () => {
+  resetPassword = () => {
     const { password, passwordConfirm, email } = this.state;
 
     if (password === '' || passwordConfirm === '') {
@@ -36,10 +37,7 @@ class ResetPassword extends React.Component {
       });
     }
     if (!isPasswordValid(password)) {
-      return this.setState({
-        error: true,
-        message: 'Invalid password',
-      });
+      return this.setState({ error: true, message: 'Invalid password' });
     }
     if (password !== passwordConfirm) {
       return this.setState({
@@ -47,9 +45,16 @@ class ResetPassword extends React.Component {
         message: 'Invalid password confirm',
       });
     }
-    const { result } = await this.api.resetPassword(password, email);
-
-    this.setState({ error: false, message: result });
+    this.api
+      .resetPassword(password, email)
+      .then(() =>
+        this.setState({
+          error: false,
+          message: 'Your password has been changed',
+          areControlsDisplayed: false,
+        }),
+      )
+      .catch(() => this.setState({ error: true, message: 'Please try again' }));
   };
 
   renderMessage = () =>
@@ -62,40 +67,50 @@ class ResetPassword extends React.Component {
       />
     );
 
-  render = () => {
-    const { classes } = this.props;
-    const { password, passwordConfirm } = this.state;
+  renderControls = () => (
+    <>
+      <TextField
+        label="Password"
+        className={this.props.classes.textField}
+        onChange={this.handleChange('password')}
+        onKeyPress={this.handleKeyPress}
+        margin="normal"
+        value={this.state.password}
+        type="password"
+      />
+      <TextField
+        label="Confirm your password"
+        className={this.props.classes.textField}
+        onChange={this.handleChange('passwordConfirm')}
+        onKeyPress={this.handleKeyPress}
+        margin="normal"
+        value={this.state.passwordConfirm}
+        type="password"
+      />
+      <Button
+        className={this.props.classes.button}
+        onClick={this.resetPassword}
+      >
+        Change password
+      </Button>
+    </>
+  );
 
-    return (
-      <div className={classes.root}>
-        <form className={classes.container} noValidate autoComplete="off">
-          {this.renderMessage()}
-          <TextField
-            label="Password"
-            className={classes.textField}
-            onChange={this.handleChange('password')}
-            onKeyPress={this.handleKeyPress}
-            margin="normal"
-            value={password}
-            type="password"
-          />
-          <TextField
-            label="Confirm your password"
-            className={classes.textField}
-            onChange={this.handleChange('passwordConfirm')}
-            onKeyPress={this.handleKeyPress}
-            margin="normal"
-            value={passwordConfirm}
-            type="password"
-          />
-          <Button className={classes.button} onClick={this.resetPassword}>
-            Change password
-          </Button>
-          <Link to="/">Home</Link>
-        </form>
-      </div>
-    );
-  };
+  render = () => (
+    <div className={this.props.classes.root}>
+      <form
+        className={this.props.classes.container}
+        noValidate
+        autoComplete="off"
+      >
+        {this.renderMessage()}
+        {this.state.areControlsDisplayed && this.renderControls()}
+      </form>
+      <Link className={this.props.classes.link} to="/">
+        Home
+      </Link>
+    </div>
+  );
 }
 
 ResetPassword.propTypes = {

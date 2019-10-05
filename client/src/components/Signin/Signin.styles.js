@@ -15,9 +15,12 @@ export const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200,
+    width: 250,
   },
   button: {
     margin: '8px',
+  },
+  resetPasswordLink: {
+    marginTop: '8px',
   },
 });

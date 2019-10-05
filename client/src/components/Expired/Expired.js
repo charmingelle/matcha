@@ -6,26 +6,24 @@ import TextField from '@material-ui/core/TextField';
 import { styles } from './Expired.styles';
 
 class Expired extends React.Component {
-  render = () => {
-    const { classes } = this.props;
-
-    return (
-      <div className={classes.root}>
-        <div className={classes.container}>
-          <TextField
-            className={classes.textField}
-            error={true}
-            disabled
-            value="This link has expired"
-          />
-          <div className={classes.linkContainer}>
-            <Link to="/forgot-password">Forgot Password?</Link>
-            <Link to="/">Home</Link>
-          </div>
+  render = () => (
+    <div className={this.props.classes.root}>
+      <div className={this.props.classes.container}>
+        <TextField
+          className={this.props.classes.textField}
+          error={true}
+          disabled
+          value="Invalid or expired link"
+        />
+        <div className={this.props.classes.linkContainer}>
+          <Link to="/forgot-password">Forgot Password?</Link>
+          <Link className={this.props.classes.homeLink} to="/">
+            Home
+          </Link>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
 }
 
 Expired.propTypes = {

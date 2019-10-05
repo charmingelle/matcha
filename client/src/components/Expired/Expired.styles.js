@@ -14,11 +14,15 @@ export const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200,
+    width: 250,
   },
   linkContainer: {
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'center',
     margin: '16px 8px',
+  },
+  homeLink: {
+    marginTop: 8,
   },
 });

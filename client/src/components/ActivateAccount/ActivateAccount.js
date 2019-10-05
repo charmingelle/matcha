@@ -10,7 +10,7 @@ class ActivateAccount extends React.Component {
   showError = () =>
     this.setState({
       error: true,
-      result: 'Invalid account activation link',
+      result: 'Invalid or expired link',
     });
 
   parseParams = params => {

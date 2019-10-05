@@ -4,8 +4,6 @@ import ResetPassword from '../ResetPassword/ResetPassword';
 import Expired from '../Expired/Expired';
 
 class ResetPasswordOrExpired extends Component {
-  api = this.props.context.api;
-
   state = {
     page: null,
   };
@@ -13,7 +11,7 @@ class ResetPasswordOrExpired extends Component {
   goHome = () => this.props.history.push('/');
 
   validateEmailAndHash = (email, hash) =>
-    this.api
+    this.props.context.api
       .resetPasswordOrExpired(email, hash)
       .then(() => this.setState({ page: 'reset-password', email }))
       .catch(() => this.setState({ page: 'expired' }));

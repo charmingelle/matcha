@@ -9,7 +9,7 @@ export const styles = {
   },
   textField: {
     margin: 8,
-    width: 500,
+    width: 250,
   },
   link: { margin: 8 },
 };

@@ -1,6 +1,7 @@
 export const styles = theme => ({
   root: {
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     width: '100vw',
@@ -15,9 +16,12 @@ export const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200,
+    width: 250,
   },
   button: {
-    margin: '8px',
+    marginTop: 8,
+  },
+  link: {
+    marginTop: 8,
   },
 });

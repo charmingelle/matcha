@@ -3,9 +3,9 @@ const express = require('express');
 const router = express.Router();
 const { isSignedIn } = require('../../middleware/common');
 const {
-  hasHashExpired,
   signinMiddlewareArray,
   passwordResetEmailMiddlewareArray,
+  passwordResetLinkMiddlewareArray,
 } = require('./middleware');
 const { gethash, transport } = require('../../utils');
 const { NO_REPLY_EMAIL } = require('../../constants');
@@ -46,10 +46,14 @@ router.post(
   },
 );
 
-router.post('/password/reset/link', hasHashExpired, async (req, res) => {
-  await DB.updateUserHashByEmail('', req.body.email);
-  res.json({ result: 'OK' });
-});
+router.post(
+  '/password/reset/link',
+  passwordResetLinkMiddlewareArray,
+  async (req, res) => {
+    await DB.updateUserHashByEmail('', req.body.email);
+    res.json({ result: 'OK' });
+  },
+);
 
 router.post('/password/reset', (req, res, next) => {
   bcrypt.genSalt(10, (error, salt) => {
