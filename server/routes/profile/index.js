@@ -63,9 +63,6 @@ const updateProfile = async (
 router.get('/', isSignedIn, async (req, res) => {
   const [user] = filterUsersData(await DB.readUser(req.session.login));
 
-  user.canLike = !(
-    user.gallery.length === 1 && user.gallery[0] === DEFAULT_AVATAR
-  );
   res.json(user);
 });
 

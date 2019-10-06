@@ -8,6 +8,7 @@ const {
   BI,
   HASH_LENGTH,
   HASH_CHARSET,
+  DEFAULT_AVATAR,
   MIN_AGE,
   MAX_AGE,
   LATITUDE_LIMIT,
@@ -102,6 +103,7 @@ exports.filterUsersData = users =>
       location,
       fame,
       fake,
+      canLike: !(gallery.length === 1 && gallery[0] === DEFAULT_AVATAR),
     }),
   );
 
