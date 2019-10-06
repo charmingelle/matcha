@@ -48,7 +48,7 @@ const checkUserExistanceByEmail = async (req, res, next) => {
     req.user = users[0];
     next();
   } else {
-    res.status(400).json('Invalid email');
+    res.status(400).json('Unregistered email');
   }
 };
 
