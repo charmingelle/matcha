@@ -14,7 +14,7 @@ To start the application, run
 npm run start
 ```
 
-Now Matcha website is available at [http://localhost:5000](http://localhost:5000) or at http://[eXrXpX].unit.ua:5000
+Now Matcha website is available at [http://localhost:5000](http://localhost:5000)
 
 To remove all node modules, run
 
