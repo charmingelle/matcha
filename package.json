@@ -42,7 +42,7 @@
     "nodemailer": "^6.3.0",
     "nodemon": "^1.18.9",
     "pg-format": "^1.0.4",
-    "pg-promise": "^8.7.5",
+    "pg-promise": "^11.14.0",
     "random-hash": "^4.0.1",
     "socket.io": "^2.2.0"
   }
